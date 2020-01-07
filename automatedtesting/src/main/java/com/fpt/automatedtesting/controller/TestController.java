@@ -25,5 +25,5 @@ public class TestController {
                 .status(HttpStatus.OK)
                 .body(testService.dummyString());
     }
-    
+
 }
