@@ -1,4 +1,4 @@
-package com.fpt.automatedtesting.controller.admin;
+package com.fpt.automatedtesting.controller;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
