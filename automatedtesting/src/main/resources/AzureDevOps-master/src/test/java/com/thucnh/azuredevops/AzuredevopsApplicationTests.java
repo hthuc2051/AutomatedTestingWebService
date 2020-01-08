@@ -14,7 +14,5 @@ class AzuredevopsApplicationTests {
     @Autowired
     private TemplateQuestion templateQuestion;
 
-  //start
- Phan nay se de code automated testing 
-//end
+  //start //starttest1 public void testcase1 Driver.findViewById('txtUsername').clear();  Driver.findViewById('txtUsername').sendKey('NguyenVanA');  Driver.findViewById('txtPassword').clear();  Driver.findViewById('txtPassword').sendKey('p4ssw0rd');     assertEquals('admin',question1('NguyenVanA','p4ssw0rd'));    //end question1  //end
 }
