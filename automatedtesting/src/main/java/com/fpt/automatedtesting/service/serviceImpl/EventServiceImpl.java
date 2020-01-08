@@ -24,20 +24,12 @@ public class EventServiceImpl implements EventService {
         dto.setCode("driver.findElement(By.id(paramName)).clear(); <br/>" +
                 "driver.findElement(By.id(paramName)).sendKeys(paramValue); ");
         dto.setSubject("Java");
-        List<ParamResponseDto> params = new ArrayList<>();
-        params.add(new ParamResponseDto("txtUsername", "thanhtd"));
-        params.add(new ParamResponseDto("txtPassword", "123456"));
-        dto.setListParams(params);
         listEvents.add(dto);
 
         dto = new EventResponseDto();
         dto.setName("sendKeysToElementByName");
         dto.setCode("driver.findElement(By.name(paramName)).clear(); <br/>" +
                 "driver.findElement(By.name(paramName)).sendKeys(paramValue); ");
-        params.clear();
-        params.add(new ParamResponseDto("txtUsername", "thanhtd"));
-        params.add(new ParamResponseDto("txtPassword", "123456"));
-        dto.setListParams(params);
         dto.setSubject("C# .NET");
         listEvents.add(dto);
 
