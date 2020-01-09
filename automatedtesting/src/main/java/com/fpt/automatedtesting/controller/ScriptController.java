@@ -1,73 +1,50 @@
 package com.fpt.automatedtesting.controller;
 
-import com.fpt.automatedtesting.dto.request.CodeDto;
 import com.fpt.automatedtesting.dto.request.TestScriptParamDto;
+import com.fpt.automatedtesting.service.ScriptService;
 import com.fpt.automatedtesting.utils.ZipFile;
-import org.springframework.util.FileCopyUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
 public class ScriptController {
-    @GetMapping("/writescript")
-    public String getString(){
-        return "ok";
+
+    @Autowired
+    private final ScriptService scriptService;
+
+    public ScriptController(ScriptService scriptService) {
+        this.scriptService = scriptService;
     }
 
 
     @PostMapping("/testscript")
-    @CrossOrigin(origins ="http://localhost:1998")
-    public String readSomething(@RequestBody TestScriptParamDto script) throws IOException {
-        Resource resource = new ClassPathResource("AzureDevOps-master\\src\\test\\java\\com\\thucnh\\azuredevops\\AzuredevopsApplicationTests.java");
-        InputStream inputStream = resource.getInputStream();
-        try {
-            byte[] bdata = FileCopyUtils.copyToByteArray(inputStream);
-            String data = new String(bdata, StandardCharsets.UTF_8);
-            String middlePart = "";
-            for ( CodeDto code : script.getQuestions()) {
-                    middlePart += code.getCode();
-            }
-            int startIndex = data.indexOf("//start");
-            String startPart = data.substring(0,startIndex) + "//start";
-            int remainderIndex = data.indexOf("//end");
-            String remainderPart =  data.substring(remainderIndex,data.length());
-            String fullScript = startPart + middlePart + remainderPart;
-            BufferedWriter writer = new BufferedWriter(new FileWriter("E:\\CN9\\FU_Capstone_Webservice\\automatedtesting\\src\\main\\resources\\AzureDevOps-master\\src\\test\\java\\com\\thucnh\\azuredevops\\AzuredevopsApplicationTests.java",false));
-            writer.write(fullScript);
-            writer.close();
-            inputStream.close();
-            return "written successfully";
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        return "ok";
+    @CrossOrigin(origins = "http://localhost:1998")
+    public ResponseEntity<Boolean> generateTestScript(@RequestBody TestScriptParamDto scriptDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));
     }
+
     @GetMapping("/testzip")
     public String getTestZip() throws IOException {
         ZipFile.zipping(null);
         return "ok";
     }
+
     @GetMapping("/download")
-    public String downloadFile(HttpServletResponse response) throws IOException {
-        String filePath = "ziptest.zip";
-        File file = new File(filePath);
-        String mimeType = "application/octet-stream";
-        response.setContentType(mimeType);
-        response.addHeader("Content-Disposition", "attachment; filename=" + filePath);
-        response.setContentLength((int) file.length());
-        OutputStream os = response.getOutputStream();
-        ZipFile.downloadZip(file,os);
-        return "ok";
+    @CrossOrigin(origins = "http://localhost:1998")
+    public ResponseEntity<Boolean> downloadFile(HttpServletRequest request, HttpServletResponse response) {
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.downloadFile(response));
     }
 }
