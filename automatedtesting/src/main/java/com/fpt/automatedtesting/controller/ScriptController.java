@@ -2,6 +2,8 @@ package com.fpt.automatedtesting.controller;
 
 import com.fpt.automatedtesting.dto.request.CodeDto;
 import com.fpt.automatedtesting.dto.request.TestScriptParamDto;
+import com.fpt.automatedtesting.dto.request.UploadFileDto;
+import com.fpt.automatedtesting.utils.UploadFile;
 import com.fpt.automatedtesting.utils.ZipFile;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,7 @@ public class ScriptController {
         Resource resource = new ClassPathResource("AzureDevOps-master\\src\\test\\java\\com\\thucnh\\azuredevops\\AzuredevopsApplicationTests.java");
         InputStream inputStream = resource.getInputStream();
         try {
+
             byte[] bdata = FileCopyUtils.copyToByteArray(inputStream);
             String data = new String(bdata, StandardCharsets.UTF_8);
             String middlePart = "";
@@ -70,4 +73,10 @@ public class ScriptController {
         ZipFile.downloadZip(file,os);
         return "ok";
     }
+    @PostMapping("/upload")
+    public String uploadFile(@ModelAttribute  UploadFileDto uploadfile) throws IOException {
+        UploadFile.uploadFile("G:\\ProjectSpringBoot\\automatedtesting\\src\\main\\resources\\Upload",uploadfile.getFile());
+        return "ok";
+    }
+
 }
