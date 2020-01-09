@@ -11,6 +11,6 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class TestScriptParamDto {
     private String name;
-    private ArrayList<CodeDto> question;
+    private ArrayList<CodeDto> questions;
 
 }

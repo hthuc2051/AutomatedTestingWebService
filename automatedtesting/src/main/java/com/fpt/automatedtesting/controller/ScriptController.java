@@ -24,7 +24,10 @@ public class ScriptController {
     public String getString(){
         return "ok";
     }
-    @PostMapping("/read")
+
+
+    @PostMapping("/testscript")
+    @CrossOrigin(origins ="http://localhost:1998")
     public String readSomething(@RequestBody TestScriptParamDto script) throws IOException {
         Resource resource = new ClassPathResource("AzureDevOps-master\\src\\test\\java\\com\\thucnh\\azuredevops\\AzuredevopsApplicationTests.java");
         InputStream inputStream = resource.getInputStream();
@@ -32,7 +35,7 @@ public class ScriptController {
             byte[] bdata = FileCopyUtils.copyToByteArray(inputStream);
             String data = new String(bdata, StandardCharsets.UTF_8);
             String middlePart = "";
-            for ( CodeDto code : script.getQuestion()) {
+            for ( CodeDto code : script.getQuestions()) {
                     middlePart += code.getCode();
             }
             int startIndex = data.indexOf("//start");
@@ -40,7 +43,7 @@ public class ScriptController {
             int remainderIndex = data.indexOf("//end");
             String remainderPart =  data.substring(remainderIndex,data.length());
             String fullScript = startPart + middlePart + remainderPart;
-            BufferedWriter writer = new BufferedWriter(new FileWriter("G:\\ProjectSpringBoot\\automatedtesting\\src\\main\\resources\\AzureDevOps-master\\src\\test\\java\\com\\thucnh\\azuredevops\\AzuredevopsApplicationTests.java",false));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("E:\\CN9\\FU_Capstone_Webservice\\automatedtesting\\src\\main\\resources\\AzureDevOps-master\\src\\test\\java\\com\\thucnh\\azuredevops\\AzuredevopsApplicationTests.java",false));
             writer.write(fullScript);
             writer.close();
             inputStream.close();

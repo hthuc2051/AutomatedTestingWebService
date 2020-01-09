@@ -22,7 +22,9 @@ public class EventController {
     }
 
     // Return data to lecturer
+
     @GetMapping("/events")
+    @CrossOrigin(origins ="http://localhost:1998")
     public ResponseEntity<List<EventResponseDto>> getAllEvent() {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -30,6 +32,7 @@ public class EventController {
     }
 
     // Get data for manager
+    @CrossOrigin(origins ="http://localhost:1998")
     @PostMapping("/events")
     public ResponseEntity<EventResponseDto> insertNewEvent(@RequestBody EventRequestDto dto) {
         return ResponseEntity
