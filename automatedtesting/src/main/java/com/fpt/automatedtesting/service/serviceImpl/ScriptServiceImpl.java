@@ -1,12 +1,15 @@
 package com.fpt.automatedtesting.service.serviceImpl;
 
-import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.CustomMessages;
 import com.fpt.automatedtesting.dto.request.CodeDto;
 import com.fpt.automatedtesting.dto.request.TestScriptParamDto;
+import com.fpt.automatedtesting.dto.response.ScriptResponseDto;
 import com.fpt.automatedtesting.exception.CustomException;
+import com.fpt.automatedtesting.mapper.MapperManager;
+import com.fpt.automatedtesting.repository.ScriptRepository;
 import com.fpt.automatedtesting.service.ScriptService;
 import com.fpt.automatedtesting.utils.ZipFile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.util.ResourceUtils;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 public class ScriptServiceImpl implements ScriptService {
@@ -25,6 +29,18 @@ public class ScriptServiceImpl implements ScriptService {
     private static final String PREFIX_END = "//end";
     private static final String TEMPLATE_SCRIPT_JAVA = "static/ScripTestJava.java";
 
+    @Autowired
+    private final ScriptRepository scriptRepository;
+
+    public ScriptServiceImpl(ScriptRepository scriptRepository) {
+        this.scriptRepository = scriptRepository;
+    }
+
+    @Override
+    public List<ScriptResponseDto> getAll() {
+        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAll(),ScriptResponseDto.class);
+        return result;
+    }
 
     @Override
     public Boolean generateScriptTest(TestScriptParamDto script) {
@@ -49,11 +65,13 @@ public class ScriptServiceImpl implements ScriptService {
             System.out.println(resource.getURL().getPath());
             String endPart = data.substring(endIndex, data.length());
             String fullScript = startPart + "\n" + middlePart + "\n" + endPart;
-            String filePath = ResourceUtils.getFile("classpath:ScripTestJava.java").getAbsolutePath();
+            String filePath = ResourceUtils.getFile("classpath:static/ScripTestJava.java").getAbsolutePath();
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false));
             writer.write(fullScript);
             writer.close();
             inputStream.close();
+            String zipPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
+            ZipFile.zipping(zipPath);
         } catch (IOException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
@@ -77,4 +95,5 @@ public class ScriptServiceImpl implements ScriptService {
         ZipFile.downloadZip(file, os);
         return true;
     }
+
 }

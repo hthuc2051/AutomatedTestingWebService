@@ -8,7 +8,7 @@ public class ZipFile {
 
     //    Zip folder
     public static void zipping(String folder) throws IOException {
-        String sourceFile = "G:\\ProjectSpringBoot\\automatedtesting\\src\\main\\resources\\CSHARP\\AzureDevOps-master";
+        String sourceFile = folder;
         FileOutputStream fos = new FileOutputStream("ziptest.zip");
         ZipOutputStream zipOut = new ZipOutputStream(fos);
         File fileToZip = new File(sourceFile);
