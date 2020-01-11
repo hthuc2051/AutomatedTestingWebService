@@ -3,15 +3,14 @@ package com.fpt.automatedtesting.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.File;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestScriptParamDto {
-    private String name;
-    private ArrayList<CodeDto> questions;
-
-
+public class UploadFileDto {
+    private String studentCode;
+    private MultipartFile file;
 }
