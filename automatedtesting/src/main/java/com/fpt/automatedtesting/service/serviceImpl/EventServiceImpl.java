@@ -45,13 +45,12 @@ public class EventServiceImpl implements EventService {
         response.setCode(dto.getCode());
         List<ParamResponseDto> requestParam = new ArrayList<>();
         if (requestParam != null || !requestParam.isEmpty()) {
-            for (ParamRequestDto paramRequest : dto.getListParams()) {
-                requestParam.add(new ParamResponseDto(paramRequest.getParamName(), paramRequest.getParamType()));
+            for (ParamRequestDto paramRequest : dto.getParams()) {
+                requestParam.add(new ParamResponseDto(paramRequest.getName(), paramRequest.getType()));
             }
         }
         response.setListParams(requestParam);
         response.setSubject(dto.getSubject());
-
         return response;
     }
 

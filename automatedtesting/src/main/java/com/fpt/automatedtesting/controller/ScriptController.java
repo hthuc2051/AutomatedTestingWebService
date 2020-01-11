@@ -1,8 +1,6 @@
 package com.fpt.automatedtesting.controller;
 
-import com.fpt.automatedtesting.dto.request.CodeDto;
-import com.fpt.automatedtesting.dto.request.TestScriptParamDto;
-import com.fpt.automatedtesting.dto.request.UploadFileDto;
+import com.fpt.automatedtesting.dto.request.*;
 import com.fpt.automatedtesting.utils.UploadFile;
 import com.fpt.automatedtesting.utils.ZipFile;
 import org.springframework.util.FileCopyUtils;
@@ -15,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -74,9 +73,20 @@ public class ScriptController {
         return "ok";
     }
     @PostMapping("/upload")
-    public String uploadFile(@ModelAttribute  UploadFileDto uploadfile) throws IOException {
-        UploadFile.uploadFile("G:\\ProjectSpringBoot\\automatedtesting\\src\\main\\resources\\Upload",uploadfile.getFile());
+    public String uploadFile(@ModelAttribute UploadFileDto file) throws IOException {
+       // File f = file.getFile();
+        UploadFile.uploadFile("G:\\ProjectSpringBoot\\automatedtesting\\src\\main\\resources\\Upload",file.getFile());
         return "ok";
     }
+
+
+    @PostMapping("/admin/action")
+    public String postAdminAction(@RequestBody EventRequestDto request) throws IOException {
+        System.out.println(request.getName());
+        return "ok";
+    }
+
+
+
 
 }

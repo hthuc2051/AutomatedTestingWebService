@@ -12,9 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class EventRequestDto implements Serializable {
 
-    String name;
-    String code;
-    List<ParamRequestDto> listParams;
-    String subject;
+    private String name;
+    private String code;
+    private List<ParamRequestDto> params;
+    private String subject;
 
 }
