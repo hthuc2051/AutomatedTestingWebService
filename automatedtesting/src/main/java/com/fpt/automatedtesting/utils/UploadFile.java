@@ -1,5 +1,9 @@
 package com.fpt.automatedtesting.utils;
 
+import com.fpt.automatedtesting.dto.request.UploadFileDto;
+import com.fpt.automatedtesting.exception.CustomException;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,14 +14,18 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class UploadFile {
-  public static void uploadFile(String folder, MultipartFile file) {
+
+  public static void uploadFile( UploadFileDto dto) {
       try {
-          Path copyLocation = Paths.get(folder + File.separator + StringUtils.cleanPath(file.getOriginalFilename()));
-          System.out.println(file.getOriginalFilename());
-          // FileInputStream fis = new FileInputStream(file);
-          Files.copy(file.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+          MultipartFile file = dto.getFile();
+          if(file != null) {
+              String folPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
+              Path copyLocation = Paths.get(folPath + File.separator + StringUtils.cleanPath(file.getOriginalFilename()));
+              Files.copy(file.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+          }
       } catch (Exception ex) {
           System.out.println(ex.getMessage());
+          throw new CustomException(HttpStatus.CONFLICT,ex.getMessage());
       }
   }
 }

@@ -38,14 +38,13 @@ public class ScriptServiceImpl implements ScriptService {
 
     @Override
     public List<ScriptResponseDto> getAll() {
-        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAll(),ScriptResponseDto.class);
+        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAll(), ScriptResponseDto.class);
         return result;
     }
 
     @Override
     public Boolean generateScriptTest(TestScriptParamDto script) {
         try {
-
             if (script == null) throw new CustomException(HttpStatus.NOT_FOUND, CustomMessages.MSG_SCRIPT_NULL);
             Resource resource = new ClassPathResource(TEMPLATE_SCRIPT_JAVA);
             if (resource == null) throw new CustomException(HttpStatus.NOT_FOUND, "File not found");
@@ -79,21 +78,25 @@ public class ScriptServiceImpl implements ScriptService {
     }
 
     @Override
-    public Boolean downloadFile(HttpServletResponse response) {
-        String filePath = "ziptest.zip";
-        File file = new File(filePath);
-        String mimeType = "application/octet-stream";
-        response.setContentType(mimeType);
-        response.addHeader("Content-Disposition", "attachment; filename=" + filePath);
-        response.setContentLength((int) file.length());
-        OutputStream os = null;
+    public void downloadFile(HttpServletResponse response) {
+        String folPath = null;
         try {
+            folPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
+            String filePath = folPath + File.separator + "SE63155.zip";
+            File file = new File(filePath);
+            String mimeType = "application/octet-stream";
+            response.setContentType(mimeType);
+            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+            response.setContentLength((int) file.length());
+            OutputStream os = null;
             os = response.getOutputStream();
+
+            ZipFile.downloadZip(file, os);
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         } catch (IOException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
-        ZipFile.downloadZip(file, os);
-        return true;
     }
 
 }

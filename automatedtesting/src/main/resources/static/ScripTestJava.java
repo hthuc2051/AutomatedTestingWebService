@@ -15,6 +15,6 @@ class ScripTestJava {
     private TemplateQuestion templateQuestion;
 
     //start
-    
+
     //end
 }

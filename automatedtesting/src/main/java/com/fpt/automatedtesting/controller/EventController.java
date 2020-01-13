@@ -22,7 +22,6 @@ public class EventController {
     }
 
     // Return data to lecturer
-
     @GetMapping("/events")
     @CrossOrigin(origins ="http://localhost:1998")
     public ResponseEntity<List<EventResponseDto>> getAllEvent() {

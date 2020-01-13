@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -49,14 +50,13 @@ public class ScriptController {
 
     @GetMapping("/download")
     @CrossOrigin(origins = "http://localhost:1998")
-    public ResponseEntity<Boolean> downloadFile(HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.status(HttpStatus.OK).body(scriptService.downloadFile(response));
+    public void downloadFile(HttpServletRequest request, HttpServletResponse response) {
+        scriptService.downloadFile(response);
     }
 
     @PostMapping("/upload")
     public String uploadFile(@ModelAttribute UploadFileDto file) throws IOException {
-       // File f = file.getFile();
-        UploadFile.uploadFile("G:\\ProjectSpringBoot\\automatedtesting\\src\\main\\resources\\Upload",file.getFile());
+        UploadFile.uploadFile(file);
         return "ok";
     }
 
