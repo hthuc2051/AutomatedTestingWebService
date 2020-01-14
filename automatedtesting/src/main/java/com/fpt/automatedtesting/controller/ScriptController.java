@@ -62,7 +62,7 @@ public class ScriptController {
 
 
     @PostMapping("/admin/action")
-    public String postAdminAction(@RequestBody EventRequestDto request) throws IOException {
+    public String postAdminAction(@RequestBody ActionRequestDto request) throws IOException {
         System.out.println(request.getName());
         return "ok";
     }

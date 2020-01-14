@@ -10,11 +10,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventResponseDto implements Serializable {
+public class ActionResponseDto implements Serializable {
 
+    int id;
     String name;
     String code;
-    List<ParamResponseDto> listParams;
+    List<ParamResponseDto> params;
     String subject;
 
 }
