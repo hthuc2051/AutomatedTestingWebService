@@ -13,7 +13,7 @@ import java.sql.Date;
 public class Param {
 
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -22,7 +22,9 @@ public class Param {
 
     @Column(name = "type", nullable = true )
     private String type;
+
     @ManyToOne
-    private Action action_id;
+    @JoinColumn(name = "action_id", referencedColumnName = "id")
+    private Action action;
 
 }

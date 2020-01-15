@@ -29,9 +29,10 @@ public class ScriptServiceImpl implements ScriptService {
     private static final String PREFIX_END = "//end";
     private static final String TEMPLATE_SCRIPT_JAVA = "static/ScripTestJava.java";
 
-    @Autowired
     private final ScriptRepository scriptRepository;
 
+
+    @Autowired
     public ScriptServiceImpl(ScriptRepository scriptRepository) {
         this.scriptRepository = scriptRepository;
     }

@@ -36,7 +36,7 @@ public class ScriptController {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.getAll());
     }
 
-    @PostMapping("/testscript")
+    @PostMapping("/scripts")
     @CrossOrigin(origins = "http://localhost:1998")
     public ResponseEntity<Boolean> generateTestScript(@RequestBody TestScriptParamDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));

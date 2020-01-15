@@ -12,10 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ActionResponseDto implements Serializable {
 
-    int id;
-    String name;
-    String code;
-    List<ParamResponseDto> params;
-    String subject;
+    private Integer id;
+    private String name;
+    private String code;
+    private List<ParamResponseDto> params;
 
 }

@@ -2,7 +2,7 @@ package com.fpt.automatedtesting.controller;
 
 import com.fpt.automatedtesting.dto.request.ActionRequestDto;
 import com.fpt.automatedtesting.dto.response.ActionResponseDto;
-import com.fpt.automatedtesting.service.EventService;
+import com.fpt.automatedtesting.service.ActionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,51 +12,53 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class EventController {
+public class ActionController {
 
     @Autowired
-    private final EventService eventService;
+    private final ActionService actionService;
 
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
+    public ActionController(ActionService actionService) {
+        this.actionService = actionService;
     }
 
     // Return data to lecturer
-    @GetMapping("/events")
+    @GetMapping("/actions")
     @CrossOrigin(origins ="http://localhost:1998")
-    public ResponseEntity<List<ActionResponseDto>> getAllEvent() {
+    public ResponseEntity<List<ActionResponseDto>> getAllActions() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(eventService.getAllEvent());
+                .body(actionService.getAll());
     }
 
-    // Get data for manager
     @CrossOrigin(origins ="http://localhost:1998")
-    @PostMapping("/events")
-    public ResponseEntity<ActionResponseDto> insertNewEvent(@RequestBody ActionRequestDto dto) {
+    @PostMapping("/actions")
+    public ResponseEntity<ActionResponseDto> insertNewActions(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(eventService.insertNewEvent(dto));
+                .body(actionService.insert(dto));
     }
+
     @CrossOrigin(origins ="http://localhost:1998")
-    @GetMapping("/event")
-    public ResponseEntity<ActionResponseDto> getEvent(@RequestParam int id) {
+    @GetMapping("/actions/{id}")
+    public ResponseEntity<ActionResponseDto> getAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(eventService.getEventById(id));
+                .body(actionService.findById(id));
     }
+
     @CrossOrigin(origins ="http://localhost:1998")
-    @DeleteMapping("/event/delete")
-    public ResponseEntity<Boolean> deleteEvent(@RequestParam int id) {
+    @DeleteMapping("/actions/{id}")
+    public ResponseEntity<Boolean> deleteAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(eventService.deleteEventById(id));
+                .body(actionService.delete(id));
     }
+
     @CrossOrigin(origins ="http://localhost:1998")
-    @PutMapping("/event/put")
-    public ResponseEntity<ActionResponseDto> updateEvent(@RequestBody ActionRequestDto dto) {
+    @PutMapping("/action")
+    public ResponseEntity<ActionResponseDto> updateAction(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(eventService.updateEvent(dto));
+                .body(actionService.update(dto));
     }
 }

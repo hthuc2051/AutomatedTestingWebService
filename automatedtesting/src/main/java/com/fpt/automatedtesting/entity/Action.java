@@ -22,12 +22,14 @@ public class Action {
     @Column(name = "name", nullable = true)
     private String name;
 
-    @Column(name = "code", nullable = true )
+    @Column(name = "code", nullable = true)
     private String code;
 
-    @OneToMany
+    @OneToMany(mappedBy = "action", cascade = CascadeType.ALL)
     private List<Param> params;
 
-
+    @ManyToOne
+    @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = false)
+    private Admin admin;
 
 }
