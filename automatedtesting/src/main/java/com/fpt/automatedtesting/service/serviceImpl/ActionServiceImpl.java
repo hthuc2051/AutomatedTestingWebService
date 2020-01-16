@@ -43,6 +43,7 @@ public class ActionServiceImpl implements ActionService {
         Action action = MapperManager.map(dto, Action.class);
         action.setAdmin(admin);
         List<Param> params = MapperManager.mapAll(dto.getParams(), Param.class);
+        params.forEach(param -> param.setAction(action));
         action.setParams(params);
         return MapperManager.map(actionRepository.save(action), ActionResponseDto.class);
     }
@@ -52,6 +53,7 @@ public class ActionServiceImpl implements ActionService {
         if (findById(dto.getId()) != null) {
             Action response = MapperManager.map(dto, Action.class);
             List<Param> requestParam = MapperManager.mapAll(dto.getParams(), Param.class);
+            requestParam.forEach(param -> param.setAction(response));
             response.setParams(requestParam);
             return MapperManager.map(actionRepository.save(response), ActionResponseDto.class);
         }

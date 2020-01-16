@@ -4,6 +4,7 @@ package com.fpt.automatedtesting.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,6 +27,7 @@ public class Admin {
     @Column(name = "email", length = 500)
     private String email;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
     private List<Action> actions;
 
