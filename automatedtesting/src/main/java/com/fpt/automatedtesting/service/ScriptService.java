@@ -10,5 +10,5 @@ public interface ScriptService {
     List<ScriptResponseDto> getAll();
     Boolean generateScriptTest(TestScriptParamDto dto);
     void downloadFile(HttpServletResponse response);
-
+    void enrollPractical();
 }

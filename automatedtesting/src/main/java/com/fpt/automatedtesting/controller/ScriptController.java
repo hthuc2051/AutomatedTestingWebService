@@ -44,10 +44,14 @@ public class ScriptController {
 
     @GetMapping("/testzip")
     public String getTestZip() throws IOException {
-        ZipFile.zipping(null);
+        ZipFile.zipping(null,"a");
         return "ok";
     }
-
+    @GetMapping("/enroll")
+    public String enroll() throws IOException {
+        scriptService.enrollPractical();
+        return "ok";
+    }
     @GetMapping("/download")
     @CrossOrigin(origins = "http://localhost:1998")
     public void downloadFile(HttpServletRequest request, HttpServletResponse response) {

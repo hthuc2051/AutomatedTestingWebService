@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.service.serviceImpl;
 
+import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.CustomMessages;
 import com.fpt.automatedtesting.dto.request.CodeDto;
 import com.fpt.automatedtesting.dto.request.TestScriptParamDto;
@@ -20,6 +21,8 @@ import org.springframework.util.ResourceUtils;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -61,8 +64,6 @@ public class ScriptServiceImpl implements ScriptService {
             int startIndex = data.indexOf(PREFIX_START);
             String startPart = data.substring(0, startIndex) + PREFIX_START;
             int endIndex = data.indexOf(PREFIX_END);
-            System.out.println(resource.getURI().getPath());
-            System.out.println(resource.getURL().getPath());
             String endPart = data.substring(endIndex, data.length());
             String fullScript = startPart + "\n" + middlePart + "\n" + endPart;
             String filePath = ResourceUtils.getFile("classpath:static/ScripTestJava.java").getAbsolutePath();
@@ -70,8 +71,6 @@ public class ScriptServiceImpl implements ScriptService {
             writer.write(fullScript);
             writer.close();
             inputStream.close();
-            String zipPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
-            ZipFile.zipping(zipPath);
         } catch (IOException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
@@ -91,7 +90,6 @@ public class ScriptServiceImpl implements ScriptService {
             response.setContentLength((int) file.length());
             OutputStream os = null;
             os = response.getOutputStream();
-
             ZipFile.downloadZip(file, os);
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -100,7 +98,42 @@ public class ScriptServiceImpl implements ScriptService {
         }
     }
 
+    @Override
+    public void enrollPractical() {
 
+        try {
+            String projectPath = CustomConstant.PROJECT_DIR;
+            String testScriptPath = "";
+            String serverJavaWebPath = projectPath + File.separator + "ServerJavaWeb";
+            String scriptJavaWebPath = serverJavaWebPath +
+                    File.separator + "src" +
+                    File.separator + "test" +
+                    File.separator + "java" +
+                    File.separator + "com" +
+                    File.separator + "thucnh" +
+                    File.separator + "azuredevops" +
+                    File.separator + "Script_JavaWeb.java";
+
+            testScriptPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
+            String filePath = testScriptPath + File.separator + "Script_JavaWeb.java";
+            Files.copy(Paths.get(filePath), Paths.get(scriptJavaWebPath));
+            ZipFile.zipping(serverJavaWebPath, "ServerJavaWeb");
+
+//            String filePath = folPath + File.separator + "SE63155.zip";
+//            File file = new File(filePath);
+//            String mimeType = "application/octet-stream";
+//            response.setContentType(mimeType);
+//            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+//            response.setContentLength((int) file.length());
+//            OutputStream os = null;
+//            os = response.getOutputStream();
+//            ZipFile.downloadZip(file, os);
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
 
 
 }

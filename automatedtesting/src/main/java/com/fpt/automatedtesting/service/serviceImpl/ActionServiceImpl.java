@@ -31,15 +31,18 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public List<ActionResponseDto> getAll() {
-        List<ActionResponseDto> listResponse = MapperManager.mapAll(actionRepository.findAll(), ActionResponseDto.class);
-        return listResponse;
+        List<Action> actionList = actionRepository.findAll();
+        if (actionList == null && actionList.size() > 0) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Actions not found");
+        }
+        return MapperManager.mapAll(actionList, ActionResponseDto.class);
     }
 
     @Override
     public ActionResponseDto insert(ActionRequestDto dto) {
         Admin admin = adminRepository
                 .findById(dto.getAdminId())
-                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND,"Admin"));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Admin"));
         Action action = MapperManager.map(dto, Action.class);
         action.setAdmin(admin);
         List<Param> params = MapperManager.mapAll(dto.getParams(), Param.class);
@@ -50,19 +53,22 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public ActionResponseDto update(ActionRequestDto dto) {
-        if (findById(dto.getId()) != null) {
-            Action response = MapperManager.map(dto, Action.class);
-            List<Param> requestParam = MapperManager.mapAll(dto.getParams(), Param.class);
-            requestParam.forEach(param -> param.setAction(response));
-            response.setParams(requestParam);
-            return MapperManager.map(actionRepository.save(response), ActionResponseDto.class);
-        }
-        return null;
+        Action action = actionRepository
+                .findById(dto.getId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Action not found"));
+        MapperManager.map(dto, Action.class);
+        List<Param> params = MapperManager.mapAll(dto.getParams(), Param.class);
+        params.forEach(param -> param.setAction(action));
+        action.setParams(params);
+        return MapperManager.map(actionRepository.save(action), ActionResponseDto.class);
     }
 
     @Override
     public ActionResponseDto findById(int id) {
-        ActionResponseDto response = MapperManager.map(actionRepository.findById(id), ActionResponseDto.class);
+        Action action = actionRepository
+                .findById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Action not found"));
+        ActionResponseDto response = MapperManager.map(action, ActionResponseDto.class);
         return response;
     }
 
