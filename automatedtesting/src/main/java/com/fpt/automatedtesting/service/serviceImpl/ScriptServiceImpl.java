@@ -27,7 +27,8 @@ public class ScriptServiceImpl implements ScriptService {
 
     private static final String PREFIX_START = "//start";
     private static final String PREFIX_END = "//end";
-    private static final String TEMPLATE_SCRIPT_JAVA = "static/ScripTestJava.java";
+    private static final String TEMPLATE_SCRIPT_JAVA = "static/ScriptTestJava.java";
+    private static final String TEMPLATE_SCRIPT_CSHARP = "static/CSharp/TemplateAutomatedTest/Tests/Controllers/ScriptTestCSharp.cs";
 
     private final ScriptRepository scriptRepository;
 
@@ -47,17 +48,15 @@ public class ScriptServiceImpl implements ScriptService {
     public Boolean generateScriptTest(TestScriptParamDto script) {
         try {
             if (script == null) throw new CustomException(HttpStatus.NOT_FOUND, CustomMessages.MSG_SCRIPT_NULL);
-            Resource resource = new ClassPathResource(TEMPLATE_SCRIPT_JAVA);
+            Resource resource = new ClassPathResource(TEMPLATE_SCRIPT_JAVA); // configure here
             if (resource == null) throw new CustomException(HttpStatus.NOT_FOUND, "File not found");
             InputStream inputStream = resource.getInputStream();
             byte[] bData = FileCopyUtils.copyToByteArray(inputStream);
             String data = new String(bData, StandardCharsets.UTF_8);
-
             String middlePart = "";
             for (CodeDto code : script.getQuestions()) {
                 middlePart += code.getCode().replace("'", "\"");
             }
-
             int startIndex = data.indexOf(PREFIX_START);
             String startPart = data.substring(0, startIndex) + PREFIX_START;
             int endIndex = data.indexOf(PREFIX_END);
@@ -65,19 +64,51 @@ public class ScriptServiceImpl implements ScriptService {
             System.out.println(resource.getURL().getPath());
             String endPart = data.substring(endIndex, data.length());
             String fullScript = startPart + "\n" + middlePart + "\n" + endPart;
-            String filePath = ResourceUtils.getFile("classpath:static/ScripTestJava.java").getAbsolutePath();
+            String filePath = ResourceUtils.getFile("classpath:"+TEMPLATE_SCRIPT_JAVA).getAbsolutePath(); // // configure here
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false));
             writer.write(fullScript);
             writer.close();
             inputStream.close();
             String zipPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
             ZipFile.zipping(zipPath);
+            return true;
         } catch (IOException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
-        return true;
     }
 
+    @Override
+    public Boolean generateScriptTestForCSharp(TestScriptParamDto script) {
+        try {
+            if (script == null) throw new CustomException(HttpStatus.NOT_FOUND, CustomMessages.MSG_SCRIPT_NULL);
+            Resource resource = new ClassPathResource(TEMPLATE_SCRIPT_CSHARP); // configure here
+            if (resource == null) throw new CustomException(HttpStatus.NOT_FOUND, "File not found");
+            InputStream inputStream = resource.getInputStream();
+            byte[] bData = FileCopyUtils.copyToByteArray(inputStream);
+            String data = new String(bData, StandardCharsets.UTF_8);
+            String middlePart = "";
+            for (CodeDto code : script.getQuestions()) {
+                middlePart += code.getCode().replace("'", "\"");
+            }
+            int startIndex = data.indexOf(PREFIX_START);
+            String startPart = data.substring(0, startIndex) + PREFIX_START;
+            int endIndex = data.indexOf(PREFIX_END);
+            System.out.println(resource.getURI().getPath());
+            System.out.println(resource.getURL().getPath());
+            String endPart = data.substring(endIndex, data.length());
+            String fullScript = startPart + "\n" + middlePart + "\n" + endPart;
+            String filePath = ResourceUtils.getFile("classpath:"+TEMPLATE_SCRIPT_CSHARP).getAbsolutePath(); // // configure here
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false));
+            writer.write(fullScript);
+            writer.close();
+            inputStream.close();
+            String zipPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
+            ZipFile.zipping(zipPath);
+            return true;
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
     @Override
     public void downloadFile(HttpServletResponse response) {
         String folPath = null;

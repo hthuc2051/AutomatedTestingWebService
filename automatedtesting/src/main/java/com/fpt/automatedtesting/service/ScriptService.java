@@ -9,6 +9,7 @@ import java.util.List;
 public interface ScriptService {
     List<ScriptResponseDto> getAll();
     Boolean generateScriptTest(TestScriptParamDto dto);
+    Boolean generateScriptTestForCSharp(TestScriptParamDto dto);
     void downloadFile(HttpServletResponse response);
 
 }
