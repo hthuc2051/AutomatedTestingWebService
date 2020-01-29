@@ -34,6 +34,10 @@ public class ScriptServiceImpl implements ScriptService {
 
     private static final String PREFIX_START = "//start";
     private static final String PREFIX_END = "//end";
+    private static final String EXTENSION_JAVA = ".java";
+    private static final String EXTENSION_C = ".c";
+    private static final String EXTENSION_CSharp = ".cs";
+
 
     private final ScriptRepository scriptRepository;
     private final UserRepository userRepository;
@@ -66,23 +70,23 @@ public class ScriptServiceImpl implements ScriptService {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA;
                     scriptStorePath = PathConstants.PATH_SCRIPT_JAVA;
-                    fileExtension = ".java";
+                    fileExtension = EXTENSION_JAVA;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA_WEB;
                     scriptStorePath = PathConstants.PATH_SCRIPT_JAVA_WEB;
-                    fileExtension = ".java";
+                    fileExtension = EXTENSION_JAVA;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
                     templatePath = PathConstants.PATH_TEMPLATE_C_SHARP;
                     scriptStorePath = PathConstants.PATH_SCRIPT_C_SHARP;
-                    fileExtension = "";
+                    fileExtension = EXTENSION_CSharp;
 
                     break;
                 case CustomConstant.TEMPLATE_TYPE_C:
                     templatePath = PathConstants.PATH_TEMPLATE_C;
                     scriptStorePath = PathConstants.PATH_SCRIPT_C;
-                    fileExtension = ".c";
+                    fileExtension = EXTENSION_C;
                     break;
                 default:
                     throw new CustomException(HttpStatus.CONFLICT, "TypeConflictNotSupported");
@@ -125,15 +129,6 @@ public class ScriptServiceImpl implements ScriptService {
             if (scriptRepository.save(script) != null) {
                 return true;
             }
-//            // Copy script file to Server
-//            Path sourceDirectory = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getName());
-//            Path targetDirectory = Paths.get(PathConstants.PATH_SERVER_JAVA + "De2.java");
-//
-//            //copy source to target using Files Class
-//            Files.copy(sourceDirectory, targetDirectory);
-//            //
-//            String zipPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
-//            ZipFile.zipping(zipPath);
         } catch (IOException e) {
             e.printStackTrace();
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());

@@ -34,7 +34,14 @@ public class ZipFile {
 
         }
     }
-
+     public static void deleteFolder(String folder)
+     {
+         File file = new File(folder);
+         if(file.isDirectory())
+         {
+             file.delete();
+         }
+     }
     private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
         if (fileToZip.isHidden()) {
             return;

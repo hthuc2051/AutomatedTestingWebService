@@ -40,6 +40,11 @@ public class ScriptController {
     public ResponseEntity<Boolean> generateTestScript(@RequestBody ScriptRequestDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));
     }
+    @PostMapping("/script_csharp")
+    @CrossOrigin(origins = "http://localhost:1998")
+    public ResponseEntity<Boolean> generateTestScriptCSharp(@RequestBody TestScriptParamDto scriptDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTestForCSharp(scriptDto));
+    }
 
     @GetMapping("/testzip")
     public String getTestZip() throws IOException {
@@ -63,6 +68,12 @@ public class ScriptController {
     @PostMapping("/admin/action")
     public String postAdminAction(@RequestBody ActionRequestDto request) throws IOException {
         System.out.println(request.getName());
+        return "ok";
+    }
+
+    @GetMapping("/admin/test")
+    public String testAction() throws IOException {
+        ZipFile.deleteFolder("G:\\New folder (5)\\deleted");
         return "ok";
     }
 
