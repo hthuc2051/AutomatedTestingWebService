@@ -15,7 +15,7 @@ public class CustomUtils {
                 s = formatter.format(date);
                 break;
             default:
-                formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 s = formatter.format(date);
                 break;
         }
