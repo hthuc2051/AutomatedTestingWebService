@@ -4,13 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.sql.Date;
+import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScriptRequestDto {
 
-    private Integer id;
-    private Date timeCreated;
-    private String scriptPath;
+    private String name;
+    private ArrayList<CodeDto> questions;
+    private String type;
+    private Integer userId;
 }

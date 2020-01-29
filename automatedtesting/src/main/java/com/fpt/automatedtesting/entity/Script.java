@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Script")
@@ -17,10 +18,16 @@ public class Script {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "timeCreated", nullable = true)
-    private Date timeCreated;
+    @Column(name = "time_created", nullable = true)
+    private String timeCreated;
 
-    @Column(name = "scriptPath", nullable = true, length = 100)
+    @Column(name = "script_path", nullable = true, length = 100)
     private String scriptPath;
+
+    @ManyToMany(targetEntity = PracticalExam.class, mappedBy = "scripts", fetch = FetchType.LAZY)
+    private List<PracticalExam> practicalExams;
+
+    @ManyToMany(targetEntity = User.class, mappedBy = "scripts", fetch = FetchType.LAZY)
+    private List<User> users;
 
 }

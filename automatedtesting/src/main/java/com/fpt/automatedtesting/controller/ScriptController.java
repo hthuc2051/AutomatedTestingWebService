@@ -1,6 +1,5 @@
 package com.fpt.automatedtesting.controller;
 
-import com.fpt.automatedtesting.dto.request.TestScriptParamDto;
 import com.fpt.automatedtesting.dto.response.ScriptResponseDto;
 import com.fpt.automatedtesting.service.ScriptService;
 import com.fpt.automatedtesting.dto.request.*;
@@ -38,7 +37,7 @@ public class ScriptController {
 
     @PostMapping("/scripts")
     @CrossOrigin(origins = "http://localhost:1998")
-    public ResponseEntity<Boolean> generateTestScript(@RequestBody TestScriptParamDto scriptDto) {
+    public ResponseEntity<Boolean> generateTestScript(@RequestBody ScriptRequestDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));
     }
 

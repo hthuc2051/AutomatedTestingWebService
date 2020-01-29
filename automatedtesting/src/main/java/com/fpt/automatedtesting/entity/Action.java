@@ -3,8 +3,6 @@ package com.fpt.automatedtesting.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,7 +27,7 @@ public class Action {
     private List<Param> params;
 
     @ManyToOne
-    @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = false)
-    private Admin admin;
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User user;
 
 }
