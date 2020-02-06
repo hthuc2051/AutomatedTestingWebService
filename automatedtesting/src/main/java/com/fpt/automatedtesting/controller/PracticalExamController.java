@@ -10,6 +10,8 @@ import com.fpt.automatedtesting.service.PracticalExamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins ="http://localhost:1998")
@@ -29,6 +31,11 @@ public class PracticalExamController {
     @PostMapping("/practicalexam")
     public void create(@RequestBody PracticalExamRequest dto){
         practicalExamService.create(dto);
+
+    }
+    @GetMapping("/import-file")
+    public void downLoadImportFile(HttpServletResponse response){
+        practicalExamService.downloadPracticalTemplate(response);
 
     }
 }

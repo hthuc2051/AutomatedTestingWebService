@@ -7,11 +7,12 @@ public class PathConstants {
     public static final String PROJECT_DIR = System.getProperty("user.dir");
     public static final String STATIC_DIR = "static/";
 
+
     // Path server
-    public static final String PATH_SERVER_JAVA_WEB = PROJECT_DIR + File.separator + "Server_JavaWeb";
-    public static final String PATH_SERVER_JAVA = PROJECT_DIR + File.separator + "Server_Java";
-    public static final String PATH_SERVER_C = PROJECT_DIR + File.separator + "Server_C";
-    public static final String PATH_SERVER_C_SHARP = PROJECT_DIR + File.separator + "Server_CSharp";
+    public static final String PATH_SERVER_JAVA_WEB = PROJECT_DIR + File.separator + "Server_JavaWeb" + File.separator + "Server";
+    public static final String PATH_SERVER_JAVA = PROJECT_DIR + File.separator + "Server_Java" + File.separator + "Server";
+    public static final String PATH_SERVER_C = PROJECT_DIR + File.separator + "Server_C" + File.separator + "Server";
+    public static final String PATH_SERVER_C_SHARP = PROJECT_DIR + File.separator + "Server_CSharp" + File.separator + "Server";
 
     // Path scripts
     public static final String PATH_SCRIPT_JAVA_WEB = PROJECT_DIR + File.separator + "Scripts_JavaWeb" + File.separator;
@@ -20,7 +21,6 @@ public class PathConstants {
     public static final String PATH_SCRIPT_C_SHARP = PROJECT_DIR + File.separator + "Scripts_CSharp" + File.separator;
 
     // Path template
-
     public static final String PATH_TEMPLATE_JAVA_WEB = STATIC_DIR
             + File.separator
             + "Template_JavaWeb"
@@ -37,7 +37,11 @@ public class PathConstants {
     public static final String PATH_TEMPLATE_C_SHARP = STATIC_DIR
             + File.separator
             + "Template_CSharp"
-            +File.separator
-            +"ScriptTestCSharp.cs";
+            + File.separator
+            + "ScriptTestCSharp.cs";
+
+
+    // Path created practical
+    public static final String PATH_PRACTICAL_EXAMS = PROJECT_DIR + File.separator + "PracticalExams";
 
 }
