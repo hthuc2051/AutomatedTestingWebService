@@ -33,9 +33,9 @@ public class PracticalExamController {
         practicalExamService.create(dto);
 
     }
-    @GetMapping("/import-file")
-    public void downLoadImportFile(HttpServletResponse response){
-        practicalExamService.downloadPracticalTemplate(response);
+    @PostMapping("/import-file")
+    public void downLoadImportFile(@RequestBody PracticalExamRequest dto,HttpServletResponse response){
+        practicalExamService.downloadPracticalTemplate(dto,response);
 
     }
 }

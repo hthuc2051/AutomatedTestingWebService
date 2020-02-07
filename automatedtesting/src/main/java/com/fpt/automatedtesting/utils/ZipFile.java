@@ -7,11 +7,10 @@ import java.util.zip.ZipOutputStream;
 public class ZipFile {
 
     //    Zip folder
-    public static void zipping(String folder) throws IOException {
-        String sourceFile = folder;
-        FileOutputStream fos = new FileOutputStream("ziptest.zip");
+    public static void zipFolder(String folder, String outPath) throws IOException {
+        FileOutputStream fos = new FileOutputStream(outPath + ".zip");
         ZipOutputStream zipOut = new ZipOutputStream(fos);
-        File fileToZip = new File(sourceFile);
+        File fileToZip = new File(folder);
         zipFile(fileToZip, fileToZip.getName(), zipOut);
         zipOut.close();
         fos.close();
@@ -31,17 +30,17 @@ public class ZipFile {
                 output.close();
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
-     public static void deleteFolder(String folder)
-     {
-         File file = new File(folder);
-         if(file.isDirectory())
-         {
-             file.delete();
-         }
-     }
+
+    public static void deleteFolder(String folder) {
+        File file = new File(folder);
+        if (file.isDirectory()) {
+            file.delete();
+        }
+    }
+
     private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
         if (fileToZip.isHidden()) {
             return;
@@ -70,7 +69,6 @@ public class ZipFile {
         }
         fis.close();
     }
-
 
 
 }

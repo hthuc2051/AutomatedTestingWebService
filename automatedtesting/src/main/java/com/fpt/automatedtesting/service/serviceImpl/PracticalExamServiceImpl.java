@@ -11,15 +11,15 @@ import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.mapper.MapperManager;
 import com.fpt.automatedtesting.repository.*;
 import com.fpt.automatedtesting.service.PracticalExamService;
+import com.fpt.automatedtesting.utils.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,10 +86,12 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
-    public void downloadPracticalTemplate(HttpServletResponse response) {
-
+    public void downloadPracticalTemplate(PracticalExamRequest dto, HttpServletResponse response) {
+        String practicalType = "";
+        PracticalExam practicalExam = practicalExamRepository.
+                findById(dto.getId()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
         // Create practical folder
-        File practicalFol = new File(PathConstants.PATH_PRACTICAL_EXAMS + File.separator + "Practical_05022020");
+        File practicalFol = new File(PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExam.getCode());
         boolean check = practicalFol.mkdir();
         if (!check) {
             throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
@@ -107,59 +109,59 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         if (!check) {
             throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
         }
-        // loop by list script test đã assign
-        Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + "SE1269_05_02_2020_De1.java");
-        Path targetScriptPath = Paths.get(scriptFile.getAbsolutePath() + File.separator + "SE1269_05_02_2020_De1.java");
-
         //copy source to target using Files Class
         try {
-            Files.copy(sourceScriptPath, targetScriptPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // loop by list script test đã assign
-        File sourceServerPath = new File(PathConstants.PATH_SERVER_JAVA_WEB);
-        File targetServerPath = new File(practicalFol.getAbsolutePath() + File.separator + "Server");
+            // loop by list script test đã assign
+            for (Script script : practicalExam.getScripts()) {
+                Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getCode() + ".java");
+                Path targetScriptPath = Paths.get(scriptFile.getAbsolutePath() + File.separator + script.getCode() + ".java");
+                Files.copy(sourceScriptPath, targetScriptPath);
+                practicalType = script.getScriptType();
+            }
 
-        //copy source to target using Files Class
-        try {
+
+            //copy server
+            File sourceServerPath = new File(PathConstants.PATH_SERVER_JAVA_WEB);
+            File targetServerPath = new File(practicalFol.getAbsolutePath() + File.separator + "Server");
+
             FileUtils.copyDirectory(sourceServerPath, targetServerPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        // Make info json files
-        ObjectMapper objectMapper = new ObjectMapper();
-        PracticalInfo practicalInfo = new PracticalInfo();
-        practicalInfo.setName("Practical_SE1268_05022020");
-        practicalInfo.setType("Java");
-        try {
+            // Make info json files
+            ObjectMapper objectMapper = new ObjectMapper();
+            PracticalInfo practicalInfo = new PracticalInfo();
+            practicalInfo.setName(practicalExam.getCode());
+            practicalInfo.setType(practicalType);
             objectMapper.writeValue(
                     new FileOutputStream(practicalFol.getAbsoluteFile() +
                             File.separator
                             + CustomConstant.PRACTICAL_INFO_FILE_NAME),
                     practicalInfo);
+
         } catch (IOException e) {
             e.printStackTrace();
+            throw new CustomException(HttpStatus.CONFLICT, "Path incorrect");
         }
 
-//        String folPath = null;
-//        try {
-//            folPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
-//            String filePath = folPath + File.separator + "SE63155.zip";
-//            File file = new File(filePath);
-//            String mimeType = "application/octet-stream";
-//            response.setContentType(mimeType);
-//            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
-//            response.setContentLength((int) file.length());
-//            OutputStream os = null;
-//            os = response.getOutputStream();
-//
-//            ZipFile.downloadZip(file, os);
-//        } catch (FileNotFoundException e) {
-//            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
-//        } catch (IOException e) {
-//            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
-//        }
+        try {
+            // Zip folder
+
+            ZipFile.zipFolder(practicalFol.getAbsolutePath(), practicalFol.getAbsolutePath());
+
+
+            String filePath = PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExam.getCode() + ".zip";
+            File file = new File(filePath);
+            String mimeType = "application/octet-stream";
+            response.setContentType(mimeType);
+            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+            response.setContentLength((int) file.length());
+            OutputStream os = null;
+            os = response.getOutputStream();
+
+            ZipFile.downloadZip(file, os);
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
     }
 }

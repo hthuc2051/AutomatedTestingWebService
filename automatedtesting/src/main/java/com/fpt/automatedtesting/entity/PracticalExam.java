@@ -18,8 +18,8 @@ public class PracticalExam {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "code")
+    private String code;
 
     @OneToMany(mappedBy = "practicalExam", cascade = CascadeType.ALL)
     private List<Submission> submissions;

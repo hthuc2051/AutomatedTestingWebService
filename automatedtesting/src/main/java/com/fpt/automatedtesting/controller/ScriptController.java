@@ -44,7 +44,7 @@ public class ScriptController {
 
     @GetMapping("/testzip")
     public String getTestZip() throws IOException {
-        ZipFile.zipping(null);
+        ZipFile.zipFolder(null, null);
         return "ok";
     }
 

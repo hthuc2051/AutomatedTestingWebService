@@ -7,5 +7,5 @@ import javax.servlet.http.HttpServletResponse;
 public interface PracticalExamService {
 
     void create(PracticalExamRequest dto);
-    void downloadPracticalTemplate(HttpServletResponse response);
+    void downloadPracticalTemplate(PracticalExamRequest dto,HttpServletResponse response);
 }
