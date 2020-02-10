@@ -28,14 +28,14 @@ public class PracticalExamController {
         this.actionRepository = actionRepository;
     }
 
-    @PostMapping("/practicalexam")
+    @PostMapping("/practical-exam")
     public void create(@RequestBody PracticalExamRequest dto){
         practicalExamService.create(dto);
 
     }
-    @PostMapping("/import-file")
-    public void downLoadImportFile(@RequestBody PracticalExamRequest dto,HttpServletResponse response){
-        practicalExamService.downloadPracticalTemplate(dto,response);
+    @GetMapping("/templates/{id}")
+    public void downLoadImportFile(@PathVariable Integer id,HttpServletResponse response){
+        practicalExamService.downloadPracticalTemplate(id,response);
 
     }
 }

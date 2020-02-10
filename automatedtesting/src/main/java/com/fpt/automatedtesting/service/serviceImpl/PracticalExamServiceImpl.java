@@ -86,82 +86,94 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
-    public void downloadPracticalTemplate(PracticalExamRequest dto, HttpServletResponse response) {
+    public void downloadPracticalTemplate(Integer templateId, HttpServletResponse response) {
         String practicalType = "";
         PracticalExam practicalExam = practicalExamRepository.
-                findById(dto.getId()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
+                findById(templateId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
         // Create practical folder
         File practicalFol = new File(PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExam.getCode());
         boolean check = practicalFol.mkdir();
         if (!check) {
-            throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
-        }
-        // Create submission folder
-        File submissionFol = new File(practicalFol.getAbsolutePath() + File.separator + "Submissions");
-        check = submissionFol.mkdir();
-        if (!check) {
-            throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
-        }
-
-        // Copy script files
-        File scriptFile = new File(practicalFol.getAbsolutePath() + File.separator + "TestScripts");
-        check = scriptFile.mkdir();
-        if (!check) {
-            throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
-        }
-        //copy source to target using Files Class
-        try {
-            // loop by list script test đã assign
-            for (Script script : practicalExam.getScripts()) {
-                Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getCode() + ".java");
-                Path targetScriptPath = Paths.get(scriptFile.getAbsolutePath() + File.separator + script.getCode() + ".java");
-                Files.copy(sourceScriptPath, targetScriptPath);
-                practicalType = script.getScriptType();
+            downloadTemplate(response, practicalExam.getCode());
+        } else {
+            // Create submission folder
+            File submissionFol = new File(practicalFol.getAbsolutePath() + File.separator + "Submissions");
+            check = submissionFol.mkdir();
+            if (!check) {
+                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
             }
 
+            // Copy script files
+            File scriptFile = new File(practicalFol.getAbsolutePath() + File.separator + "TestScripts");
+            check = scriptFile.mkdir();
+            if (!check) {
+                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
+            }
+            //copy source to target using Files Class
+            try {
+                // loop by list script test đã assign
+                for (Script script : practicalExam.getScripts()) {
+                    Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getCode() + ".java");
+                    Path targetScriptPath = Paths.get(scriptFile.getAbsolutePath() + File.separator + script.getCode() + ".java");
+                    Files.copy(sourceScriptPath, targetScriptPath);
+                    practicalType = script.getScriptType();
+                }
 
-            //copy server
-            File sourceServerPath = new File(PathConstants.PATH_SERVER_JAVA_WEB);
-            File targetServerPath = new File(practicalFol.getAbsolutePath() + File.separator + "Server");
 
-            FileUtils.copyDirectory(sourceServerPath, targetServerPath);
+                //copy server
+                File sourceServerPath = new File(PathConstants.PATH_SERVER_JAVA_WEB);
+                File targetServerPath = new File(practicalFol.getAbsolutePath() + File.separator + "Server");
 
-            // Make info json files
-            ObjectMapper objectMapper = new ObjectMapper();
-            PracticalInfo practicalInfo = new PracticalInfo();
-            practicalInfo.setName(practicalExam.getCode());
-            practicalInfo.setType(practicalType);
-            objectMapper.writeValue(
-                    new FileOutputStream(practicalFol.getAbsoluteFile() +
-                            File.separator
-                            + CustomConstant.PRACTICAL_INFO_FILE_NAME),
-                    practicalInfo);
+                FileUtils.copyDirectory(sourceServerPath, targetServerPath);
 
+                // Make info json files
+                ObjectMapper objectMapper = new ObjectMapper();
+                PracticalInfo practicalInfo = new PracticalInfo();
+                practicalInfo.setName(practicalExam.getCode());
+                practicalInfo.setType(practicalType);
+                objectMapper.writeValue(
+                        new FileOutputStream(practicalFol.getAbsoluteFile() +
+                                File.separator
+                                + CustomConstant.PRACTICAL_INFO_FILE_NAME),
+                        practicalInfo);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new CustomException(HttpStatus.CONFLICT, "Path incorrect");
+            }
+
+            try {
+                // Zip folder
+                ZipFile.zipFolder(practicalFol.getAbsolutePath(), practicalFol.getAbsolutePath());
+                downloadTemplate(response, practicalExam.getCode());
+
+            } catch (FileNotFoundException e) {
+                throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+            } catch (IOException e) {
+                throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+            }
+        }
+    }
+
+    private void downloadTemplate(HttpServletResponse response, String practicalExamCode) {
+        // Download
+        try {
+            String filePath = PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExamCode + ".zip";
+            File file = new File(filePath);
+            OutputStream os = null;
+            if (file.isFile()) {
+                String mimeType = "application/octet-stream";
+                response.setContentType(mimeType);
+                response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+                response.setContentLength((int) file.length());
+                os = response.getOutputStream();
+                ZipFile.downloadZip(file, os);
+
+            } else {
+                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Please try later");
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            throw new CustomException(HttpStatus.CONFLICT, "Path incorrect");
-        }
-
-        try {
-            // Zip folder
-
-            ZipFile.zipFolder(practicalFol.getAbsolutePath(), practicalFol.getAbsolutePath());
-
-
-            String filePath = PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExam.getCode() + ".zip";
-            File file = new File(filePath);
-            String mimeType = "application/octet-stream";
-            response.setContentType(mimeType);
-            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
-            response.setContentLength((int) file.length());
-            OutputStream os = null;
-            os = response.getOutputStream();
-
-            ZipFile.downloadZip(file, os);
-        } catch (FileNotFoundException e) {
-            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
-        } catch (IOException e) {
-            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
 }
