@@ -1,6 +1,5 @@
 package com.fpt.automatedtesting.controller;
 
-import com.fpt.automatedtesting.dto.request.TestScriptParamDto;
 import com.fpt.automatedtesting.dto.response.ScriptResponseDto;
 import com.fpt.automatedtesting.service.ScriptService;
 import com.fpt.automatedtesting.dto.request.*;
@@ -36,15 +35,16 @@ public class ScriptController {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.getAll());
     }
 
-    @PostMapping("/testscript")
+    @PostMapping("/scripts")
     @CrossOrigin(origins = "http://localhost:1998")
-    public ResponseEntity<Boolean> generateTestScript(@RequestBody TestScriptParamDto scriptDto) {
+    public ResponseEntity<Boolean> generateTestScript(@RequestBody ScriptRequestDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));
     }
 
+
     @GetMapping("/testzip")
     public String getTestZip() throws IOException {
-        ZipFile.zipping(null);
+        ZipFile.zipFolder(null, null);
         return "ok";
     }
 
@@ -62,8 +62,14 @@ public class ScriptController {
 
 
     @PostMapping("/admin/action")
-    public String postAdminAction(@RequestBody EventRequestDto request) throws IOException {
+    public String postAdminAction(@RequestBody ActionRequestDto request) throws IOException {
         System.out.println(request.getName());
+        return "ok";
+    }
+
+    @GetMapping("/admin/test")
+    public String testAction() throws IOException {
+        ZipFile.deleteFolder("G:\\New folder (5)\\deleted");
         return "ok";
     }
 

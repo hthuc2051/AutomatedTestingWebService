@@ -10,6 +10,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParamRequestDto implements Serializable {
-    String name;
-    String type;
+
+    private Integer id;
+    private String name;
+    private String type;
 }

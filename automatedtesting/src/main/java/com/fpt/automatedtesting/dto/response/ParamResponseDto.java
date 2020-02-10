@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ParamResponseDto implements Serializable {
 
-    String paramName;
-    String paramType;
+    String name;
+    String type;
 
 }

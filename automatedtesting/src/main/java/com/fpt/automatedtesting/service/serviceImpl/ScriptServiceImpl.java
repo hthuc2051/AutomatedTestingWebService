@@ -1,13 +1,19 @@
 package com.fpt.automatedtesting.service.serviceImpl;
 
+import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.CustomMessages;
+import com.fpt.automatedtesting.constants.PathConstants;
 import com.fpt.automatedtesting.dto.request.CodeDto;
-import com.fpt.automatedtesting.dto.request.TestScriptParamDto;
+import com.fpt.automatedtesting.dto.request.ScriptRequestDto;
 import com.fpt.automatedtesting.dto.response.ScriptResponseDto;
+import com.fpt.automatedtesting.entity.Script;
+import com.fpt.automatedtesting.entity.User;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.mapper.MapperManager;
 import com.fpt.automatedtesting.repository.ScriptRepository;
+import com.fpt.automatedtesting.repository.UserRepository;
 import com.fpt.automatedtesting.service.ScriptService;
+import com.fpt.automatedtesting.utils.CustomUtils;
 import com.fpt.automatedtesting.utils.ZipFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -20,6 +26,7 @@ import org.springframework.util.ResourceUtils;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,13 +34,18 @@ public class ScriptServiceImpl implements ScriptService {
 
     private static final String PREFIX_START = "//start";
     private static final String PREFIX_END = "//end";
-    private static final String TEMPLATE_SCRIPT_JAVA = "static/ScripTestJava.java";
+    private static final String EXTENSION_JAVA = ".java";
+    private static final String EXTENSION_C = ".c";
+    private static final String EXTENSION_CSharp = ".cs";
+
+
+    private final ScriptRepository scriptRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    private final ScriptRepository scriptRepository;
-
-    public ScriptServiceImpl(ScriptRepository scriptRepository) {
+    public ScriptServiceImpl(ScriptRepository scriptRepository, UserRepository userRepository) {
         this.scriptRepository = scriptRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -43,38 +55,85 @@ public class ScriptServiceImpl implements ScriptService {
     }
 
     @Override
-    public Boolean generateScriptTest(TestScriptParamDto script) {
+    public Boolean generateScriptTest(ScriptRequestDto dto) {
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found user with id" + dto.getUserId()));
+        List<User> users = new ArrayList<>();
         try {
-            if (script == null) throw new CustomException(HttpStatus.NOT_FOUND, CustomMessages.MSG_SCRIPT_NULL);
-            Resource resource = new ClassPathResource(TEMPLATE_SCRIPT_JAVA);
-            if (resource == null) throw new CustomException(HttpStatus.NOT_FOUND, "File not found");
+            if (dto == null) throw new CustomException(HttpStatus.NOT_FOUND, CustomMessages.MSG_SCRIPT_NULL);
+            String templatePath = "";
+            String scriptStorePath = "";
+            String fileExtension = "";
+
+            // Select path to create and save script test by type
+            switch (dto.getType()) {
+                case CustomConstant.TEMPLATE_TYPE_JAVA:
+                    templatePath = PathConstants.PATH_TEMPLATE_JAVA;
+                    scriptStorePath = PathConstants.PATH_SCRIPT_JAVA;
+                    fileExtension = EXTENSION_JAVA;
+                    break;
+                case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
+                    templatePath = PathConstants.PATH_TEMPLATE_JAVA_WEB;
+                    scriptStorePath = PathConstants.PATH_SCRIPT_JAVA_WEB;
+                    fileExtension = EXTENSION_JAVA;
+                    break;
+                case CustomConstant.TEMPLATE_TYPE_CSHARP:
+                    templatePath = PathConstants.PATH_TEMPLATE_C_SHARP;
+                    scriptStorePath = PathConstants.PATH_SCRIPT_C_SHARP;
+                    fileExtension = EXTENSION_CSharp;
+
+                    break;
+                case CustomConstant.TEMPLATE_TYPE_C:
+                    templatePath = PathConstants.PATH_TEMPLATE_C;
+                    scriptStorePath = PathConstants.PATH_SCRIPT_C;
+                    fileExtension = EXTENSION_C;
+                    break;
+                default:
+                    throw new CustomException(HttpStatus.CONFLICT, "TypeConflictNotSupported");
+            }
+
+            // Get template path
+            Resource resource = new ClassPathResource(templatePath);
+            if (resource == null) throw new CustomException(HttpStatus.NOT_FOUND, "TemplateNotFound");
             InputStream inputStream = resource.getInputStream();
             byte[] bData = FileCopyUtils.copyToByteArray(inputStream);
             String data = new String(bData, StandardCharsets.UTF_8);
 
             String middlePart = "";
-            for (CodeDto code : script.getQuestions()) {
+            for (CodeDto code : dto.getQuestions()) {
                 middlePart += code.getCode().replace("'", "\"");
             }
 
             int startIndex = data.indexOf(PREFIX_START);
             String startPart = data.substring(0, startIndex) + PREFIX_START;
             int endIndex = data.indexOf(PREFIX_END);
-            System.out.println(resource.getURI().getPath());
-            System.out.println(resource.getURL().getPath());
+
             String endPart = data.substring(endIndex, data.length());
             String fullScript = startPart + "\n" + middlePart + "\n" + endPart;
-            String filePath = ResourceUtils.getFile("classpath:static/ScripTestJava.java").getAbsolutePath();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false));
+
+            // Write new file to Scripts_Languages folder
+            // TODO: Add prefix cur datetime later
+            BufferedWriter writer = new BufferedWriter(
+                    new FileWriter(scriptStorePath + dto.getName() + fileExtension,
+                            false));
             writer.write(fullScript);
             writer.close();
             inputStream.close();
-            String zipPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
-            ZipFile.zipping(zipPath);
+
+            // Save to database
+            Script script = new Script();
+            script.setTimeCreated(CustomUtils.getCurDateTime("Date"));
+            script.setScriptPath("");
+            users.add(user);
+            script.setUsers(users);
+            if (scriptRepository.save(script) != null) {
+                return true;
+            }
         } catch (IOException e) {
+            e.printStackTrace();
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -98,5 +157,6 @@ public class ScriptServiceImpl implements ScriptService {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
+
 
 }

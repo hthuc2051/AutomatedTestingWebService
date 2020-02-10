@@ -1,17 +1,16 @@
 package com.fpt.automatedtesting.utils;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ZipFile {
+
     //    Zip folder
-    public static void zipping(String folder) throws IOException {
-        String sourceFile = folder;
-        FileOutputStream fos = new FileOutputStream(folder+".zip");
+    public static void zipFolder(String folder, String outPath) throws IOException {
+        FileOutputStream fos = new FileOutputStream(outPath + ".zip");
         ZipOutputStream zipOut = new ZipOutputStream(fos);
-        File fileToZip = new File(sourceFile);
+        File fileToZip = new File(folder);
         zipFile(fileToZip, fileToZip.getName(), zipOut);
         zipOut.close();
         fos.close();
@@ -31,7 +30,14 @@ public class ZipFile {
                 output.close();
             }
         } catch (Exception e) {
-        e.printStackTrace();
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteFolder(String folder) {
+        File file = new File(folder);
+        if (file.isDirectory()) {
+            file.delete();
         }
     }
 
@@ -63,6 +69,7 @@ public class ZipFile {
         }
         fis.close();
     }
+
 
 }
 
