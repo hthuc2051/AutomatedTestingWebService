@@ -5,6 +5,7 @@ import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.constants.PathConstants;
 import com.fpt.automatedtesting.dto.PracticalInfo;
 import com.fpt.automatedtesting.dto.request.PracticalExamRequest;
+import com.fpt.automatedtesting.dto.response.StudentSubmissionDetails;
 import com.fpt.automatedtesting.entity.*;
 import com.fpt.automatedtesting.entity.Class;
 import com.fpt.automatedtesting.exception.CustomException;
@@ -153,6 +154,35 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
             }
         }
+    }
+
+    @Override
+    public List<StudentSubmissionDetails> getListStudentInPracticalExam(Integer id) {
+        List<StudentSubmissionDetails> result = null;
+        PracticalExam practicalExamEntity = practicalExamRepository
+                .findById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
+        List<Submission> submissionList = submissionRepository.findAllByPracticalExam(practicalExamEntity);
+        if (submissionList != null && submissionList.size() > 0) {
+            result = new ArrayList<>();
+            for (Submission submission : submissionList) {
+                StudentSubmissionDetails dto = new StudentSubmissionDetails();
+                StudentClass studentClass = submission.getStudentClass();
+                if(studentClass== null)
+                    throw new CustomException(HttpStatus.NOT_FOUND,"Not found Student class");
+
+                Student student = studentClass.getStudent();
+                if(student== null)
+                    throw new CustomException(HttpStatus.NOT_FOUND,"Not found Student");
+                dto.setId(submission.getId());
+                dto.setStudentCode(student.getCode());
+                dto.setStudentName(student.getName());
+                dto.setScriptCode(submission.getScriptCode());
+
+                result.add(dto);
+            }
+        }
+        return result;
     }
 
     private void downloadTemplate(HttpServletResponse response, String practicalExamCode) {
