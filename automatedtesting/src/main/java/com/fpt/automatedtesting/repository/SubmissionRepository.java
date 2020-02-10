@@ -1,13 +1,10 @@
 package com.fpt.automatedtesting.repository;
 
-import com.fpt.automatedtesting.entity.PracticalExam;
 import com.fpt.automatedtesting.entity.Submission;
+import io.swagger.models.auth.In;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface SubmissionRepository extends JpaRepository<Submission, Integer> {
-    List<Submission> findAllByPracticalExam(PracticalExam practicalExam);
+public interface SubmissionRepository extends JpaRepository<Submission, In> {
 }

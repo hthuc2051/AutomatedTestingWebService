@@ -24,11 +24,8 @@ public class Submission {
     @Column(name = "submit_path")
     private String submitPath;
 
-    @Column(name = "script_code")
-    private String scriptCode;
-
-    @Column(name = "point")
-    private Double point;
+    @Column(name = "mark")
+    private Double mark;
 
     // Student
 
