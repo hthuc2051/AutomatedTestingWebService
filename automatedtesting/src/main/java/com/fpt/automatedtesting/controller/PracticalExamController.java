@@ -33,9 +33,10 @@ public class PracticalExamController {
     }
 
     @PostMapping("/practical-exam")
-    public void create(@RequestBody PracticalExamRequest dto) {
-        practicalExamService.create(dto);
-
+    public ResponseEntity<Boolean> create(@RequestBody PracticalExamRequest dto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.create(dto));
     }
 
     @GetMapping("/templates/{id}")

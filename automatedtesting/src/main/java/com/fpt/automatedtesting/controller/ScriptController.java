@@ -20,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:1998")
 public class ScriptController {
 
     @Autowired
@@ -36,8 +37,7 @@ public class ScriptController {
     }
 
     @PostMapping("/scripts")
-    @CrossOrigin(origins = "http://localhost:1998")
-    public ResponseEntity<Boolean> generateTestScript(@RequestBody ScriptRequestDto scriptDto) {
+    public ResponseEntity<Boolean> create(@RequestBody ScriptRequestDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));
     }
 
@@ -49,7 +49,6 @@ public class ScriptController {
     }
 
     @GetMapping("/download")
-    @CrossOrigin(origins = "http://localhost:1998")
     public void downloadFile(HttpServletRequest request, HttpServletResponse response) {
         scriptService.downloadFile(response);
     }
@@ -72,6 +71,5 @@ public class ScriptController {
         ZipFile.deleteFolder("G:\\New folder (5)\\deleted");
         return "ok";
     }
-
 
 }

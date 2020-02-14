@@ -13,6 +13,6 @@ public class ScriptRequestDto {
 
     private String name;
     private ArrayList<CodeDto> questions;
-    private String type;
-    private Integer userId;
+    private Integer headLecturerId;
+    private Integer subjectId;
 }

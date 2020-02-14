@@ -11,8 +11,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Student_Class")
-public class StudentClass {
+@Table(name = "Class_Student")
+public class ClassStudent {
 
     @Id
     @Column(name = "id")
@@ -26,7 +26,7 @@ public class StudentClass {
     @JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false)
     private Student student;
 
-    @OneToMany(mappedBy = "studentClass", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "classStudent", cascade = CascadeType.ALL)
     private List<Submission> submissions;
 
 }

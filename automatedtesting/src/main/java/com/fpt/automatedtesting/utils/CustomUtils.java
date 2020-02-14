@@ -5,13 +5,13 @@ import java.util.Date;
 
 public class CustomUtils {
 
-    public static String getCurDateTime(String typeFormat) {
+    public static String getCurDateTime(Date date, String typeFormat) {
         String s = "";
-        Date date = new Date();
+
         SimpleDateFormat formatter = null;
         switch (typeFormat) {
             case "Prefix":
-                formatter = new SimpleDateFormat("ddMMyyyy_HHmmss");
+                formatter = new SimpleDateFormat("dd_MM_yyyy_HHmmss");
                 s = formatter.format(date);
                 break;
             default:

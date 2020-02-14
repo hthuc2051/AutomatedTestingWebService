@@ -27,7 +27,7 @@ public class Student {
     private String email;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<StudentClass> studentClasses;
+    private List<ClassStudent> classStudents;
 
     @Column(name = "active")
     private Boolean active;

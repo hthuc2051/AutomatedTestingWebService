@@ -17,7 +17,6 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -33,28 +32,27 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     private final PracticalExamRepository practicalExamRepository;
     private final ScriptRepository scriptRepository;
     private final SubmissionRepository submissionRepository;
-    private final StudentClassRepository studentClassRepository;
+    private final ClassStudentRepository classStudentRepository;
     private final ClassRepository classRepository;
 
     @Autowired
-    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, StudentClassRepository studentClassRepository, ClassRepository classRepository) {
+    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, ClassStudentRepository classStudentRepository, ClassRepository classRepository) {
         this.practicalExamRepository = practicalExamRepository;
         this.scriptRepository = scriptRepository;
         this.submissionRepository = submissionRepository;
-        this.studentClassRepository = studentClassRepository;
+        this.classStudentRepository = classStudentRepository;
         this.classRepository = classRepository;
     }
 
     @Override
-    public void create(PracticalExamRequest dto) {
+    public Boolean create(PracticalExamRequest dto) {
         Class classRoom = classRepository
                 .findById(dto.getClassId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + dto.getClassId()));
-        List<StudentClass> studentClassList = studentClassRepository.findAllByClassRoom(classRoom);
-        if (studentClassList != null && studentClassList.size() > 0) {
+        List<ClassStudent> classStudentList = classStudentRepository.findAllByClassRoom(classRoom);
+        if (classStudentList != null && classStudentList.size() > 0) {
             List<Script> scriptEntities = null;
             List<Integer> listScriptId = dto.getListScripts();
-
             if (listScriptId != null && listScriptId.size() > 0) {
                 scriptEntities = new ArrayList<>();
                 for (Integer id : listScriptId) {
@@ -67,10 +65,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             PracticalExam practicalExam = MapperManager.map(dto, PracticalExam.class);
             List<Submission> submissions = new ArrayList<>();
 
-            for (StudentClass studentClass : studentClassList) {
+            for (ClassStudent classStudent : classStudentList) {
                 Submission submission = new Submission();
                 submission.setActive(true);
-                submission.setStudentClass(studentClass);
+                submission.setClassStudent(classStudent);
                 submissions.add(submission);
                 submission.setPracticalExam(practicalExam);
             }
@@ -83,7 +81,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         } else {
             throw new CustomException(HttpStatus.NOT_FOUND, "No student from this class");
         }
-
+        return true;
     }
 
     @Override
@@ -117,7 +115,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                     Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getCode() + ".java");
                     Path targetScriptPath = Paths.get(scriptFile.getAbsolutePath() + File.separator + script.getCode() + ".java");
                     Files.copy(sourceScriptPath, targetScriptPath);
-                    practicalType = script.getScriptType();
+                    practicalType = script.getSubject().getCode();
                 }
 
 
@@ -167,13 +165,13 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             result = new ArrayList<>();
             for (Submission submission : submissionList) {
                 StudentSubmissionDetails dto = new StudentSubmissionDetails();
-                StudentClass studentClass = submission.getStudentClass();
-                if(studentClass== null)
-                    throw new CustomException(HttpStatus.NOT_FOUND,"Not found Student class");
+                ClassStudent classStudent = submission.getClassStudent();
+                if (classStudent == null)
+                    throw new CustomException(HttpStatus.NOT_FOUND, "Not found Student class");
 
-                Student student = studentClass.getStudent();
-                if(student== null)
-                    throw new CustomException(HttpStatus.NOT_FOUND,"Not found Student");
+                Student student = classStudent.getStudent();
+                if (student == null)
+                    throw new CustomException(HttpStatus.NOT_FOUND, "Not found Student");
                 dto.setId(submission.getId());
                 dto.setStudentCode(student.getCode());
                 dto.setStudentName(student.getName());

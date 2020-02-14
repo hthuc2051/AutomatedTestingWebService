@@ -37,8 +37,8 @@ public class Submission {
     private PracticalExam practicalExam;
 
     @ManyToOne
-    @JoinColumn(name = "student_class_id", referencedColumnName = "id")
-    private StudentClass studentClass;
+    @JoinColumn(name = "class_student_id", referencedColumnName = "id")
+    private ClassStudent classStudent;
 
     @Column(name = "active")
     private Boolean active;

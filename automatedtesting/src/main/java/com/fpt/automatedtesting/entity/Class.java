@@ -24,5 +24,5 @@ public class Class {
     private Boolean active;
 
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
-    private List<StudentClass> studentClasses;
+    private List<ClassStudent> classStudents;
 }

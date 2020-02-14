@@ -3,6 +3,7 @@ package com.fpt.automatedtesting.service.serviceImpl;
 import com.fpt.automatedtesting.dto.request.ActionRequestDto;
 import com.fpt.automatedtesting.dto.response.ActionResponseDto;
 import com.fpt.automatedtesting.entity.Action;
+import com.fpt.automatedtesting.entity.Admin;
 import com.fpt.automatedtesting.entity.User;
 import com.fpt.automatedtesting.entity.Param;
 import com.fpt.automatedtesting.exception.CustomException;
@@ -37,11 +38,11 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public ActionResponseDto insert(ActionRequestDto dto) {
-        User user = adminRepository
+        Admin admin = adminRepository
                 .findById(dto.getAdminId())
-                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND,"Admin"));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Admin"));
         Action action = MapperManager.map(dto, Action.class);
-        action.setUser(user);
+        action.setAdmin(admin);
         List<Param> params = MapperManager.mapAll(dto.getParams(), Param.class);
         params.forEach(param -> param.setAction(action));
         action.setParams(params);

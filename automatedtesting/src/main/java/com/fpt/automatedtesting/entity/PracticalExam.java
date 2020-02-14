@@ -21,6 +21,10 @@ public class PracticalExam {
     @Column(name = "code")
     private String code;
 
+    @ManyToOne()
+    @JoinColumn(name = "lecturer_id", referencedColumnName = "id", nullable = false)
+    private Lecturer lecturer;
+
     @OneToMany(mappedBy = "practicalExam", cascade = CascadeType.ALL)
     private List<Submission> submissions;
 

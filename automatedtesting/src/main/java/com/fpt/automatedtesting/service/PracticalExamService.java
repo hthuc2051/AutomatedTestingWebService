@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PracticalExamService {
 
-    void create(PracticalExamRequest dto);
+    Boolean create(PracticalExamRequest dto);
     void downloadPracticalTemplate(Integer id,HttpServletResponse response);
     List<StudentSubmissionDetails> getListStudentInPracticalExam(Integer id);
 }

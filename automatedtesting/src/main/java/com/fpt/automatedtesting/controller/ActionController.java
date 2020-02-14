@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins ="http://localhost:1998")
 @RequestMapping("/api")
 public class ActionController {
 
@@ -23,14 +24,12 @@ public class ActionController {
 
     // Return data to lecturer
     @GetMapping("/actions")
-    @CrossOrigin(origins ="http://localhost:1998")
     public ResponseEntity<List<ActionResponseDto>> getAllActions() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAll());
     }
 
-    @CrossOrigin(origins ="http://localhost:1998")
     @PostMapping("/actions")
     public ResponseEntity<ActionResponseDto> insertNewActions(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
@@ -38,7 +37,6 @@ public class ActionController {
                 .body(actionService.insert(dto));
     }
 
-    @CrossOrigin(origins ="http://localhost:1998")
     @GetMapping("/actions/{id}")
     public ResponseEntity<ActionResponseDto> getAction(@PathVariable Integer id) {
         return ResponseEntity
@@ -46,7 +44,6 @@ public class ActionController {
                 .body(actionService.findById(id));
     }
 
-    @CrossOrigin(origins ="http://localhost:1998")
     @DeleteMapping("/actions/{id}")
     public ResponseEntity<Boolean> deleteAction(@PathVariable Integer id) {
         return ResponseEntity
@@ -54,7 +51,6 @@ public class ActionController {
                 .body(actionService.delete(id));
     }
 
-    @CrossOrigin(origins ="http://localhost:1998")
     @PutMapping("/action")
     public ResponseEntity<ActionResponseDto> updateAction(@RequestBody ActionRequestDto dto) {
         return ResponseEntity

@@ -6,12 +6,14 @@ import com.fpt.automatedtesting.constants.PathConstants;
 import com.fpt.automatedtesting.dto.request.CodeDto;
 import com.fpt.automatedtesting.dto.request.ScriptRequestDto;
 import com.fpt.automatedtesting.dto.response.ScriptResponseDto;
+import com.fpt.automatedtesting.entity.HeadLecturer;
 import com.fpt.automatedtesting.entity.Script;
-import com.fpt.automatedtesting.entity.User;
+import com.fpt.automatedtesting.entity.Subject;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.mapper.MapperManager;
+import com.fpt.automatedtesting.repository.HeadLecturerRepository;
 import com.fpt.automatedtesting.repository.ScriptRepository;
-import com.fpt.automatedtesting.repository.UserRepository;
+import com.fpt.automatedtesting.repository.SubjectRepository;
 import com.fpt.automatedtesting.service.ScriptService;
 import com.fpt.automatedtesting.utils.CustomUtils;
 import com.fpt.automatedtesting.utils.ZipFile;
@@ -26,7 +28,7 @@ import org.springframework.util.ResourceUtils;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -37,15 +39,17 @@ public class ScriptServiceImpl implements ScriptService {
     private static final String EXTENSION_JAVA = ".java";
     private static final String EXTENSION_C = ".c";
     private static final String EXTENSION_CSharp = ".cs";
-
+    private static final String PREFIX_SCRIPT = "_Script_";
 
     private final ScriptRepository scriptRepository;
-    private final UserRepository userRepository;
+    private final HeadLecturerRepository headLecturerRepository;
+    private final SubjectRepository subjectRepository;
 
     @Autowired
-    public ScriptServiceImpl(ScriptRepository scriptRepository, UserRepository userRepository) {
+    public ScriptServiceImpl(ScriptRepository scriptRepository, HeadLecturerRepository headLecturerRepository, SubjectRepository subjectRepository) {
         this.scriptRepository = scriptRepository;
-        this.userRepository = userRepository;
+        this.headLecturerRepository = headLecturerRepository;
+        this.subjectRepository = subjectRepository;
     }
 
     @Override
@@ -56,9 +60,11 @@ public class ScriptServiceImpl implements ScriptService {
 
     @Override
     public Boolean generateScriptTest(ScriptRequestDto dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found user with id" + dto.getUserId()));
-        List<User> users = new ArrayList<>();
+        HeadLecturer headLecturer = headLecturerRepository.findById(dto.getHeadLecturerId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found user with id" + dto.getHeadLecturerId()));
+        Subject subject = subjectRepository.findById(dto.getSubjectId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found subject with id" + dto.getSubjectId()));
+
         try {
             if (dto == null) throw new CustomException(HttpStatus.NOT_FOUND, CustomMessages.MSG_SCRIPT_NULL);
             String templatePath = "";
@@ -66,7 +72,7 @@ public class ScriptServiceImpl implements ScriptService {
             String fileExtension = "";
 
             // Select path to create and save script test by type
-            switch (dto.getType()) {
+            switch (subject.getCode()) {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA;
                     scriptStorePath = PathConstants.PATH_SCRIPT_JAVA;
@@ -112,9 +118,10 @@ public class ScriptServiceImpl implements ScriptService {
             String fullScript = startPart + "\n" + middlePart + "\n" + endPart;
 
             // Write new file to Scripts_Languages folder
-            // TODO: Add prefix cur datetime later
+            Date date = new Date();
+            String scriptCode = subject.getCode() + "_" + dto.getName() + "_" + CustomUtils.getCurDateTime(date, "Date");
             BufferedWriter writer = new BufferedWriter(
-                    new FileWriter(scriptStorePath + dto.getName() + fileExtension,
+                    new FileWriter(scriptStorePath + scriptCode + fileExtension,
                             false));
             writer.write(fullScript);
             writer.close();
@@ -122,10 +129,15 @@ public class ScriptServiceImpl implements ScriptService {
 
             // Save to database
             Script script = new Script();
-            script.setTimeCreated(CustomUtils.getCurDateTime("Date"));
-            script.setScriptPath("");
-            users.add(user);
-            script.setUsers(users);
+            script.setHeadLecturer(headLecturer);
+            script.setSubject(subject);
+            script.setCode(scriptCode);
+
+            script.setTimeCreated(CustomUtils.getCurDateTime(date, "Date"));
+
+            // TODO:SetPath later
+            script.setScriptPath("Path temp");
+
             if (scriptRepository.save(script) != null) {
                 return true;
             }

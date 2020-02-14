@@ -27,7 +27,11 @@ public class Action {
     private List<Param> params;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    private User user;
+    @JoinColumn(name = "subject_id", referencedColumnName = "id", nullable = false)
+    private Subject subject;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = false)
+    private Admin admin;
 
 }

@@ -24,16 +24,20 @@ public class Script {
     @Column(name = "time_created", nullable = true)
     private String timeCreated;
 
-    @Column(name = "script_type", nullable = true)
-    private String scriptType;
-
     @Column(name = "script_path", nullable = true, length = 100)
     private String scriptPath;
+
+    @ManyToOne
+    @JoinColumn(name = "subject_id", referencedColumnName = "id", nullable = false)
+    private Subject subject;
+
+    @ManyToOne
+    @JoinColumn(name = "headlecturer_id", referencedColumnName = "id", nullable = false)
+    private HeadLecturer headLecturer;
 
     @ManyToMany(targetEntity = PracticalExam.class, mappedBy = "scripts", fetch = FetchType.LAZY)
     private List<PracticalExam> practicalExams;
 
-    @ManyToMany(targetEntity = User.class, mappedBy = "scripts", fetch = FetchType.LAZY)
-    private List<User> users;
-
+    @Column(name = "active", nullable = true)
+    private Boolean active;
 }

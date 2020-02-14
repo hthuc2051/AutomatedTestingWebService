@@ -27,15 +27,10 @@ public class User {
     @Column(name = "password", length = 500)
     private String password;
 
-    @Column(name = "name", length = 500)
-    private String name;
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<Admin> admins;
 
-    @Column(name = "email", length = 500)
-    private String email;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Action> actions;
 
     @ManyToMany(targetEntity = Script.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "user_script", joinColumns = {
