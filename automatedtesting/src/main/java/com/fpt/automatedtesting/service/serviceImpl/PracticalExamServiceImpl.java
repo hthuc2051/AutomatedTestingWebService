@@ -29,6 +29,8 @@ import java.util.List;
 @Service
 public class PracticalExamServiceImpl implements PracticalExamService {
 
+    private static final String PREFIX_EXAM_CODE ="Practical_";
+
     private final PracticalExamRepository practicalExamRepository;
     private final ScriptRepository scriptRepository;
     private final SubmissionRepository submissionRepository;
@@ -85,10 +87,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
-    public void downloadPracticalTemplate(Integer templateId, HttpServletResponse response) {
-        String practicalType = "";
+    public void downloadPracticalTemplate(Integer practicalExamId, HttpServletResponse response) {
+        String examCode = "";
         PracticalExam practicalExam = practicalExamRepository.
-                findById(templateId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
+                findById(practicalExamId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
         // Create practical folder
         File practicalFol = new File(PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExam.getCode());
         boolean check = practicalFol.mkdir();
@@ -115,7 +117,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                     Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getCode() + ".java");
                     Path targetScriptPath = Paths.get(scriptFile.getAbsolutePath() + File.separator + script.getCode() + ".java");
                     Files.copy(sourceScriptPath, targetScriptPath);
-                    practicalType = script.getSubject().getCode();
+                    examCode = PREFIX_EXAM_CODE+script.getSubject().getCode();
                 }
 
 
@@ -129,7 +131,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 PracticalInfo practicalInfo = new PracticalInfo();
                 practicalInfo.setName(practicalExam.getCode());
-                practicalInfo.setType(practicalType);
+                practicalInfo.setExamCode(examCode);
                 objectMapper.writeValue(
                         new FileOutputStream(practicalFol.getAbsoluteFile() +
                                 File.separator
