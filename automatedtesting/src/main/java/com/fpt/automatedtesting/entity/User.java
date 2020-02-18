@@ -30,11 +30,7 @@ public class User {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<Admin> admins;
 
+    @Column(name = "active", columnDefinition = "boolean default true")
+    private Boolean active;
 
-
-    @ManyToMany(targetEntity = Script.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "user_script", joinColumns = {
-            @JoinColumn(name = "user_id", referencedColumnName = "id", updatable = true)}, inverseJoinColumns = {
-            @JoinColumn(name = "script_id", referencedColumnName = "id", nullable = true, updatable = false)})
-    private List<Script> scripts;
 }

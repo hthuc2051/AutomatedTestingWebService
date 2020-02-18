@@ -25,34 +25,42 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class PracticalExamServiceImpl implements PracticalExamService {
 
-    private static final String PREFIX_EXAM_CODE ="Practical_";
+    private static final String PREFIX_EXAM_CODE = "Practical_";
 
     private final PracticalExamRepository practicalExamRepository;
     private final ScriptRepository scriptRepository;
     private final SubmissionRepository submissionRepository;
-    private final ClassStudentRepository classStudentRepository;
     private final ClassRepository classRepository;
+    private final SubjectClassRepository subjectClassRepository;
+    private final LecturerRepository lecturerRepository;
 
     @Autowired
-    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, ClassStudentRepository classStudentRepository, ClassRepository classRepository) {
+    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, ClassRepository classRepository, SubjectClassRepository subjectClassRepository, LecturerRepository lecturerRepository) {
         this.practicalExamRepository = practicalExamRepository;
         this.scriptRepository = scriptRepository;
         this.submissionRepository = submissionRepository;
-        this.classStudentRepository = classStudentRepository;
         this.classRepository = classRepository;
+        this.subjectClassRepository = subjectClassRepository;
+        this.lecturerRepository = lecturerRepository;
     }
 
     @Override
     public Boolean create(PracticalExamRequest dto) {
-        Class classRoom = classRepository
-                .findById(dto.getClassId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + dto.getClassId()));
-        List<ClassStudent> classStudentList = classStudentRepository.findAllByClassRoom(classRoom);
-        if (classStudentList != null && classStudentList.size() > 0) {
+
+        SubjectClass subjectClass = subjectClassRepository
+                .findById(dto.getSubjectClassId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + dto.getSubjectClassId()));
+        List<Student> studentList = subjectClass.getStudents();
+
+        // Fix database là lấy đc Subject
+        String practicalExamCode = PREFIX_EXAM_CODE + subjectClass.getAClass().getClassCode() + "_" + dto.getDate().replace("-", "");
+
+        if (studentList != null && studentList.size() > 0) {
             List<Script> scriptEntities = null;
             List<Integer> listScriptId = dto.getListScripts();
             if (listScriptId != null && listScriptId.size() > 0) {
@@ -65,18 +73,22 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             }
 
             PracticalExam practicalExam = MapperManager.map(dto, PracticalExam.class);
-            List<Submission> submissions = new ArrayList<>();
+            List<Submission> submissionList = new ArrayList<>();
 
-            for (ClassStudent classStudent : classStudentList) {
+            for (Student student : studentList) {
                 Submission submission = new Submission();
-                submission.setActive(true);
-                submission.setClassStudent(classStudent);
-                submissions.add(submission);
+                submission.setStudent(student);
                 submission.setPracticalExam(practicalExam);
+                submission.setActive(true);
+                submission.setScriptCode(getScriptCodeRandom(scriptEntities));
+                submissionList.add(submission);
             }
 
             practicalExam.setScripts(scriptEntities);
-            practicalExam.setSubmissions(submissions);
+            practicalExam.setSubmissions(submissionList);
+            practicalExam.setCode(practicalExamCode);
+            practicalExam.setSubjectClass(subjectClass);
+            practicalExam.setDate(dto.getDate());
 
             practicalExamRepository.saveAndFlush(practicalExam);
 
@@ -86,11 +98,20 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         return true;
     }
 
+    private String getScriptCodeRandom(List<Script> scripts) {
+        if (scripts != null && scripts.size() > 0) {
+            int index = new Random().nextInt(scripts.size());
+            return scripts.get(index).getCode() + "_DE" + String.format("%02d", (index + 1));
+        }
+        return null;
+    }
+
     @Override
     public void downloadPracticalTemplate(Integer practicalExamId, HttpServletResponse response) {
         String examCode = "";
         PracticalExam practicalExam = practicalExamRepository.
                 findById(practicalExamId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
+
         // Create practical folder
         File practicalFol = new File(PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExam.getCode());
         boolean check = practicalFol.mkdir();
@@ -105,39 +126,50 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             }
 
             // Copy script files
-            File scriptFile = new File(practicalFol.getAbsolutePath() + File.separator + "TestScripts");
-            check = scriptFile.mkdir();
-            if (!check) {
+            File scriptFol = new File(practicalFol.getAbsolutePath() + File.separator + "TestScripts");
+            File docsFol = new File(practicalFol.getAbsolutePath() + File.separator + "ExamDocuments");
+            boolean checkScriptFolCreated = scriptFol.mkdir();
+            boolean checkDocFolCreate = docsFol.mkdir();
+            if (!checkScriptFolCreated || !checkDocFolCreate) {
                 throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
             }
             //copy source to target using Files Class
             try {
                 // loop by list script test đã assign
-                for (Script script : practicalExam.getScripts()) {
-                    Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getCode() + ".java");
-                    Path targetScriptPath = Paths.get(scriptFile.getAbsolutePath() + File.separator + script.getCode() + ".java");
-                    Files.copy(sourceScriptPath, targetScriptPath);
-                    examCode = PREFIX_EXAM_CODE+script.getSubject().getCode();
+                List<Script> scripts = practicalExam.getScripts();
+                if(scripts != null) {
+                    for (Script script : practicalExam.getScripts()) {
+
+                        // For Test Scripts
+                        Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getCode() + ".java");
+                        Path targetScriptPath = Paths.get(scriptFol.getAbsolutePath() + File.separator + script.getCode() + ".java");
+                        Files.copy(sourceScriptPath, targetScriptPath);
+
+                        // For docs
+                        Path sourceDocPath = Paths.get(PathConstants.PATH_DOCS_JAVA + script.getCode() + ".docx");
+                        Path targetDocPath = Paths.get(docsFol.getAbsolutePath() + File.separator + script.getCode() + ".docx");
+                        Files.copy(sourceDocPath, targetDocPath);
+                        examCode = PREFIX_EXAM_CODE + script.getSubject().getCode();
+                    }
+
+
+                    //copy server
+                    File sourceServerPath = new File(PathConstants.PATH_SERVER_JAVA_WEB);
+                    File targetServerPath = new File(practicalFol.getAbsolutePath() + File.separator + "Server");
+
+                    FileUtils.copyDirectory(sourceServerPath, targetServerPath);
+
+                    // Make info json files
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    PracticalInfo practicalInfo = new PracticalInfo();
+                    practicalInfo.setName(practicalExam.getCode());
+                    practicalInfo.setExamCode(examCode);
+                    objectMapper.writeValue(
+                            new FileOutputStream(practicalFol.getAbsoluteFile() +
+                                    File.separator
+                                    + CustomConstant.PRACTICAL_INFO_FILE_NAME),
+                            practicalInfo);
                 }
-
-
-                //copy server
-                File sourceServerPath = new File(PathConstants.PATH_SERVER_JAVA_WEB);
-                File targetServerPath = new File(practicalFol.getAbsolutePath() + File.separator + "Server");
-
-                FileUtils.copyDirectory(sourceServerPath, targetServerPath);
-
-                // Make info json files
-                ObjectMapper objectMapper = new ObjectMapper();
-                PracticalInfo practicalInfo = new PracticalInfo();
-                practicalInfo.setName(practicalExam.getCode());
-                practicalInfo.setExamCode(examCode);
-                objectMapper.writeValue(
-                        new FileOutputStream(practicalFol.getAbsoluteFile() +
-                                File.separator
-                                + CustomConstant.PRACTICAL_INFO_FILE_NAME),
-                        practicalInfo);
-
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new CustomException(HttpStatus.CONFLICT, "Path incorrect");
@@ -158,31 +190,31 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
     @Override
     public List<StudentSubmissionDetails> getListStudentInPracticalExam(Integer id) {
-        List<StudentSubmissionDetails> result = null;
-        PracticalExam practicalExamEntity = practicalExamRepository
-                .findById(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
-        List<Submission> submissionList = submissionRepository.findAllByPracticalExam(practicalExamEntity);
-        if (submissionList != null && submissionList.size() > 0) {
-            result = new ArrayList<>();
-            for (Submission submission : submissionList) {
-                StudentSubmissionDetails dto = new StudentSubmissionDetails();
-                ClassStudent classStudent = submission.getClassStudent();
-                if (classStudent == null)
-                    throw new CustomException(HttpStatus.NOT_FOUND, "Not found Student class");
-
-                Student student = classStudent.getStudent();
-                if (student == null)
-                    throw new CustomException(HttpStatus.NOT_FOUND, "Not found Student");
-                dto.setId(submission.getId());
-                dto.setStudentCode(student.getCode());
-                dto.setStudentName(student.getName());
-                dto.setScriptCode(submission.getScriptCode());
-
-                result.add(dto);
-            }
-        }
-        return result;
+//        List<StudentSubmissionDetails> result = null;
+//        PracticalExam practicalExamEntity = practicalExamRepository
+//                .findById(id)
+//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
+//        List<Submission> submissionList = submissionRepository.findAllByPracticalExam(practicalExamEntity);
+//        if (submissionList != null && submissionList.size() > 0) {
+//            result = new ArrayList<>();
+//            for (Submission submission : submissionList) {
+//                StudentSubmissionDetails dto = new StudentSubmissionDetails();
+//                ClassStudent classStudent = submission.getClassStudent();
+//                if (classStudent == null)
+//                    throw new CustomException(HttpStatus.NOT_FOUND, "Not found Student class");
+//
+//                Student student = classStudent.getStudent();
+//                if (student == null)
+//                    throw new CustomException(HttpStatus.NOT_FOUND, "Not found Student");
+//                dto.setId(submission.getId());
+//                dto.setStudentCode(student.getCode());
+//                dto.setStudentName(student.getName());
+//                dto.setScriptCode(submission.getScriptCode());
+//
+//                result.add(dto);
+//            }
+//        }
+        return null;
     }
 
     private void downloadTemplate(HttpServletResponse response, String practicalExamCode) {

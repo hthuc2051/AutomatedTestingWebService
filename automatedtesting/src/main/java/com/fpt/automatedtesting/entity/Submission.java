@@ -30,16 +30,14 @@ public class Submission {
     @Column(name = "point")
     private Double point;
 
-    // Student
+    @ManyToOne
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
+    private Student student;
 
     @ManyToOne
     @JoinColumn(name = "practical_exam_id", referencedColumnName = "id")
     private PracticalExam practicalExam;
 
-    @ManyToOne
-    @JoinColumn(name = "class_student_id", referencedColumnName = "id")
-    private ClassStudent classStudent;
-
-    @Column(name = "active")
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 }

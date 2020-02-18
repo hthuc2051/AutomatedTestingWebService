@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PracticalExam {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -21,12 +22,18 @@ public class PracticalExam {
     @Column(name = "code")
     private String code;
 
-    @ManyToOne()
-    @JoinColumn(name = "lecturer_id", referencedColumnName = "id", nullable = false)
-    private Lecturer lecturer;
+    @Column(name = "date")
+    private String date;
+
+    @Column(name = "active", columnDefinition = "boolean default true")
+    private Boolean active;
 
     @OneToMany(mappedBy = "practicalExam", cascade = CascadeType.ALL)
     private List<Submission> submissions;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "subject_class_id", referencedColumnName = "id")
+    private SubjectClass subjectClass;
 
     @ManyToMany(targetEntity = Script.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "practicalexam_script", joinColumns = {
@@ -34,7 +41,6 @@ public class PracticalExam {
             @JoinColumn(name = "script_id", referencedColumnName = "id", nullable = true, updatable = false)})
     private List<Script> scripts;
 
-    @Column(name = "active")
-    private Boolean active;
+
 
 }

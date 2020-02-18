@@ -20,9 +20,9 @@ public class Class {
     @Column(name = "class_code")
     private String classCode;
 
-    @Column(name = "active")
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
-    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
-    private List<ClassStudent> classStudents;
+    @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL)
+    private List<SubjectClass> subjectClasses;
 }

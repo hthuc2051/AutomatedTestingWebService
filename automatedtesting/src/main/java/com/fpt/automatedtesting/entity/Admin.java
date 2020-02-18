@@ -41,7 +41,7 @@ public class Admin {
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
     private List<Action> actions;
 
-    @Column(name = "active", nullable = true)
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
 }

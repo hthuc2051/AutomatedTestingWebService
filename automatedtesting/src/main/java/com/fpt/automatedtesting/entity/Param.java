@@ -27,4 +27,6 @@ public class Param {
     @JoinColumn(name = "action_id", referencedColumnName = "id")
     private Action action;
 
+    @Column(name = "active", columnDefinition = "boolean default true")
+    private Boolean active;
 }

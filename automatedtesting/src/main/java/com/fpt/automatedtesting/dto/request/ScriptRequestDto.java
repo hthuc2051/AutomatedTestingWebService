@@ -3,8 +3,7 @@ package com.fpt.automatedtesting.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.sql.Date;
-import java.util.ArrayList;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -12,7 +11,10 @@ import java.util.ArrayList;
 public class ScriptRequestDto {
 
     private String name;
-    private ArrayList<CodeDto> questions;
+    private String questionPointStr;
+    private String questions;
     private Integer headLecturerId;
     private Integer subjectId;
+    private MultipartFile docsFile;
+
 }

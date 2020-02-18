@@ -32,7 +32,10 @@ public class Subject {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<Script> scripts;
 
-    @Column(name = "active")
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    private List<SubjectClass> subjectClasses;
+
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
 }

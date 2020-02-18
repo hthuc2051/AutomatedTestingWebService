@@ -37,7 +37,7 @@ public class ScriptController {
     }
 
     @PostMapping("/scripts")
-    public ResponseEntity<Boolean> create(@RequestBody ScriptRequestDto scriptDto) {
+    public ResponseEntity<Boolean> create(@ModelAttribute ScriptRequestDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));
     }
 

@@ -27,8 +27,14 @@ public class Student {
     private String email;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<ClassStudent> classStudents;
+    private List<Submission> submissions;
 
-    @Column(name = "active")
+    @ManyToMany(targetEntity = SubjectClass.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "subject_class_student", joinColumns = {
+            @JoinColumn(name = "student_id", referencedColumnName = "id", updatable = true)}, inverseJoinColumns = {
+            @JoinColumn(name = "subject_class_id", referencedColumnName = "id", nullable = true, updatable = false)})
+    private List<SubjectClass> subjectClasses;
+
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 }

@@ -13,8 +13,7 @@ import java.util.List;
 public class PracticalExamRequest implements Serializable {
 
     private Integer id;
-    private String name;
     private List<Integer> listScripts;
-    private Integer classId;
-
+    private Integer subjectClassId;
+    private String date;
 }

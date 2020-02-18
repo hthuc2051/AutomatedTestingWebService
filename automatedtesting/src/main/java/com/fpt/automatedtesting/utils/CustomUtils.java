@@ -11,7 +11,7 @@ public class CustomUtils {
         SimpleDateFormat formatter = null;
         switch (typeFormat) {
             case "Prefix":
-                formatter = new SimpleDateFormat("dd_MM_yyyy_HHmmss");
+                formatter = new SimpleDateFormat("dd_MM_yyyy_HH:mm:ss");
                 s = formatter.format(date);
                 break;
             default:

@@ -34,4 +34,6 @@ public class Action {
     @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = false)
     private Admin admin;
 
+    @Column(name = "active", columnDefinition = "boolean default true")
+    private Boolean active;
 }

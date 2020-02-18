@@ -21,6 +21,9 @@ public class Script {
     @Column(name = "code", nullable = true)
     private String code;
 
+    @Column(name = "name", nullable = true)
+    private String name;
+
     @Column(name = "time_created", nullable = true)
     private String timeCreated;
 
@@ -38,6 +41,6 @@ public class Script {
     @ManyToMany(targetEntity = PracticalExam.class, mappedBy = "scripts", fetch = FetchType.LAZY)
     private List<PracticalExam> practicalExams;
 
-    @Column(name = "active", nullable = true)
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 }

@@ -38,9 +38,9 @@ public class Lecturer {
     private String contactPhone;
 
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL)
-    private List<PracticalExam> practicalExams;
+    private List<SubjectClass> subjectClasses;
 
-    @Column(name = "active", nullable = true)
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
 }

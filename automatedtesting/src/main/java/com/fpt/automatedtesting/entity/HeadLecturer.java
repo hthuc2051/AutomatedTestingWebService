@@ -40,7 +40,7 @@ public class HeadLecturer {
     @OneToMany(mappedBy = "headLecturer", cascade = CascadeType.ALL)
     private List<Script> scripts;
 
-    @Column(name = "active", nullable = true)
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
 }

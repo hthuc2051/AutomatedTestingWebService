@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.service.serviceImpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.CustomMessages;
 import com.fpt.automatedtesting.constants.PathConstants;
@@ -24,10 +25,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +47,7 @@ public class ScriptServiceImpl implements ScriptService {
     private static final String EXTENSION_JAVA = ".java";
     private static final String EXTENSION_C = ".c";
     private static final String EXTENSION_CSharp = ".cs";
-    private static final String PREFIX_SCRIPT = "_Script_";
+    private static final String QUESTION_POINT_STR_VALUE ="questionPointStrValue";
 
     private final ScriptRepository scriptRepository;
     private final HeadLecturerRepository headLecturerRepository;
@@ -60,6 +68,7 @@ public class ScriptServiceImpl implements ScriptService {
 
     @Override
     public Boolean generateScriptTest(ScriptRequestDto dto) {
+
         HeadLecturer headLecturer = headLecturerRepository.findById(dto.getHeadLecturerId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found user with id" + dto.getHeadLecturerId()));
         Subject subject = subjectRepository.findById(dto.getSubjectId())
@@ -70,28 +79,32 @@ public class ScriptServiceImpl implements ScriptService {
             String templatePath = "";
             String scriptStorePath = "";
             String fileExtension = "";
-
+            String docsFolPath = "";
             // Select path to create and save script test by type
             switch (subject.getCode()) {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA;
                     scriptStorePath = PathConstants.PATH_SCRIPT_JAVA;
+                    docsFolPath = PathConstants.PATH_DOCS_JAVA;
                     fileExtension = EXTENSION_JAVA;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA_WEB;
                     scriptStorePath = PathConstants.PATH_SCRIPT_JAVA_WEB;
+                    docsFolPath = PathConstants.PATH_DOCS_JAVA_WEB;
                     fileExtension = EXTENSION_JAVA;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
                     templatePath = PathConstants.PATH_TEMPLATE_C_SHARP;
                     scriptStorePath = PathConstants.PATH_SCRIPT_C_SHARP;
+                    docsFolPath = PathConstants.PATH_DOCS_C_SHARP;
                     fileExtension = EXTENSION_CSharp;
 
                     break;
                 case CustomConstant.TEMPLATE_TYPE_C:
                     templatePath = PathConstants.PATH_TEMPLATE_C;
                     scriptStorePath = PathConstants.PATH_SCRIPT_C;
+                    docsFolPath = PathConstants.PATH_DOCS_C;
                     fileExtension = EXTENSION_C;
                     break;
                 default:
@@ -105,39 +118,51 @@ public class ScriptServiceImpl implements ScriptService {
             byte[] bData = FileCopyUtils.copyToByteArray(inputStream);
             String data = new String(bData, StandardCharsets.UTF_8);
 
+            ObjectMapper mapper = new ObjectMapper();
+            // [{"testcase":"testcase1", "code":"ABC"}, {"testcase":"testcase2", "code":"AB2C"}]
             String middlePart = "";
-            for (CodeDto code : dto.getQuestions()) {
-                middlePart += code.getCode().replace("'", "\"");
+            List<CodeDto> codeDtoList = Arrays.asList(mapper.readValue(dto.getQuestions(), CodeDto[].class));
+            if (codeDtoList != null && codeDtoList.size() > 0) {
+                for (CodeDto code : codeDtoList) {
+                    middlePart += code.getCode().replace(QUESTION_POINT_STR_VALUE, "\"");
+                }
             }
-
             int startIndex = data.indexOf(PREFIX_START);
             String startPart = data.substring(0, startIndex) + PREFIX_START;
             int endIndex = data.indexOf(PREFIX_END);
 
             String endPart = data.substring(endIndex, data.length());
-            String fullScript = startPart + "\n" + middlePart + "\n" + endPart;
-
-            // Write new file to Scripts_Languages folder
+            String tempScript = startPart + "\n" + middlePart + "\n" + endPart;
+            String fullScript = tempScript.replace(QUESTION_POINT_STR_VALUE, dto.getQuestionPointStr());
+            // Write new file to Scripts_[Language] folder
             Date date = new Date();
-            String scriptCode = subject.getCode() + "_" + dto.getName() + "_" + CustomUtils.getCurDateTime(date, "Date");
+            Integer hashCode = CustomUtils.getCurDateTime(date, "Date").hashCode();
+            String code = subject.getCode() + "_" + Math.abs(hashCode);
             BufferedWriter writer = new BufferedWriter(
-                    new FileWriter(scriptStorePath + scriptCode + fileExtension,
+                    new FileWriter(scriptStorePath + code + fileExtension,
                             false));
             writer.write(fullScript);
             writer.close();
             inputStream.close();
 
+            // Copy docs file to Docs_[Language] folder
+            MultipartFile docsFile = dto.getDocsFile();
+            if (docsFile != null) {
+                Path copyLocation = Paths.get(docsFolPath + File.separator + code + ".docx");
+                Files.copy(docsFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+            }
             // Save to database
             Script script = new Script();
+            script.setName(dto.getName());
             script.setHeadLecturer(headLecturer);
             script.setSubject(subject);
-            script.setCode(scriptCode);
+            script.setCode(code);
 
             script.setTimeCreated(CustomUtils.getCurDateTime(date, "Date"));
 
             // TODO:SetPath later
             script.setScriptPath("Path temp");
-
+//
             if (scriptRepository.save(script) != null) {
                 return true;
             }
