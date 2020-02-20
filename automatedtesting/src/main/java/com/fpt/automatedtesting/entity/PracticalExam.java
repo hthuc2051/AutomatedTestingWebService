@@ -25,6 +25,9 @@ public class PracticalExam {
     @Column(name = "date")
     private String date;
 
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 

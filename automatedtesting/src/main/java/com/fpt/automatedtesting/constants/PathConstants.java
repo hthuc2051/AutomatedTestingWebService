@@ -47,6 +47,9 @@ public class PathConstants {
             + File.separator
             + "ScriptTestCSharp.cs";
 
+    public static final String PATH_TEMPLATE_CSV_STUDENT_RESULT = STATIC_DIR + File.separator + "Student_Results.csv";
+    public static final String PATH_TEMPLATE_CSV_STUDENT_LIST = STATIC_DIR + File.separator + "Student_List.csv";
+
 
     // Path created practical
     public static final String PATH_PRACTICAL_EXAMS = PROJECT_DIR + File.separator + "PracticalExams";

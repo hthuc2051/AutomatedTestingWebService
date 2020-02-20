@@ -4,7 +4,6 @@ import com.fpt.automatedtesting.dto.response.ScriptResponseDto;
 import com.fpt.automatedtesting.service.ScriptService;
 import com.fpt.automatedtesting.dto.request.*;
 import com.fpt.automatedtesting.utils.UploadFile;
-import com.fpt.automatedtesting.utils.ZipFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
+import java.io.*;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -44,7 +43,7 @@ public class ScriptController {
 
     @GetMapping("/testzip")
     public String getTestZip() throws IOException {
-        ZipFile.zipFolder(null, null);
+
         return "ok";
     }
 
@@ -68,8 +67,8 @@ public class ScriptController {
 
     @GetMapping("/admin/test")
     public String testAction() throws IOException {
-        ZipFile.deleteFolder("G:\\New folder (5)\\deleted");
-        return "ok";
+
+        return "";
     }
 
 }

@@ -1,7 +1,9 @@
 package com.fpt.automatedtesting.controller;
 
 
+import com.fpt.automatedtesting.dto.request.EnrollDetailsDto;
 import com.fpt.automatedtesting.dto.request.PracticalExamRequest;
+import com.fpt.automatedtesting.dto.response.PracticalExamResponse;
 import com.fpt.automatedtesting.dto.response.StudentSubmissionDetails;
 import com.fpt.automatedtesting.entity.Action;
 import com.fpt.automatedtesting.entity.Script;
@@ -22,14 +24,11 @@ import java.util.List;
 public class PracticalExamController {
 
     private final PracticalExamService practicalExamService;
-    private final ScriptRepository scriptRepository;
-    private final ActionRepository actionRepository;
 
     @Autowired
-    public PracticalExamController(PracticalExamService practicalExamService, ScriptRepository scriptRepository, ActionRepository actionRepository) {
+    public PracticalExamController(PracticalExamService practicalExamService) {
         this.practicalExamService = practicalExamService;
-        this.scriptRepository = scriptRepository;
-        this.actionRepository = actionRepository;
+
     }
 
     @PostMapping("/practical-exam")
@@ -37,6 +36,13 @@ public class PracticalExamController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.create(dto));
+    }
+
+    @PostMapping("/practical-exam/lecturer/enroll")
+    public ResponseEntity<List<PracticalExamResponse>> getPracticalExamsByEnroll(EnrollDetailsDto dto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.getListPracticalExamByLecturer(dto));
     }
 
     @GetMapping("/templates/{id}")
@@ -50,4 +56,5 @@ public class PracticalExamController {
                 .status(HttpStatus.OK)
                 .body(practicalExamService.getListStudentInPracticalExam(id));
     }
+
 }
