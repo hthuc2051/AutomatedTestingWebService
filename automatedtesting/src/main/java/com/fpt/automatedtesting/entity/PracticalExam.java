@@ -25,8 +25,8 @@ public class PracticalExam {
     @Column(name = "date")
     private String date;
 
-    @Column(name = "status")
-    private String status;
+    @Column(name = "state")
+    private String state;
 
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
@@ -34,7 +34,7 @@ public class PracticalExam {
     @OneToMany(mappedBy = "practicalExam", cascade = CascadeType.ALL)
     private List<Submission> submissions;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "subject_class_id", referencedColumnName = "id")
     private SubjectClass subjectClass;
 

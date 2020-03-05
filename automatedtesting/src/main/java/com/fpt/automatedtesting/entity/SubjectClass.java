@@ -26,8 +26,8 @@ public class SubjectClass {
     @JoinColumn(name = "class_id", referencedColumnName = "id")
     private Class aClass;
 
-    @OneToOne(mappedBy = "subjectClass")
-    private PracticalExam practicalExam;
+    @OneToMany(mappedBy = "subjectClass",cascade = CascadeType.ALL)
+    private List<PracticalExam> practicalExams;
 
     @ManyToMany(targetEntity = Student.class, mappedBy = "subjectClasses", fetch = FetchType.LAZY)
     private List<Student> students;

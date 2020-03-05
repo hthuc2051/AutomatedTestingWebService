@@ -6,8 +6,9 @@ import static com.fpt.automatedtesting.common.CustomConstant.*;
 
 import com.fpt.automatedtesting.constants.PathConstants;
 import com.fpt.automatedtesting.dto.PracticalInfo;
-import com.fpt.automatedtesting.dto.request.EnrollDetailsDto;
 import com.fpt.automatedtesting.dto.request.PracticalExamRequest;
+import com.fpt.automatedtesting.dto.request.PracticalExamResultDto;
+import com.fpt.automatedtesting.dto.request.SubmissionDetailsDto;
 import com.fpt.automatedtesting.dto.response.PracticalExamResponse;
 import com.fpt.automatedtesting.dto.response.StudentSubmissionDetails;
 import com.fpt.automatedtesting.entity.*;
@@ -62,8 +63,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + dto.getSubjectClassId()));
         List<Student> studentList = subjectClass.getStudents();
 
-        // Fix database là lấy đc Subject
-        String practicalExamCode = PREFIX_EXAM_CODE + "_" + subjectClass.getSubject().getCode() + "_"
+
+        String practicalExamCode = PREFIX_EXAM_CODE + subjectClass.getSubject().getCode() + "_"
                 + subjectClass.getAClass().getClassCode() + "_" + dto.getDate().replace("-", "");
 
         if (studentList != null && studentList.size() > 0) {
@@ -93,6 +94,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             practicalExam.setScripts(scriptEntities);
             practicalExam.setSubmissions(submissionList);
             practicalExam.setCode(practicalExamCode);
+            practicalExam.setState(STATE_NOT_EVALUATE);
             practicalExam.setSubjectClass(subjectClass);
             practicalExam.setDate(dto.getDate());
 
@@ -102,6 +104,29 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             throw new CustomException(HttpStatus.NOT_FOUND, "No student from this class");
         }
         return true;
+    }
+
+    @Override
+    public Boolean updatePracticalExamResult(PracticalExamResultDto practicalExamResultDto) {
+        PracticalExam practicalExam = practicalExamRepository
+                .findById(practicalExamResultDto.getId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + practicalExamResultDto.getId()));
+        List<Submission> submissions = practicalExam.getSubmissions();
+        for (Submission entity : submissions) {
+            for (SubmissionDetailsDto dto : practicalExamResultDto.getSubmissions()) {
+                if (entity.getId() == dto.getId()) {
+                    entity.setPoint(dto.getPoint());
+                    entity.setSubmitPath(dto.getSubmitPath());
+                    entity.setTimeSubmitted(dto.getTimeSubmitted());
+                }
+            }
+        }
+        practicalExam.setState(practicalExamResultDto.getState());
+
+        if (practicalExamRepository.saveAndFlush(practicalExam) == null) {
+            throw new CustomException(HttpStatus.CONFLICT, "Cannot update practical exam submission with id:" + practicalExamResultDto.getId());
+        }
+        return false;
     }
 
     private String getScriptCodeRandom(List<Script> scripts) {
@@ -149,8 +174,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             for (int i = 0; i < submissionList.size(); i++) {
                 Submission submission = submissionList.get(i);
                 Student student = submission.getStudent();
-                rowsStudentsList.add(Arrays.asList(String.valueOf(i + 1), student.getCode(), student.getName(), submission.getScriptCode()));
-                rowsStudentsResult.add(Arrays.asList(String.valueOf(i + 1), student.getCode(), student.getName()));
+                rowsStudentsList.add(Arrays.asList(String.valueOf(i + 1), student.getCode().trim(), student.getName().trim(), submission.getScriptCode().trim()));
+                rowsStudentsResult.add(Arrays.asList(String.valueOf(i + 1), student.getCode().trim(), student.getName().trim()));
             }
             writeDataToCSVFile(practicalFol.getAbsolutePath() + File.separator + "Student_List.csv", rowsStudentsList);
             writeDataToCSVFile(practicalFol.getAbsolutePath() + File.separator + "Student_Results.csv", rowsStudentsResult);
@@ -180,7 +205,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         Files.copy(sourceDocPath, targetDocPath);
                         examCode = PREFIX_EXAM_CODE + script.getSubject().getCode();
                     }
-
 
                     //copy server
                     File sourceServerPath = new File(PathConstants.PATH_SERVER_JAVA_WEB);
@@ -263,18 +287,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
-    public List<PracticalExamResponse> getListPracticalExamByLecturer(EnrollDetailsDto dto) {
-        if (dto == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "No details for Enroll obj");
-        }
-
-        User user = userRepository.findByUsernameAndPasswordAndActiveIsTrue(dto.getUsername(), dto.getPassword());
-        if (user == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Not found user");
-        }
-        Lecturer lecturer = lecturerRepository.findByUserAndActiveIsTrue(user);
+    public List<PracticalExamResponse> getListPracticalExamByLecturer(String enrollKey) {
+        Lecturer lecturer = lecturerRepository.findByEnrollKeyAndActiveIsTrue(enrollKey);
         if (lecturer == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Not found lecturer");
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found lecturer for key enroll " + enrollKey);
         }
 
         List<PracticalExamResponse> result = null;
@@ -282,12 +298,13 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         if (subjectClassList != null && subjectClassList.size() > 0) {
             result = new ArrayList<>();
             for (SubjectClass subjectClass : subjectClassList) {
-                PracticalExam practicalExam = subjectClass.getPracticalExam();
-                if (practicalExam != null) {
-                    PracticalExamResponse response = MapperManager.map(practicalExam, PracticalExamResponse.class);
-                    response.setSubjectCode(subjectClass.getSubject().getCode());
-                    if (response != null) {
-                        result.add(response);
+                List<PracticalExam> practicalExams = subjectClass.getPracticalExams();
+                if (practicalExams != null && practicalExams.size() > 0) {
+                    result = MapperManager.mapAll(practicalExams, PracticalExamResponse.class);
+                    if (result != null) {
+                        for (PracticalExamResponse practicalExamDto : result) {
+                            practicalExamDto.setSubjectCode(subjectClass.getSubject().getCode());
+                        }
                     }
                 }
             }

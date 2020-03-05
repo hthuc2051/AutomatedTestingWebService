@@ -23,5 +23,9 @@ public class CustomConstant {
     public static final String COLUMN_TOTAL_POINT = "Total point";
     public static final String COLUMN_ERROR = "Error";
 
+    public static final String STATE_NOT_EVALUATE = "NOT_EVALUATE";
+    public static final String STATE_EVALUATE = "EVALUATE";
+    public static final String STATE_ERROR = "ERROR";
+
 
 }

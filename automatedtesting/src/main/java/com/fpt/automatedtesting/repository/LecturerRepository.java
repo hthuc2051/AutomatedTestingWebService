@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LecturerRepository extends JpaRepository<Lecturer, Integer> {
     Lecturer findByUserAndActiveIsTrue(User user);
+    Lecturer findByEnrollKeyAndActiveIsTrue(String enrollKey);
 }

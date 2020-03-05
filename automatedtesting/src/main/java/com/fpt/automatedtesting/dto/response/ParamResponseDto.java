@@ -10,8 +10,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParamResponseDto implements Serializable {
-
     String name;
     String type;
-
 }
