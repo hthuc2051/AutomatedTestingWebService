@@ -13,7 +13,7 @@ import java.sql.Date;
 public class Param {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

@@ -33,6 +33,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+
+//TODO:Log file lại toàn bộ
+
 @Service
 public class PracticalExamServiceImpl implements PracticalExamService {
 
@@ -59,7 +62,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     public Boolean create(PracticalExamRequest dto) {
 
         SubjectClass subjectClass = subjectClassRepository
-                .findById(dto.getSubjectClassId())
+                .findByIdAndActiveIsTrue(dto.getSubjectClassId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + dto.getSubjectClassId()));
         List<Student> studentList = subjectClass.getStudents();
 
@@ -73,8 +76,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             if (listScriptId != null && listScriptId.size() > 0) {
                 scriptEntities = new ArrayList<>();
                 for (Integer id : listScriptId) {
-                    Script scriptEntity = scriptRepository.findById(id)
-                            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script " + id));
+                    Script scriptEntity = scriptRepository.findByIdAndActiveIsTrue(id)
+                            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script for Id: " + id));
                     scriptEntities.add(scriptEntity);
                 }
             }
@@ -109,7 +112,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     @Override
     public Boolean updatePracticalExamResult(PracticalExamResultDto practicalExamResultDto) {
         PracticalExam practicalExam = practicalExamRepository
-                .findById(practicalExamResultDto.getId())
+                .findByIdAndActiveIsTrue(practicalExamResultDto.getId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + practicalExamResultDto.getId()));
         List<Submission> submissions = practicalExam.getSubmissions();
         for (Submission entity : submissions) {
@@ -141,7 +144,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     public void downloadPracticalTemplate(Integer practicalExamId, HttpServletResponse response) {
         String examCode = "";
         PracticalExam practicalExam = practicalExamRepository.
-                findById(practicalExamId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
+                findByIdAndActiveIsTrue(practicalExamId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for Id:" + practicalExamId));
 
         // Create practical folder
         File practicalFol = new File(PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExam.getCode());
@@ -153,7 +157,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             File submissionFol = new File(practicalFol.getAbsolutePath() + File.separator + "Submissions");
             check = submissionFol.mkdir();
             if (!check) {
-                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
+                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Please try later");
             }
             List<Student> students = practicalExam.getSubjectClass().getStudents();
             if (students == null) {
@@ -186,7 +190,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             boolean checkScriptFolCreated = scriptFol.mkdir();
             boolean checkDocFolCreate = docsFol.mkdir();
             if (!checkScriptFolCreated || !checkDocFolCreate) {
-                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Try later");
+                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Please try later");
             }
             //copy source to target using Files Class
             try {
@@ -228,15 +232,14 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 throw new CustomException(HttpStatus.CONFLICT, "Path incorrect");
             }
 
+            // Zip folder
             try {
-                // Zip folder
                 ZipFile.zipFolder(practicalFol.getAbsolutePath(), practicalFol.getAbsolutePath());
                 downloadTemplate(response, practicalExam.getCode());
-
             } catch (FileNotFoundException e) {
-                throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+                throw new CustomException(HttpStatus.CONFLICT, "Cannot download practical exam ! Please try later");
             } catch (IOException e) {
-                throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+                throw new CustomException(HttpStatus.CONFLICT, "Cannot download practical exam ! Please try later");
             }
         }
     }
@@ -257,6 +260,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             w.close();
         } catch (IOException e) {
             e.printStackTrace();
+            throw new CustomException(HttpStatus.CONFLICT, "Cannot download practical exam ! Please try later");
         }
     }
 
@@ -265,9 +269,9 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
         List<StudentSubmissionDetails> result = null;
         PracticalExam practicalExamEntity = practicalExamRepository
-                .findById(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam"));
-        List<Submission> submissionList = submissionRepository.findAllByPracticalExam(practicalExamEntity);
+                .findByIdAndActiveIsTrue(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for Id" + id));
+        List<Submission> submissionList = submissionRepository.findAllByPracticalExamActiveIsTrue(practicalExamEntity);
         if (submissionList != null && submissionList.size() > 0) {
             result = new ArrayList<>();
             for (Submission submission : submissionList) {

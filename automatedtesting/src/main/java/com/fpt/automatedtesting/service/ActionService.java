@@ -10,5 +10,5 @@ public interface ActionService {
     ActionResponseDto insert(ActionRequestDto dto);
     ActionResponseDto update(ActionRequestDto dto);
     ActionResponseDto findById(int id);
-    boolean delete(int id);
+    String delete(int id);
 }

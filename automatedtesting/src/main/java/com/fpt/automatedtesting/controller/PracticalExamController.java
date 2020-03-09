@@ -35,7 +35,7 @@ public class PracticalExamController {
                 .body(practicalExamService.create(dto));
     }
     @PutMapping("/practical-exam/result")
-    public ResponseEntity<Boolean> create(@RequestBody PracticalExamResultDto dto) {
+    public ResponseEntity<Boolean> updateResult(@RequestBody PracticalExamResultDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.updatePracticalExamResult(dto));

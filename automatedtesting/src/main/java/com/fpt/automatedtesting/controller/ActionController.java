@@ -45,7 +45,7 @@ public class ActionController {
     }
 
     @DeleteMapping("/actions/{id}")
-    public ResponseEntity<Boolean> deleteAction(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.delete(id));
