@@ -17,4 +17,6 @@ public class ActionRequestDto implements Serializable {
     private String code;
     private List<ParamRequestDto> params;
     private Integer adminId;
+    private int subjectId;
+    private boolean active;
 }
