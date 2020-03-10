@@ -103,9 +103,8 @@ public class ActionServiceImpl implements ActionService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
         List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject);
         List<ActionResponseDto> response = MapperManager.mapAll(actions,ActionResponseDto.class);
-        response.forEach(element -> element.setSubject(subject.getName()));
+        response.forEach(element -> element.setSubjectId(subjectId));
         return response;
-
     }
 
     @Override
