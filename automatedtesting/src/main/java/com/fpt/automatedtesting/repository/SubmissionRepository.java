@@ -6,11 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, Integer> {
-    List<Submission> findAllByPracticalExamAndPracticalExamIsTrue(PracticalExam practicalExam);
+    List<Submission> findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(PracticalExam practicalExam,Boolean active);
 //    Optional<Submission> findByIdAndActiveIsTrue(Integer id);
 //    List<Submission> findAllByActiveIsTrue();
 }
