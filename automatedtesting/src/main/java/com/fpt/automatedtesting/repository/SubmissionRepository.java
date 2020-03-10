@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, Integer> {
-    List<Submission> findAllByPracticalExamActiveIsTrue(PracticalExam practicalExam);
-    Optional<Submission> findByIdAndActiveIsTrue(Integer id);
-    List<Submission> findAllByActiveIsTrue();
+    List<Submission> findAllByPracticalExamAndPracticalExamIsTrue(PracticalExam practicalExam);
+//    Optional<Submission> findByIdAndActiveIsTrue(Integer id);
+//    List<Submission> findAllByActiveIsTrue();
 }

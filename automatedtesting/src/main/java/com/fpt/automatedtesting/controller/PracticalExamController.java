@@ -25,7 +25,6 @@ public class PracticalExamController {
     @Autowired
     public PracticalExamController(PracticalExamService practicalExamService) {
         this.practicalExamService = practicalExamService;
-
     }
 
     @PostMapping("/practical-exam")
