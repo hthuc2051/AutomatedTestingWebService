@@ -16,5 +16,6 @@ public class ActionResponseDto implements Serializable {
     private String name;
     private String code;
     private List<ParamResponseDto> params;
+    private String subject;
 
 }

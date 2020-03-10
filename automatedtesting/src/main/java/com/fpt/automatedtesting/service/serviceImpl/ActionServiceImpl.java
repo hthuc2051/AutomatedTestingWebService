@@ -97,6 +97,18 @@ public class ActionServiceImpl implements ActionService {
     }
 
     @Override
+    public List<ActionResponseDto> getAllActionBySubject(int subjectId) {
+        Subject subject = subjectRepository
+                .findByIdAndActiveIsTrue(subjectId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
+        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject);
+        List<ActionResponseDto> response = MapperManager.mapAll(actions,ActionResponseDto.class);
+        response.forEach(element -> element.setSubject(subject.getName()));
+        return response;
+
+    }
+
+    @Override
     public String delete(int id) {
         Action action = actionRepository
                 .findByIdAndActiveIsTrue(id)

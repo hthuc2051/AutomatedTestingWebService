@@ -30,6 +30,13 @@ public class ActionController {
                 .body(actionService.getAll());
     }
 
+    @GetMapping("/actions/subjects/{id}")
+    public ResponseEntity<List<ActionResponseDto>> getAllActionsBySubject(int subjectId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(actionService.getAllActionBySubject(subjectId));
+    }
+
     @PostMapping("/actions")
     public ResponseEntity<ActionResponseDto> insertNewActions(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
