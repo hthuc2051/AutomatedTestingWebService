@@ -271,7 +271,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         PracticalExam practicalExamEntity = practicalExamRepository
                 .findByIdAndActiveIsTrue(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for Id" + id));
-        List<Submission> submissionList = submissionRepository.findAllByPracticalExamAndPracticalExamIsTrue(practicalExamEntity);
+        List<Submission> submissionList = submissionRepository.findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(practicalExamEntity,true);
         if (submissionList != null && submissionList.size() > 0) {
             result = new ArrayList<>();
             for (Submission submission : submissionList) {

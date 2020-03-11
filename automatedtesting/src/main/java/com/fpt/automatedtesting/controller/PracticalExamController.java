@@ -1,11 +1,15 @@
 package com.fpt.automatedtesting.controller;
 
 
-import com.fpt.automatedtesting.dto.request.EnrollDetailsDto;
 import com.fpt.automatedtesting.dto.request.PracticalExamRequest;
 import com.fpt.automatedtesting.dto.request.PracticalExamResultDto;
 import com.fpt.automatedtesting.dto.response.PracticalExamResponse;
 import com.fpt.automatedtesting.dto.response.StudentSubmissionDetails;
+import com.fpt.automatedtesting.entity.PracticalExam;
+import com.fpt.automatedtesting.entity.Submission;
+import com.fpt.automatedtesting.exception.CustomException;
+import com.fpt.automatedtesting.repository.PracticalExamRepository;
+import com.fpt.automatedtesting.repository.SubmissionRepository;
 import com.fpt.automatedtesting.service.PracticalExamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,10 +25,14 @@ import java.util.List;
 public class PracticalExamController {
 
     private final PracticalExamService practicalExamService;
+    private final SubmissionRepository submissionRepository;
+    private final PracticalExamRepository practicalExamRepository;
 
     @Autowired
-    public PracticalExamController(PracticalExamService practicalExamService) {
+    public PracticalExamController(PracticalExamService practicalExamService, SubmissionRepository submissionRepository, SubmissionRepository submissionRepository1, PracticalExamRepository practicalExamRepository) {
         this.practicalExamService = practicalExamService;
+        this.submissionRepository = submissionRepository1;
+        this.practicalExamRepository = practicalExamRepository;
     }
 
     @PostMapping("/practical-exam")
@@ -59,4 +67,12 @@ public class PracticalExamController {
                 .body(practicalExamService.getListStudentInPracticalExam(id));
     }
 
+    @GetMapping("/practical-exam/test/{id}")
+    public ResponseEntity<List<StudentSubmissionDetails>> test(@PathVariable Integer id) {
+        PracticalExam practicalExamEntity = practicalExamRepository
+                .findByIdAndActiveIsTrue(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for Id: " + id));
+        List<Submission> submissionList = submissionRepository.findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(practicalExamEntity,true);
+        return null;
+    }
 }
