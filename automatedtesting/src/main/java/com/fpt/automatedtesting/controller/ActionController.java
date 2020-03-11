@@ -30,8 +30,8 @@ public class ActionController {
                 .body(actionService.getAll());
     }
 
-    @GetMapping("/actions/subjects/{id}")
-    public ResponseEntity<List<ActionResponseDto>> getAllActionsBySubject(int subjectId) {
+    @GetMapping("/actions/subjects/{subjectId}")
+    public ResponseEntity<List<ActionResponseDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionBySubject(subjectId));
