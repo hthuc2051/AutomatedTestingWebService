@@ -41,6 +41,12 @@ public class PracticalExamController {
                 .status(HttpStatus.OK)
                 .body(practicalExamService.create(dto));
     }
+    @PutMapping("/practical-exam")
+    public ResponseEntity<Boolean> update(@RequestBody PracticalExamRequest dto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.create(dto));
+    }
     @PutMapping("/practical-exam/result")
     public ResponseEntity<Boolean> updateResult(@RequestBody PracticalExamResultDto dto) {
         return ResponseEntity
@@ -53,6 +59,13 @@ public class PracticalExamController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.getListPracticalExamByLecturer(enrollKey));
+    }
+
+    @GetMapping("/subjects/{id}/practical-exams")
+    public ResponseEntity<List<PracticalExamResponse>> getPracticalExamsOfSubject(@PathVariable Integer id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.getPracticalExamsOfSubject(id));
     }
 
     @GetMapping("/templates/{id}")

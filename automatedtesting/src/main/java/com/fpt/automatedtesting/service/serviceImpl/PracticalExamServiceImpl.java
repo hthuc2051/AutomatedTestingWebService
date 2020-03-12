@@ -47,15 +47,17 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     private final UserRepository userRepository;
     private final SubjectClassRepository subjectClassRepository;
     private final LecturerRepository lecturerRepository;
+    private final SubjectRepository subjectRepository;
 
     @Autowired
-    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, LecturerRepository lecturerRepository) {
+    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, LecturerRepository lecturerRepository, SubjectRepository subjectRepository) {
         this.practicalExamRepository = practicalExamRepository;
         this.scriptRepository = scriptRepository;
         this.submissionRepository = submissionRepository;
         this.userRepository = userRepository;
         this.subjectClassRepository = subjectClassRepository;
         this.lecturerRepository = lecturerRepository;
+        this.subjectRepository = subjectRepository;
     }
 
     @Override
@@ -271,7 +273,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         PracticalExam practicalExamEntity = practicalExamRepository
                 .findByIdAndActiveIsTrue(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for Id" + id));
-        List<Submission> submissionList = submissionRepository.findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(practicalExamEntity,true);
+        List<Submission> submissionList = submissionRepository.findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(practicalExamEntity, true);
         if (submissionList != null && submissionList.size() > 0) {
             result = new ArrayList<>();
             for (Submission submission : submissionList) {
@@ -286,6 +288,34 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
                 result.add(dto);
             }
+        }
+        return result;
+    }
+
+    @Override
+    public List<PracticalExamResponse> getPracticalExamsOfSubject(Integer id) {
+
+        Subject subject = subjectRepository
+                .findByIdAndActiveIsTrue(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found subject for Id:" + id));
+        List<PracticalExamResponse> result = null;
+        List<SubjectClass> subjectClassList = subject.getSubjectClasses();
+        if (subjectClassList != null && subjectClassList.size() > 0) {
+            result = new ArrayList<>();
+            for (SubjectClass subjectClass : subjectClassList) {
+                List<PracticalExam> practicalExams = subjectClass.getPracticalExams();
+                if (practicalExams != null && practicalExams.size() > 0) {
+                    result = MapperManager.mapAll(practicalExams, PracticalExamResponse.class);
+                    if (result != null) {
+                        for (PracticalExamResponse practicalExamDto : result) {
+                            practicalExamDto.setSubjectCode(subject.getCode());
+                            practicalExamDto.setSubjectId(subject.getId());
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found subject class for lecturer");
         }
         return result;
     }

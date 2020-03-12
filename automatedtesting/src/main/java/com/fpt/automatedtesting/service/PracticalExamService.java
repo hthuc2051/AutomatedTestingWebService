@@ -19,5 +19,6 @@ public interface PracticalExamService {
 
     List<StudentSubmissionDetails> getListStudentInPracticalExam(Integer id);
 
+    List<PracticalExamResponse> getPracticalExamsOfSubject(Integer id);
     List<PracticalExamResponse> getListPracticalExamByLecturer(String enrollKey);
 }

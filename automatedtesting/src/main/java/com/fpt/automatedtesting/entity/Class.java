@@ -25,4 +25,5 @@ public class Class {
 
     @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL)
     private List<SubjectClass> subjectClasses;
+
 }
