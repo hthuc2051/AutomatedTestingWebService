@@ -9,12 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScriptRequestDto {
-
+    private int id;
     private String name;
     private String questionPointStr;
     private String questions;
     private Integer headLecturerId;
     private Integer subjectId;
     private MultipartFile docsFile;
-
 }

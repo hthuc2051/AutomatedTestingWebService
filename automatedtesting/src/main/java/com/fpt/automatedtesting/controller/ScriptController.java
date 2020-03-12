@@ -7,6 +7,7 @@ import com.fpt.automatedtesting.utils.UploadFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,14 @@ public class ScriptController {
     public ResponseEntity<Boolean> create(@ModelAttribute ScriptRequestDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));
     }
-
+    @PutMapping("/scripts")
+    public ResponseEntity<Boolean> update(@ModelAttribute ScriptRequestDto scriptDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.updateScriptTest(scriptDto));
+    }
+    @DeleteMapping("/scripts/{id}")
+    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.deleteScript(id));
+    }
 
     @GetMapping("/testzip")
     public String getTestZip() throws IOException {

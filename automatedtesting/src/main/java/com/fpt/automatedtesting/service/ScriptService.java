@@ -10,5 +10,6 @@ public interface ScriptService {
     List<ScriptResponseDto> getAll();
     Boolean generateScriptTest(ScriptRequestDto dto);
     void downloadFile(HttpServletResponse response);
-
+    Boolean deleteScript(Integer scriptId);
+    Boolean updateScriptTest(ScriptRequestDto dto);
 }
