@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.controller;
 
+import com.fpt.automatedtesting.constants.PathConstants;
 import com.fpt.automatedtesting.dto.response.ScriptResponseDto;
 import com.fpt.automatedtesting.service.ScriptService;
 import com.fpt.automatedtesting.dto.request.*;
@@ -7,6 +8,7 @@ import com.fpt.automatedtesting.utils.UploadFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,5 +72,15 @@ public class ScriptController {
 
         return "";
     }
+
+    @PostMapping("/upload_template")
+    public String uploadTemplateExam(@ModelAttribute UploadFileDto2 file) throws IOException {
+        {
+            UploadFile.uploadTemplate(file);
+        }
+
+        return "ok";
+    }
+
 
 }
