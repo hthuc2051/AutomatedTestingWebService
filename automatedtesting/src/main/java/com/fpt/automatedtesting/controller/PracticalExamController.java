@@ -61,7 +61,7 @@ public class PracticalExamController {
                 .body(practicalExamService.getListPracticalExamByLecturer(enrollKey));
     }
 
-    @GetMapping("/subjects/{id}/practical-exams")
+    @GetMapping("/subjects/{id}/practical-exam")
     public ResponseEntity<List<PracticalExamResponse>> getPracticalExamsOfSubject(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)

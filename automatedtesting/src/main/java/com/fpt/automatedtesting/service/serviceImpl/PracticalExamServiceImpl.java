@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,49 +62,56 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
+    @Transactional
     public Boolean create(PracticalExamRequest dto) {
+        List<PracticalExam> saveEntities = null;
+        List<Integer> subjectClassesId = dto.getSubjectClasses();
+        if (subjectClassesId != null && subjectClassesId.size() > 0) {
+            saveEntities = new ArrayList<>();
+            for (Integer subjectClassId : subjectClassesId) {
+                SubjectClass subjectClass = subjectClassRepository
+                        .findByIdAndActiveIsTrue(subjectClassId)
+                        .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + subjectClassId));
+                List<Student> studentList = subjectClass.getStudents();
 
-        SubjectClass subjectClass = subjectClassRepository
-                .findByIdAndActiveIsTrue(dto.getSubjectClassId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + dto.getSubjectClassId()));
-        List<Student> studentList = subjectClass.getStudents();
+                String practicalExamCode = PREFIX_EXAM_CODE + subjectClass.getSubject().getCode() + "_"
+                        + subjectClass.getAClass().getClassCode() + "_" + dto.getDate().replace("-", "");
 
+                if (studentList != null && studentList.size() > 0) {
+                    List<Script> scriptEntities = null;
+                    List<Integer> listScriptId = dto.getListScripts();
+                    if (listScriptId != null && listScriptId.size() > 0) {
+                        scriptEntities = new ArrayList<>();
+                        for (Integer id : listScriptId) {
+                            Script scriptEntity = scriptRepository.findByIdAndActiveIsTrue(id)
+                                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script for Id: " + id));
+                            scriptEntities.add(scriptEntity);
+                        }
+                    }
 
-        String practicalExamCode = PREFIX_EXAM_CODE + subjectClass.getSubject().getCode() + "_"
-                + subjectClass.getAClass().getClassCode() + "_" + dto.getDate().replace("-", "");
+                    PracticalExam practicalExam = MapperManager.map(dto, PracticalExam.class);
+                    List<Submission> submissionList = new ArrayList<>();
 
-        if (studentList != null && studentList.size() > 0) {
-            List<Script> scriptEntities = null;
-            List<Integer> listScriptId = dto.getListScripts();
-            if (listScriptId != null && listScriptId.size() > 0) {
-                scriptEntities = new ArrayList<>();
-                for (Integer id : listScriptId) {
-                    Script scriptEntity = scriptRepository.findByIdAndActiveIsTrue(id)
-                            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script for Id: " + id));
-                    scriptEntities.add(scriptEntity);
+                    for (Student student : studentList) {
+                        Submission submission = new Submission();
+                        submission.setStudent(student);
+                        submission.setPracticalExam(practicalExam);
+                        submission.setActive(true);
+                        submission.setScriptCode(getScriptCodeRandom(scriptEntities));
+                        submissionList.add(submission);
+                    }
+
+                    practicalExam.setScripts(scriptEntities);
+                    practicalExam.setSubmissions(submissionList);
+                    practicalExam.setCode(practicalExamCode);
+                    practicalExam.setState(STATE_NOT_EVALUATE);
+                    practicalExam.setSubjectClass(subjectClass);
+                    practicalExam.setDate(dto.getDate());
+                    saveEntities.add(practicalExam);
                 }
             }
 
-            PracticalExam practicalExam = MapperManager.map(dto, PracticalExam.class);
-            List<Submission> submissionList = new ArrayList<>();
-
-            for (Student student : studentList) {
-                Submission submission = new Submission();
-                submission.setStudent(student);
-                submission.setPracticalExam(practicalExam);
-                submission.setActive(true);
-                submission.setScriptCode(getScriptCodeRandom(scriptEntities));
-                submissionList.add(submission);
-            }
-
-            practicalExam.setScripts(scriptEntities);
-            practicalExam.setSubmissions(submissionList);
-            practicalExam.setCode(practicalExamCode);
-            practicalExam.setState(STATE_NOT_EVALUATE);
-            practicalExam.setSubjectClass(subjectClass);
-            practicalExam.setDate(dto.getDate());
-
-            practicalExamRepository.saveAndFlush(practicalExam);
+            practicalExamRepository.saveAll(saveEntities);
 
         } else {
             throw new CustomException(HttpStatus.NOT_FOUND, "No student from this class");

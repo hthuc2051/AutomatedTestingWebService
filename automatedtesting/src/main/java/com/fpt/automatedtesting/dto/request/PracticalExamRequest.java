@@ -14,6 +14,7 @@ public class PracticalExamRequest implements Serializable {
 
     private Integer id;
     private List<Integer> listScripts;
-    private Integer subjectClassId;
+    private List<Integer> subjectClasses;
     private String date;
+
 }
