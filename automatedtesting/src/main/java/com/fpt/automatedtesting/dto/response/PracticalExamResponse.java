@@ -16,6 +16,7 @@ public class PracticalExamResponse implements Serializable {
     private String date;
     private String subjectCode;
     private Integer subjectId;
+    private String classCode;
     private String state;
 
 }

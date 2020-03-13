@@ -63,7 +63,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
     @Override
     @Transactional
-    public Boolean create(PracticalExamRequest dto) {
+    public String create(PracticalExamRequest dto) {
         List<PracticalExam> saveEntities = null;
         List<Integer> subjectClassesId = dto.getSubjectClasses();
         if (subjectClassesId != null && subjectClassesId.size() > 0) {
@@ -107,16 +107,19 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                     practicalExam.setState(STATE_NOT_EVALUATE);
                     practicalExam.setSubjectClass(subjectClass);
                     practicalExam.setDate(dto.getDate());
+                    practicalExam.setActive(true);
                     saveEntities.add(practicalExam);
                 }
             }
 
-            practicalExamRepository.saveAll(saveEntities);
-
+            List<PracticalExam> result = practicalExamRepository.saveAll(saveEntities);
+            if (result == null) {
+                return "Create practical exam failed";
+            }
         } else {
             throw new CustomException(HttpStatus.NOT_FOUND, "No student from this class");
         }
-        return true;
+        return "Create practical exam successfully";
     }
 
     @Override
@@ -254,6 +257,19 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         }
     }
 
+    @Override
+    public String delete(Integer id) {
+        PracticalExam entity = practicalExamRepository
+                .findByIdAndActiveIsTrue(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
+        entity.setActive(false);
+        PracticalExam result = practicalExamRepository.save(entity);
+        if (result == null) {
+            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
+        }
+        return "Delete practical exam successfully";
+    }
+
     private void writeDataToCSVFile(String filePath, List<List<String>> data) {
         try {
             OutputStream os = new FileOutputStream(filePath);
@@ -355,6 +371,35 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         }
         return result;
     }
+
+    @Override
+    public List<PracticalExamResponse> getPracticalExamsOfLecturer(Integer id) {
+        Lecturer lecturer = lecturerRepository
+                .findByIdAndActiveIsTrue(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found lecturer for Id:" + id));
+
+        List<PracticalExamResponse> result = null;
+        List<SubjectClass> subjectClassList = lecturer.getSubjectClasses();
+        if (subjectClassList != null && subjectClassList.size() > 0) {
+            result = new ArrayList<>();
+            for (SubjectClass subjectClass : subjectClassList) {
+                List<PracticalExam> practicalExams = subjectClass.getPracticalExams();
+                if (practicalExams != null && practicalExams.size() > 0) {
+                    result = MapperManager.mapAll(practicalExams, PracticalExamResponse.class);
+                    if (result != null) {
+                        for (PracticalExamResponse practicalExamDto : result) {
+                            practicalExamDto.setClassCode(subjectClass.getAClass().getClassCode());
+                            practicalExamDto.setSubjectCode(subjectClass.getSubject().getCode());
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found subject class for lecturer");
+        }
+        return result;
+    }
+
 
     private void downloadTemplate(HttpServletResponse response, String practicalExamCode) {
         // Download

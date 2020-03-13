@@ -36,17 +36,27 @@ public class PracticalExamController {
     }
 
     @PostMapping("/practical-exam")
-    public ResponseEntity<Boolean> create(@RequestBody PracticalExamRequest dto) {
+    public ResponseEntity<String> create(@RequestBody PracticalExamRequest dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.create(dto));
     }
+
     @PutMapping("/practical-exam")
-    public ResponseEntity<Boolean> update(@RequestBody PracticalExamRequest dto) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(practicalExamService.create(dto));
+    public ResponseEntity<String> update(@RequestBody PracticalExamRequest dto) {
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(practicalExamService.create(dto));
+        return null;
     }
+
+    @DeleteMapping("/practical-exam/{id}")
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
+                return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.delete(id));
+    }
+
     @PutMapping("/practical-exam/result")
     public ResponseEntity<Boolean> updateResult(@RequestBody PracticalExamResultDto dto) {
         return ResponseEntity
@@ -68,6 +78,16 @@ public class PracticalExamController {
                 .body(practicalExamService.getPracticalExamsOfSubject(id));
     }
 
+    @GetMapping("/lecturers/{id}/practical-exam")
+    public ResponseEntity<List<PracticalExamResponse>> getPracticalExamsOfLecturer(@PathVariable Integer id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.getPracticalExamsOfLecturer(id));
+    }
+
+
+
+
     @GetMapping("/templates/{id}")
     public void downLoadImportFile(@PathVariable Integer id, HttpServletResponse response) {
         practicalExamService.downloadPracticalTemplate(id, response);
@@ -85,7 +105,7 @@ public class PracticalExamController {
         PracticalExam practicalExamEntity = practicalExamRepository
                 .findByIdAndActiveIsTrue(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for Id: " + id));
-        List<Submission> submissionList = submissionRepository.findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(practicalExamEntity,true);
+        List<Submission> submissionList = submissionRepository.findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(practicalExamEntity, true);
         return null;
     }
 }

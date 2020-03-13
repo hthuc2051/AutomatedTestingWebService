@@ -11,14 +11,18 @@ import java.util.List;
 
 public interface PracticalExamService {
 
-    Boolean create(PracticalExamRequest dto);
+    String create(PracticalExamRequest dto);
 
     Boolean updatePracticalExamResult(PracticalExamResultDto dto);
 
     void downloadPracticalTemplate(Integer id, HttpServletResponse response);
 
+    String delete(Integer id);
+
     List<StudentSubmissionDetails> getListStudentInPracticalExam(Integer id);
 
     List<PracticalExamResponse> getPracticalExamsOfSubject(Integer id);
     List<PracticalExamResponse> getListPracticalExamByLecturer(String enrollKey);
+    List<PracticalExamResponse> getPracticalExamsOfLecturer(Integer id);
+
 }
