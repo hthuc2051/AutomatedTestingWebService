@@ -1,6 +1,8 @@
 package com.fpt.automatedtesting.scripts;
 
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
+import com.fpt.automatedtesting.common.ExcelFileDto;
+import com.fpt.automatedtesting.common.ImportExcelFile;
 import com.fpt.automatedtesting.practicalexams.dtos.UploadFileDto;
 import com.fpt.automatedtesting.common.UploadFile;
 import com.fpt.automatedtesting.scripts.dtos.ScriptRequestDto;
@@ -63,6 +65,13 @@ public class ScriptController {
     @PostMapping("/upload")
     public String uploadFile(@ModelAttribute UploadFileDto file) throws IOException {
         UploadFile.uploadFile(file);
+        return "ok";
+    }
+
+
+    @PutMapping("/upload_excel")
+    public String importExcelFile(@ModelAttribute ExcelFileDto excelDto) throws IOException {
+        List<?> listReturn = ImportExcelFile.importExcelFileByRole(excelDto);
         return "ok";
     }
 
