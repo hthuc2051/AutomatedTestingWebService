@@ -35,6 +35,10 @@ public class ScriptController {
     public ResponseEntity<List<ScriptResponseDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.getAll());
     }
+    @GetMapping("/scripts/{subjectId}")
+    public ResponseEntity<List<ScriptResponseDto>> getScriptBySubjectId(@PathVariable Integer subjectId) {
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.getAll());
+    }
 
     @PostMapping("/scripts")
     public ResponseEntity<Boolean> create(@ModelAttribute ScriptRequestDto scriptDto) {

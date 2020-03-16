@@ -13,6 +13,6 @@ public class ScriptResponseDto {
 
     private Integer id;
     private Date timeCreated;
-    private String scriptPath;
+    private String scriptCode;
 
 }

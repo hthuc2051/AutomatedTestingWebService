@@ -18,7 +18,6 @@ import com.fpt.automatedtesting.repository.SubjectRepository;
 import com.fpt.automatedtesting.service.ScriptService;
 import com.fpt.automatedtesting.utils.CustomUtils;
 import com.fpt.automatedtesting.utils.ZipFile;
-import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -66,6 +65,12 @@ public class ScriptServiceImpl implements ScriptService {
     public List<ScriptResponseDto> getAll() {
         List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAll(), ScriptResponseDto.class);
         return result;
+    }
+
+    @Override
+    public List<ScriptResponseDto> getScriptTestBySubjectId(Integer subjectId) {
+        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAll(), ScriptResponseDto.class);
+return null;
     }
 
     @Override
