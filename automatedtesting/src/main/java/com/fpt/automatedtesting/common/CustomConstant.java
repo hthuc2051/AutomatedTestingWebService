@@ -27,5 +27,8 @@ public class CustomConstant {
     public static final String STATE_EVALUATE = "EVALUATE";
     public static final String STATE_ERROR = "ERROR";
 
+    public static final String HEAD_LECTURER ="HEAD LECTURER";
+    public static final String LECTURER ="LECTURER";
+
 
 }
