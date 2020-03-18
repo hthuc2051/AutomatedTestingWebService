@@ -3,10 +3,12 @@ package com.fpt.automatedtesting.scripts;
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.common.ExcelFileDto;
 import com.fpt.automatedtesting.common.ImportExcelFile;
+import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamTemplateDto;
 import com.fpt.automatedtesting.practicalexams.dtos.UploadFileDto;
 import com.fpt.automatedtesting.common.UploadFile;
 import com.fpt.automatedtesting.scripts.dtos.ScriptRequestDto;
 import com.fpt.automatedtesting.scripts.dtos.ScriptResponseDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,5 +93,14 @@ public class ScriptController {
 
         return "";
     }
+
+    @PostMapping("/upload_template")
+    public String uploadTemplateExam(@ModelAttribute PracticalExamTemplateDto file) throws IOException {
+        {
+            UploadFile.uploadTemplate(file);
+        }
+        return "ok";
+    }
+
 
 }

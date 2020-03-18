@@ -8,8 +8,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UploadFileDto {
-    private String studentCode;
-    private MultipartFile file;
+public class PracticalExamTemplateDto {
+
+    private String serverSubject;
+    private MultipartFile serverFile;
+    private String scriptSubject;
+    private MultipartFile scriptFile;
 
 }
