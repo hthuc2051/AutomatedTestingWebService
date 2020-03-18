@@ -62,10 +62,10 @@ public class PracticalExamController {
     }
 
     @PostMapping("/practical-exam/lecturer/enroll")
-    public ResponseEntity<List<PracticalExamResponse>> enrollPracticalExam(String enrollKey) {
+    public ResponseEntity<List<PracticalExamResponse>> enrollPracticalExam(String code) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(practicalExamService.getListPracticalExamByLecturer(enrollKey));
+                .body(practicalExamService.getListPracticalExamByLecturer(code));
     }
 
     @GetMapping("/subjects/{id}/practical-exam")

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface LecturerRepository extends JpaRepository<Lecturer, Integer> {
     Lecturer findByUserAndActiveIsTrue(User user);
-    Lecturer findByEnrollKeyAndActiveIsTrue(String enrollKey);
+    Lecturer findByCodeAndActiveIsTrue(String code);
     Optional<Lecturer> findByIdAndActiveIsTrue(Integer id);
     List<Lecturer> findAllByActiveIsTrue();
 }

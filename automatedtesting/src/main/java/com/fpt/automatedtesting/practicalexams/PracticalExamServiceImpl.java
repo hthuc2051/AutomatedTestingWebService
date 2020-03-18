@@ -200,8 +200,14 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             for (int i = 0; i < submissionList.size(); i++) {
                 Submission submission = submissionList.get(i);
                 Student student = submission.getStudent();
-                rowsStudentsList.add(Arrays.asList(String.valueOf(i + 1), student.getCode().trim(), student.getName().trim(), submission.getScriptCode().trim()));
-                rowsStudentsResult.add(Arrays.asList(String.valueOf(i + 1), student.getCode().trim(), student.getName().trim()));
+                String fullName = student.getLastName();
+                String middleName = student.getMiddleName();
+                if (middleName != null && !middleName.equals("")) {
+                    fullName += " " + student.getMiddleName();
+                }
+                fullName += " " + student.getFirstName();
+                rowsStudentsList.add(Arrays.asList(String.valueOf(i + 1), student.getCode().trim(), fullName, submission.getScriptCode().trim()));
+                rowsStudentsResult.add(Arrays.asList(String.valueOf(i + 1), student.getCode().trim(), fullName));
             }
             writeDataToCSVFile(practicalFol.getAbsolutePath() + File.separator + "Student_List.csv", rowsStudentsList);
             writeDataToCSVFile(practicalFol.getAbsolutePath() + File.separator + "Student_Results.csv", rowsStudentsResult);
@@ -316,9 +322,14 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                     throw new CustomException(HttpStatus.NOT_FOUND, "Not found Student");
                 dto.setId(submission.getId());
                 dto.setStudentCode(student.getCode());
-                dto.setStudentName(student.getName());
+                String fullName = student.getLastName();
+                String middleName = student.getMiddleName();
+                if (middleName != null && !middleName.equals("")) {
+                    fullName += " " + student.getMiddleName();
+                }
+                fullName += " " + student.getFirstName();
+                dto.setStudentName(fullName);
                 dto.setScriptCode(submission.getScriptCode());
-
                 result.add(dto);
             }
         }
@@ -355,10 +366,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
-    public List<PracticalExamResponse> getListPracticalExamByLecturer(String enrollKey) {
-        Lecturer lecturer = lecturerRepository.findByEnrollKeyAndActiveIsTrue(enrollKey);
+    public List<PracticalExamResponse> getListPracticalExamByLecturer(String code) {
+        Lecturer lecturer = lecturerRepository.findByCodeAndActiveIsTrue(code);
         if (lecturer == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Not found lecturer for key enroll " + enrollKey);
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found lecturer for code " + code);
         }
 
         List<PracticalExamResponse> result = null;

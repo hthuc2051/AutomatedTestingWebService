@@ -22,8 +22,14 @@ public class Student {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "first_name", nullable = true)
+    private String firstName;
+
+    @Column(name = "middle_name", nullable = true)
+    private String middleName;
+
+    @Column(name = "last_name", nullable = true)
+    private String lastName;
 
     @Column(name = "email")
     private String email;

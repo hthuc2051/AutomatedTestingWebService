@@ -24,8 +24,8 @@ public class Lecturer {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @Column(name = "enroll_key", nullable = true)
-    private String enrollKey;
+    @Column(name = "code", nullable = true)
+    private String code;
 
     @Column(name = "first_name", nullable = true)
     private String firstName;
