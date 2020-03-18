@@ -28,4 +28,25 @@ public class UploadFile {
           throw new CustomException(HttpStatus.CONFLICT,ex.getMessage());
       }
   }
+
+    public static String  uploadFileToReturnString(MultipartFile excelFile) {
+        try {
+            MultipartFile file = excelFile;
+            if(file != null) {
+                String folPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
+                Path copyLocation = Paths.get(folPath + File.separator + StringUtils.cleanPath(file.getOriginalFilename()));
+                if(Files.exists(copyLocation))
+                {
+                    Files.delete(copyLocation);
+                }
+                Files.copy(file.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+                Thread.sleep(1000);
+                return copyLocation.toString();
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            throw new CustomException(HttpStatus.CONFLICT,ex.getMessage());
+        }
+        return null;
+    }
 }

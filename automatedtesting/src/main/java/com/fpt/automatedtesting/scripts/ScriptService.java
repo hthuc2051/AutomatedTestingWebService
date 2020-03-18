@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ScriptService {
     List<ScriptResponseDto> getAll();
+    List<ScriptResponseDto> getScriptTestBySubjectId(Integer subjectId);
     Boolean generateScriptTest(ScriptRequestDto dto);
     void downloadFile(HttpServletResponse response);
     Boolean deleteScript(Integer scriptId);
