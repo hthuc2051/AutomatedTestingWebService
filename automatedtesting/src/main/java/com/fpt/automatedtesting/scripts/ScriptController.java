@@ -41,7 +41,7 @@ public class ScriptController {
     }
     @GetMapping("/scripts/{subjectId}")
     public ResponseEntity<List<ScriptResponseDto>> getScriptBySubjectId(@PathVariable Integer subjectId) {
-        return ResponseEntity.status(HttpStatus.OK).body(scriptService.getAll());
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.getScriptTestBySubjectId(subjectId));
     }
 
     @PostMapping("/scripts")

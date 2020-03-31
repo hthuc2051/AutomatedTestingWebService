@@ -10,9 +10,8 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScriptResponseDto {
-
     private Integer id;
-    private Date timeCreated;
-    private String scriptCode;
-
+    private String timeCreated;
+    private String code;
+    private String scriptData;
 }
