@@ -2,6 +2,7 @@ package com.fpt.automatedtesting.actions;
 
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
+import com.fpt.automatedtesting.actions.dtos.ActionResponseSubjectIdDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,8 @@ import java.util.List;
 @CrossOrigin(origins ="http://localhost:1998")
 public class ActionController {
 
-    @Autowired
     private final ActionService actionService;
-
+    @Autowired
     public ActionController(ActionService actionService) {
         this.actionService = actionService;
     }
@@ -30,7 +30,7 @@ public class ActionController {
     }
 
     @GetMapping("/actions/subjects/{subjectId}")
-    public ResponseEntity<List<ActionResponseDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
+    public ResponseEntity<List<ActionResponseSubjectIdDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionBySubject(subjectId));

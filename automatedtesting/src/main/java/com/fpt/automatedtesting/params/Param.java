@@ -1,8 +1,10 @@
 package com.fpt.automatedtesting.params;
 
+import com.fpt.automatedtesting.practicalexams.PracticalExam;
 import lombok.*;
 import com.fpt.automatedtesting.actions.Action;
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Param")
@@ -22,9 +24,8 @@ public class Param {
     @Column(name = "type", nullable = true )
     private String type;
 
-    @ManyToOne
-    @JoinColumn(name = "action_id", referencedColumnName = "id")
-    private Action action;
+    @ManyToMany(targetEntity = Action.class, mappedBy = "params", fetch = FetchType.LAZY)
+    private List<Action> actions;
 
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;

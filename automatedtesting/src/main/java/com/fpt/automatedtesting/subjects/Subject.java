@@ -29,7 +29,7 @@ public class Subject {
     @Column(name = "code")
     private String code;
 
-    @OneToMany(mappedBy = "subject",cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Action.class, mappedBy = "subjects", fetch = FetchType.LAZY)
     private List<Action> actions;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
