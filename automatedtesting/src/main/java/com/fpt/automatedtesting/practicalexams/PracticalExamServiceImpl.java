@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static com.fpt.automatedtesting.common.CustomConstant.*;
 
 import com.fpt.automatedtesting.common.PathConstants;
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamRequest;
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamResponse;
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamResultDto;
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalInfo;
+import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.dtos.SubmissionDetailsDto;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 import com.fpt.automatedtesting.exception.CustomException;
@@ -341,15 +338,14 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
     @Override
     public String delete(Integer id) {
-        checkDuplicatedCode();
-//        PracticalExam entity = practicalExamRepository
-//                .findByIdAndActiveIsTrue(id)
-//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
-//        entity.setActive(false);
-//        PracticalExam result = practicalExamRepository.save(entity);
-//        if (result == null) {
-//            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
-//        }
+        PracticalExam entity = practicalExamRepository
+                .findByIdAndActiveIsTrue(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
+        entity.setActive(false);
+        PracticalExam result = practicalExamRepository.save(entity);
+        if (result == null) {
+            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
+        }
         return "Delete practical exam successfully";
     }
 
@@ -493,10 +489,12 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         return result;
     }
 
-    private void checkDuplicatedCode() {
+    @Override
+    public String checkDuplicatedCode(UploadFileDto dto) {
         List<List<Double>> vectorsOfFile = duplicatedCodeService.getListTree("A.java", JAVA);
-        System.out.println("Here");
+        return "";
     }
+
 
     private void downloadTemplate(HttpServletResponse response, String practicalExamCode) {
         try {

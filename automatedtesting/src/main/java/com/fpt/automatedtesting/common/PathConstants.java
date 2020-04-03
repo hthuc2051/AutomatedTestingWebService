@@ -87,15 +87,8 @@ public class PathConstants {
             + "Grammar"
             + File.separator
             + "C.g4";
-    // Language in search api
-    public static final String LANGUAGE_JAVA = "JAVA";
-    public static final String LANGUAGE_CS = "CS";
-    public static final String LANGUAGE_C = "C";
 
-    // Import name
-    public static final String IMPORT_JAVA = "import";
-    public static final String IMPORT_CS = "using";
-    public static final String IMPORT_C = "#include";
+
 
     // Log path
     public static final String GITHUB_LOG_PATH = STATIC_DIR + "Github_Log.txt";

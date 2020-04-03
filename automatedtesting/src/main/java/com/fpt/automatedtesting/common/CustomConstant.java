@@ -34,6 +34,17 @@ public class CustomConstant {
     public static final int JAVA_WEB = 1;
     public static final int C = 2;
     public static final int CSHARP = 3;
+
+    // Language in search api
+    public static final String LANGUAGE_JAVA = "JAVA";
+    public static final String LANGUAGE_CS = "CS";
+    public static final String LANGUAGE_C = "C";
+
+    // Import name
+    public static final String IMPORT_JAVA = "import";
+    public static final String IMPORT_CS = "using";
+    public static final String IMPORT_C = "#include";
+
     public static final String DELETE_SCRIPT_SUCCESS = "Delete Successfully";
     public static final String DELETE_SCRIPT_FAIL = "Delete Failed";
 
