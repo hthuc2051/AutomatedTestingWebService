@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class ScripTestJava {
-
+    questionPointStrValue
     @Autowired
     private TemplateQuestion templateQuestion;
 

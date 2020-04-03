@@ -62,29 +62,43 @@ public class PathConstants {
             + File.separator
             + "Grammar"
             + File.separator
-            +"JavaLexer.g4";
+            + "JavaLexer.g4";
     public static final String PATH_GRAMMAR_JAVA_PARSER = PROJECT_DIR
             + File.separator
             + "Grammar"
             + File.separator
-            +"JavaParser.g4";
+            + "JavaParser.g4";
 
     // CSharp
     public static final String PATH_GRAMMAR_CSHARP_LEXER = PROJECT_DIR
             + File.separator
             + "Grammar"
             + File.separator
-            +"CSharpLexer.g4";
+            + "CSharpLexer.g4";
     public static final String PATH_GRAMMAR_CSHARP_PARSER = PROJECT_DIR
             + File.separator
             + "Grammar"
             + File.separator
-            +"CSharpParser.g4";
+            + "CSharpParser.g4";
 
     // C
     public static final String PATH_GRAMMAR_C_PARSER = PROJECT_DIR
             + File.separator
             + "Grammar"
             + File.separator
-            +"C.g4";
+            + "C.g4";
+    // Language in search api
+    public static final String LANGUAGE_JAVA = "JAVA";
+    public static final String LANGUAGE_CS = "CS";
+    public static final String LANGUAGE_C = "C";
+
+    // Import name
+    public static final String IMPORT_JAVA = "import";
+    public static final String IMPORT_CS = "using";
+    public static final String IMPORT_C = "#include";
+
+    // Log path
+    public static final String GITHUB_LOG_PATH = STATIC_DIR + "Github_Log.txt";
+
+
 }

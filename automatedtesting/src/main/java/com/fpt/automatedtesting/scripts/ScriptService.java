@@ -11,6 +11,6 @@ public interface ScriptService {
     List<ScriptResponseDto> getScriptTestBySubjectId(Integer subjectId);
     Boolean generateScriptTest(ScriptRequestDto dto);
     void downloadFile(HttpServletResponse response);
-    Boolean deleteScript(Integer scriptId);
+    String deleteScript(Integer scriptId);
     Boolean updateScriptTest(ScriptRequestDto dto);
 }

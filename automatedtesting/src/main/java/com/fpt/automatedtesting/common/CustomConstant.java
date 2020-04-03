@@ -27,13 +27,15 @@ public class CustomConstant {
     public static final String STATE_EVALUATE = "EVALUATE";
     public static final String STATE_ERROR = "ERROR";
 
-    public static final String HEAD_LECTURER ="HEAD LECTURER";
-    public static final String LECTURER ="LECTURER";
+    public static final String HEAD_LECTURER = "HEAD LECTURER";
+    public static final String LECTURER = "LECTURER";
 
     public static final int JAVA = 0;
     public static final int JAVA_WEB = 1;
     public static final int C = 2;
     public static final int CSHARP = 3;
+    public static final String DELETE_SCRIPT_SUCCESS = "Delete Successfully";
+    public static final String DELETE_SCRIPT_FAIL = "Delete Failed";
 
 
 }

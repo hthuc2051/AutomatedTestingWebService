@@ -15,8 +15,8 @@ import com.fpt.automatedtesting.headlecturers.HeadLecturerRepository;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
 import com.fpt.automatedtesting.common.CustomUtils;
 import com.fpt.automatedtesting.common.ZipFile;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -44,7 +44,7 @@ public class ScriptServiceImpl implements ScriptService {
     private static final String EXTENSION_JAVA = ".java";
     private static final String EXTENSION_C = ".c";
     private static final String EXTENSION_CSharp = ".cs";
-    private static final String QUESTION_POINT_STR_VALUE ="questionPointStrValue";
+    private static final String QUESTION_POINT_STR_VALUE = "questionPointStrValue";
 
     private final ScriptRepository scriptRepository;
     private final HeadLecturerRepository headLecturerRepository;
@@ -59,14 +59,15 @@ public class ScriptServiceImpl implements ScriptService {
 
     @Override
     public List<ScriptResponseDto> getAll() {
-        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAll(), ScriptResponseDto.class);
+        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAllByActiveIsTrue(), ScriptResponseDto.class);
         return result;
     }
 
     @Override
     public List<ScriptResponseDto> getScriptTestBySubjectId(Integer subjectId) {
-        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAll(), ScriptResponseDto.class);
-return null;
+        List<Script> listScript  =scriptRepository.getAllBySubjectIdAndActiveIsTrueOrderByTimeCreatedDesc(subjectId);
+        List<ScriptResponseDto> result = MapperManager.mapAll(listScript, ScriptResponseDto.class);
+        return result;
     }
 
     @Override
@@ -139,7 +140,7 @@ return null;
             // Write new file to Scripts_[Language] folder
             Date date = new Date();
             Integer hashCode = CustomUtils.getCurDateTime(date, "Date").hashCode();
-            String code = subject.getCode() + "_" + Math.abs(hashCode)+ "_" + dto.getName() ;
+            String code = subject.getCode() + "_" + Math.abs(hashCode) + "_" + dto.getName();
             String scriptPath = scriptStorePath + code + fileExtension;
             BufferedWriter writer = new BufferedWriter(
                     new FileWriter(scriptPath,
@@ -162,16 +163,16 @@ return null;
             script.setHeadLecturer(headLecturer);
             script.setSubject(subject);
             script.setCode(code);
-
+            script.setScriptData(dto.getScriptData());
             script.setTimeCreated(CustomUtils.getCurDateTime(date, "Date"));
 
             script.setScriptPath(scriptPath);
             script.setDocumentPath(documentPath);
             script.setActive(true);
-//
             if (scriptRepository.save(script) != null) {
                 return true;
             }
+
         } catch (IOException e) {
             e.printStackTrace();
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -202,13 +203,13 @@ return null;
     }
 
     @Override
-    public Boolean deleteScript(Integer scriptId) {
-     Script script =  scriptRepository.findById(scriptId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script with id" + scriptId));
-     script.setActive(false);
-    if(scriptRepository.save(script) != null){
-        return true;
-    }
-     return false;
+    public String deleteScript(Integer scriptId) {
+        Script script = scriptRepository.findById(scriptId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script with id" + scriptId));
+        script.setActive(false);
+        if (scriptRepository.save(script) != null) {
+            return CustomConstant.DELETE_SCRIPT_SUCCESS;
+        }
+        return CustomConstant.DELETE_SCRIPT_FAIL;
     }
 
     @Override
@@ -279,9 +280,9 @@ return null;
             String fullScript = tempScript.replace(QUESTION_POINT_STR_VALUE, dto.getQuestionPointStr());
             // Write new file to Scripts_[Language] folder
 
-            Script script = scriptRepository.findById(dto.getId()) .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script" + dto.getHeadLecturerId()));
+            Script script = scriptRepository.findById(dto.getId()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script" + dto.getHeadLecturerId()));
 
-            String scriptPath =script.getScriptPath();
+            String scriptPath = script.getScriptPath();
             BufferedWriter writer = new BufferedWriter(
                     new FileWriter(scriptPath,
                             false));
@@ -301,7 +302,7 @@ return null;
 
             script.setName(dto.getName());
             script.setScriptPath(scriptPath);
-            if(!documentPath.equals("")) {
+            if (!documentPath.equals("")) {
                 script.setDocumentPath(documentPath);
             }
             if (scriptRepository.save(script) != null) {

@@ -41,7 +41,7 @@ public class ScriptController {
     }
     @GetMapping("/scripts/{subjectId}")
     public ResponseEntity<List<ScriptResponseDto>> getScriptBySubjectId(@PathVariable Integer subjectId) {
-        return ResponseEntity.status(HttpStatus.OK).body(scriptService.getAll());
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.getScriptTestBySubjectId(subjectId));
     }
 
     @PostMapping("/scripts")
@@ -53,7 +53,7 @@ public class ScriptController {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.updateScriptTest(scriptDto));
     }
     @DeleteMapping("/scripts/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.deleteScript(id));
     }
 

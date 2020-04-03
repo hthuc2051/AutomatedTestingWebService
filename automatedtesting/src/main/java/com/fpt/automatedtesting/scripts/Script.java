@@ -34,6 +34,10 @@ public class Script {
 
     @Column(name = "document_path", nullable = true, length = 100)
     private String documentPath;
+
+    @Column(name = "script_data", nullable = true, length = 100)
+    private String scriptData;
+
     @ManyToOne
     @JoinColumn(name = "subject_id", referencedColumnName = "id", nullable = false)
     private Subject subject;

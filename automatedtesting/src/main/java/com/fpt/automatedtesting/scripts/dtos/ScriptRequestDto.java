@@ -15,5 +15,6 @@ public class ScriptRequestDto {
     private String questions;
     private Integer headLecturerId;
     private Integer subjectId;
+    private String scriptData;
     private MultipartFile docsFile;
 }
