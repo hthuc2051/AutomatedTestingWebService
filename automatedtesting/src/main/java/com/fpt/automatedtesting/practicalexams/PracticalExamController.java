@@ -41,10 +41,9 @@ public class PracticalExamController {
 
     @PutMapping("/practical-exam")
     public ResponseEntity<String> update(@RequestBody PracticalExamRequest dto) {
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(practicalExamService.create(dto));
-        return null;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.update(dto));
     }
 
     @DeleteMapping("/practical-exam/{id}")

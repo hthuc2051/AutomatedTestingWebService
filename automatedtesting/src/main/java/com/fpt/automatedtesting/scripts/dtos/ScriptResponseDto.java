@@ -12,7 +12,7 @@ import java.sql.Date;
 public class ScriptResponseDto {
 
     private Integer id;
-    private Date timeCreated;
+    private String name;
+    private String timeCreated;
     private String scriptCode;
-
 }

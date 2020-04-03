@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, Integer> {
     List<Submission> findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(PracticalExam practicalExam,Boolean active);
+    Integer deleteAllByPracticalExam(PracticalExam practicalExam);
 //    Optional<Submission> findByIdAndActiveIsTrue(Integer id);
 //    List<Submission> findAllByActiveIsTrue();
 }

@@ -54,4 +54,37 @@ public class PathConstants {
     // Path created practical
     public static final String PATH_PRACTICAL_EXAMS = PROJECT_DIR + File.separator + "PracticalExams";
 
+
+    // Lexer and parser file
+
+    // Java
+    public static final String PATH_GRAMMAR_JAVA_LEXER = PROJECT_DIR
+            + File.separator
+            + "Grammar"
+            + File.separator
+            +"JavaLexer.g4";
+    public static final String PATH_GRAMMAR_JAVA_PARSER = PROJECT_DIR
+            + File.separator
+            + "Grammar"
+            + File.separator
+            +"JavaParser.g4";
+
+    // CSharp
+    public static final String PATH_GRAMMAR_CSHARP_LEXER = PROJECT_DIR
+            + File.separator
+            + "Grammar"
+            + File.separator
+            +"CSharpLexer.g4";
+    public static final String PATH_GRAMMAR_CSHARP_PARSER = PROJECT_DIR
+            + File.separator
+            + "Grammar"
+            + File.separator
+            +"CSharpParser.g4";
+
+    // C
+    public static final String PATH_GRAMMAR_C_PARSER = PROJECT_DIR
+            + File.separator
+            + "Grammar"
+            + File.separator
+            +"C.g4";
 }

@@ -14,9 +14,9 @@ import java.util.List;
 @RequestMapping("/api")
 public class SubjectController {
 
-    @Autowired
     private final SubjectService subjectService;
 
+    @Autowired
     public SubjectController(SubjectService subjectService) {
         this.subjectService = subjectService;
     }
@@ -28,11 +28,11 @@ public class SubjectController {
                 .body(subjectService.getAll());
     }
 
-    @GetMapping("/subjects/classes/{id}")
-    public ResponseEntity<List<ClassResponseDto>> getAllClassBySubjectId(@PathVariable Integer id) {
+    @GetMapping("/subjects/{id}/classes-scripts")
+    public ResponseEntity<SubjectResponseDto> getAllClassAndScriptsBySubjectId(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(subjectService.getAllClassBySubjectIncludeSubjectClassId(id));
+                .body(subjectService.getAllClassAndScriptsBySubjectId(id));
     }
 
 }

@@ -1,10 +1,12 @@
 package com.fpt.automatedtesting.classes;
 
+import com.fpt.automatedtesting.scripts.dtos.ScriptResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor

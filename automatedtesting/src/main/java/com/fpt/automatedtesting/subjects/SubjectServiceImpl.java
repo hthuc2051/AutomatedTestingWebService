@@ -2,6 +2,8 @@ package com.fpt.automatedtesting.subjects;
 
 import com.fpt.automatedtesting.classes.ClassResponseDto;
 import com.fpt.automatedtesting.classes.Class;
+import com.fpt.automatedtesting.scripts.Script;
+import com.fpt.automatedtesting.scripts.dtos.ScriptResponseDto;
 import com.fpt.automatedtesting.subjectclasses.SubjectClass;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.common.MapperManager;
@@ -26,31 +28,66 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public List<SubjectResponseDto> getAll() {
-        List<Subject> listSubject = subjectRepository.findAllByActiveIsTrue();
-        if (listSubject != null && !listSubject.isEmpty()) {
-            return MapperManager.mapAll(listSubject, SubjectResponseDto.class);
+        List<SubjectResponseDto> result = null;
+        List<Subject> subjectEntities = subjectRepository.findAllByActiveIsTrue();
+        if (subjectEntities != null && !subjectEntities.isEmpty()) {
+            result = MapperManager.mapAll(subjectEntities, SubjectResponseDto.class);
+            if (result != null && !result.isEmpty()) {
+                for (int i = 0; i < result.size(); i++) {
+                    List<ClassResponseDto> classResponseDtos = new ArrayList<>();
+                    List<SubjectClass> subjectClassEntities = subjectEntities.get(i).getSubjectClasses();
+                    if (subjectClassEntities != null && !subjectClassEntities.isEmpty()) {
+                        for (SubjectClass entity : subjectClassEntities) {
+                            Integer subjectClassId = entity.getId();
+                            Class classEntity = entity.getAClass();
+                            Integer classId = classEntity.getId();
+                            String classCode = classEntity.getClassCode();
+                            classResponseDtos.add(new ClassResponseDto(classId, classCode, subjectClassId));
+                        }
+                    }
+                    result.get(i).setClasses(classResponseDtos);
+                }
+            }
         } else {
             throw new CustomException(HttpStatus.NOT_FOUND, "Not found any subject");
         }
+        return result;
     }
 
     @Override
-    public List<ClassResponseDto> getAllClassBySubjectIncludeSubjectClassId(Integer subjectId) {
-        List<SubjectClass> listSubjectClass = subjectClassRepository.findAllBySubjectId(subjectId);
-        List<ClassResponseDto> listResponse;
+    public SubjectResponseDto getAllClassAndScriptsBySubjectId(Integer subjectId) {
 
-        if (listSubjectClass != null && !listSubjectClass.isEmpty()) {
+        Subject subject = subjectRepository.findByIdAndActiveIsTrue(subjectId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found subject with id" + subjectId));
+
+        List<SubjectClass> subjectClassEntities = subject.getSubjectClasses();
+
+        SubjectResponseDto result = MapperManager.map(subject, SubjectResponseDto.class);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Occur error ! Please try later");
+        }
+        List<ClassResponseDto> listResponse;
+        if (subjectClassEntities == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any class");
+        }
+        if (!subjectClassEntities.isEmpty()) {
             listResponse = new ArrayList<>();
-            for (SubjectClass entity : listSubjectClass) {
+            for (SubjectClass entity : subjectClassEntities) {
                 Integer subjectClassId = entity.getId();
                 Class classEntity = entity.getAClass();
                 Integer classId = classEntity.getId();
                 String classCode = classEntity.getClassCode();
                 listResponse.add(new ClassResponseDto(classId, classCode, subjectClassId));
             }
-            return listResponse;
-        } else {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any class");
+            result.setClasses(listResponse);
         }
+        List<Script> scriptEntities = subject.getScripts();
+        if (scriptEntities != null && !scriptEntities.isEmpty()) {
+            List<ScriptResponseDto> scriptResponseDtos = MapperManager.mapAll(scriptEntities, ScriptResponseDto.class);
+            if (scriptResponseDtos != null && !scriptResponseDtos.isEmpty()) {
+                result.setScripts(scriptResponseDtos);
+            }
+        }
+        return result;
     }
 }

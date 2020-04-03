@@ -27,7 +27,11 @@ import com.fpt.automatedtesting.submissions.SubmissionRepository;
 import com.fpt.automatedtesting.users.UserRepository;
 import com.fpt.automatedtesting.common.ZipFile;
 
+
 import org.apache.commons.io.FileUtils;
+import org.snt.inmemantlr.exceptions.CompilationException;
+import org.snt.inmemantlr.exceptions.IllegalWorkflowException;
+import org.snt.inmemantlr.exceptions.ParsingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -58,9 +62,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     private final SubjectClassRepository subjectClassRepository;
     private final LecturerRepository lecturerRepository;
     private final SubjectRepository subjectRepository;
+    private final DuplicatedCodeService duplicatedCodeService;
 
     @Autowired
-    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, LecturerRepository lecturerRepository, SubjectRepository subjectRepository) {
+    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, LecturerRepository lecturerRepository, SubjectRepository subjectRepository, DuplicatedCodeService duplicatedCodeService) {
         this.practicalExamRepository = practicalExamRepository;
         this.scriptRepository = scriptRepository;
         this.submissionRepository = submissionRepository;
@@ -68,6 +73,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         this.subjectClassRepository = subjectClassRepository;
         this.lecturerRepository = lecturerRepository;
         this.subjectRepository = subjectRepository;
+        this.duplicatedCodeService = duplicatedCodeService;
     }
 
     @Override
@@ -132,10 +138,71 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
+    @Transactional
+    public String update(PracticalExamRequest dto) {
+        PracticalExam practicalExam = practicalExamRepository.findByIdAndStateEqualsAndActiveIsTrue(dto.getId(), STATE_NOT_EVALUATE)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for id" + dto.getId()));
+        submissionRepository.deleteAllByPracticalExam(practicalExam);
+
+        List<Integer> subjectClassesId = dto.getSubjectClasses();
+        if (subjectClassesId != null && subjectClassesId.size() > 0) {
+            for (Integer subjectClassId : subjectClassesId) {
+                SubjectClass subjectClass = subjectClassRepository
+                        .findByIdAndActiveIsTrue(subjectClassId)
+                        .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + subjectClassId));
+                List<Student> studentList = subjectClass.getStudents();
+
+                String practicalExamCode = PREFIX_EXAM_CODE + subjectClass.getSubject().getCode() + "_"
+                        + subjectClass.getAClass().getClassCode() + "_" + dto.getDate().replace("-", "");
+
+                if (studentList != null && studentList.size() > 0) {
+                    List<Script> scriptEntities = null;
+                    List<Integer> listScriptId = dto.getListScripts();
+                    if (listScriptId != null && listScriptId.size() > 0) {
+                        scriptEntities = new ArrayList<>();
+                        for (Integer id : listScriptId) {
+                            Script scriptEntity = scriptRepository.findByIdAndActiveIsTrue(id)
+                                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script for Id: " + id));
+                            scriptEntities.add(scriptEntity);
+                        }
+                    }
+
+                    List<Submission> submissionList = new ArrayList<>();
+
+                    for (Student student : studentList) {
+                        Submission submission = new Submission();
+                        submission.setStudent(student);
+                        submission.setPracticalExam(practicalExam);
+                        submission.setActive(true);
+                        submission.setScriptCode(getScriptCodeRandom(scriptEntities));
+                        submissionList.add(submission);
+                    }
+
+                    practicalExam.setScripts(scriptEntities);
+                    practicalExam.setSubmissions(null);
+                    practicalExam.setSubmissions(submissionList);
+                    practicalExam.setCode(practicalExamCode);
+                    practicalExam.setState(STATE_NOT_EVALUATE);
+                    practicalExam.setSubjectClass(subjectClass);
+                    practicalExam.setDate(dto.getDate());
+                    practicalExam.setActive(true);
+                }
+            }
+            PracticalExam result = practicalExamRepository.save(practicalExam);
+            if (result == null) {
+                return "Update practical exam failed";
+            }
+        } else {
+            throw new CustomException(HttpStatus.NOT_FOUND, "No student from this class");
+        }
+        return "Update practical exam successfully";
+    }
+
+    @Override
     public Boolean updatePracticalExamResult(PracticalExamResultDto practicalExamResultDto) {
         PracticalExam practicalExam = practicalExamRepository
                 .findByIdAndActiveIsTrue(practicalExamResultDto.getId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found class for id" + practicalExamResultDto.getId()));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for id" + practicalExamResultDto.getId()));
         List<Submission> submissions = practicalExam.getSubmissions();
         for (Submission entity : submissions) {
             for (SubmissionDetailsDto dto : practicalExamResultDto.getSubmissions()) {
@@ -274,14 +341,15 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
     @Override
     public String delete(Integer id) {
-        PracticalExam entity = practicalExamRepository
-                .findByIdAndActiveIsTrue(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
-        entity.setActive(false);
-        PracticalExam result = practicalExamRepository.save(entity);
-        if (result == null) {
-            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
-        }
+        checkDuplicatedCode();
+//        PracticalExam entity = practicalExamRepository
+//                .findByIdAndActiveIsTrue(id)
+//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
+//        entity.setActive(false);
+//        PracticalExam result = practicalExamRepository.save(entity);
+//        if (result == null) {
+//            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
+//        }
         return "Delete practical exam successfully";
     }
 
@@ -344,9 +412,13 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found subject for Id:" + id));
         List<PracticalExamResponse> result = null;
         List<SubjectClass> subjectClassList = subject.getSubjectClasses();
+
         if (subjectClassList != null && subjectClassList.size() > 0) {
             result = new ArrayList<>();
+
+            List<Integer> subjectClassId = new ArrayList<>();
             for (SubjectClass subjectClass : subjectClassList) {
+                subjectClassId.add(subjectClass.getId());
                 List<PracticalExam> practicalExams = subjectClass.getPracticalExams();
                 if (practicalExams != null && practicalExams.size() > 0) {
                     result = MapperManager.mapAll(practicalExams, PracticalExamResponse.class);
@@ -421,9 +493,12 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         return result;
     }
 
+    private void checkDuplicatedCode() {
+        List<List<Double>> vectorsOfFile = duplicatedCodeService.getListTree("A.java", JAVA);
+        System.out.println("Here");
+    }
 
     private void downloadTemplate(HttpServletResponse response, String practicalExamCode) {
-        // Download
         try {
             String filePath = PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExamCode + ".zip";
             File file = new File(filePath);

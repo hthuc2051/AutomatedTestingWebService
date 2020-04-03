@@ -12,6 +12,8 @@ public interface PracticalExamService {
 
     String create(PracticalExamRequest dto);
 
+    String update(PracticalExamRequest dto);
+
     Boolean updatePracticalExamResult(PracticalExamResultDto dto);
 
     void downloadPracticalTemplate(Integer id, HttpServletResponse response);
