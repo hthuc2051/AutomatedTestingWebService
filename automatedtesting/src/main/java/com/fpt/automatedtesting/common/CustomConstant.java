@@ -30,5 +30,8 @@ public class CustomConstant {
     public static final String HEAD_LECTURER ="HEAD LECTURER";
     public static final String LECTURER ="LECTURER";
 
+     public static final String DELETE_SCRIPT_SUCCESS = "Delete Successfully";
+     public static final String DELETE_SCRIPT_FAIL = "Delete Failed";
+
 
 }

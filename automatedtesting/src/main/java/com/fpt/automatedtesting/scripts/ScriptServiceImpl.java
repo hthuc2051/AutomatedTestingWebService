@@ -16,6 +16,7 @@ import com.fpt.automatedtesting.subjects.SubjectRepository;
 import com.fpt.automatedtesting.common.CustomUtils;
 import com.fpt.automatedtesting.common.ZipFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -58,13 +59,13 @@ public class ScriptServiceImpl implements ScriptService {
 
     @Override
     public List<ScriptResponseDto> getAll() {
-        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAll(), ScriptResponseDto.class);
+        List<ScriptResponseDto> result = MapperManager.mapAll(scriptRepository.findAllByActiveIsTrue(), ScriptResponseDto.class);
         return result;
     }
 
     @Override
     public List<ScriptResponseDto> getScriptTestBySubjectId(Integer subjectId) {
-        List<Script> listScript  =scriptRepository.getAllBySubjectId(subjectId);
+        List<Script> listScript  =scriptRepository.getAllBySubjectIdAndActiveIsTrueOrderByTimeCreatedDesc(subjectId);
         List<ScriptResponseDto> result = MapperManager.mapAll(listScript, ScriptResponseDto.class);
         return result;
     }
@@ -202,13 +203,13 @@ public class ScriptServiceImpl implements ScriptService {
     }
 
     @Override
-    public Boolean deleteScript(Integer scriptId) {
+    public String deleteScript(Integer scriptId) {
         Script script = scriptRepository.findById(scriptId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script with id" + scriptId));
         script.setActive(false);
         if (scriptRepository.save(script) != null) {
-            return true;
+            return CustomConstant.DELETE_SCRIPT_SUCCESS;
         }
-        return false;
+        return CustomConstant.DELETE_SCRIPT_FAIL;
     }
 
     @Override

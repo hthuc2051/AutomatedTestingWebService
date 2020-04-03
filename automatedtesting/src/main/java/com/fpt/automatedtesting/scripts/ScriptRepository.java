@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface ScriptRepository extends JpaRepository<Script,Integer> {
     Optional<Script> findByIdAndActiveIsTrue(Integer id);
     List<Script> findAllByActiveIsTrue();
-    List<Script> getAllBySubjectId(Integer id);
+    List<Script> getAllBySubjectIdAndActiveIsTrueOrderByTimeCreatedDesc(Integer id);
 }

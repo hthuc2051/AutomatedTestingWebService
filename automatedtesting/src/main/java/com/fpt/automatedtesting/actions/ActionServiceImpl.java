@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -101,8 +102,11 @@ public class ActionServiceImpl implements ActionService {
                 .findByIdAndActiveIsTrue(subjectId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
         List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject);
-        List<ActionResponseDto> response = MapperManager.mapAll(actions,ActionResponseDto.class);
-        response.forEach(element -> element.setSubjectId(subjectId));
+        List<ActionResponseDto> response = new ArrayList<>();
+        if(actions.size() > 0){
+            response = MapperManager.mapAll(actions,ActionResponseDto.class);
+            response.forEach(element -> element.setSubjectId(subjectId));
+        }
         return response;
     }
 
