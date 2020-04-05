@@ -10,6 +10,7 @@ import com.fpt.automatedtesting.subjects.Subject;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.headlecturers.HeadLecturerRepository;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
+import com.fpt.automatedtesting.common.CustomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
