@@ -3,43 +3,52 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.thucnh.student.controllers;
-
-import com.thucnh.student.beans.JavaBean;
+package com.practicalexam.student.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author USER
+ * @author Le Ngoc Tan
  */
-public class DeleteController extends HttpServlet {
+public class LogoutServlet extends HttpServlet {
 
-    private static final String SUCCESS ="SearchController";
-    private static final String ERROR ="error.jsp";
+    private final String SEARCH_PAGE = "search.jsp";
+    private final String LOGIN_PAGE = "login.jsp";
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = ERROR;
+        PrintWriter out = response.getWriter();
+        String url = SEARCH_PAGE;
+
         try {
-            String id = request.getParameter("idDelete");
-            JavaBean beans =  new JavaBean();
-            beans.setBookID(id);
-            boolean check = beans.deleteBook();
-            if(check){
-                url = SUCCESS;
-                request.setAttribute("STATUS", "Delete successfully");
-            }else{
-                request.setAttribute("ERROR", "Delete Failed");
+            request.getSession(false).invalidate();
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies) {
+                response.addCookie(cookie);
             }
-        } catch (Exception e) {
-            log("Error at DeleteController "+e.getMessage());
-        }finally{
-            request.getRequestDispatcher(url).forward(request, response);
+            if (request.getSession(false) == null) {
+                url = LOGIN_PAGE;
+            }
+        } finally {
+            response.sendRedirect(url);
+            out.close();
         }
     }
 

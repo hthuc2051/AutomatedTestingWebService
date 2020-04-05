@@ -105,7 +105,7 @@ public class PracticalExamUtils {
         return convertedToString;
     }
 
-    public static void searchRepo(GitHub gitHub, String lineOfCode, String language){
+    public static void searchRepo(GitHub gitHub, String lineOfCode, String language) {
         try {
             List<String> pageUrl = new ArrayList<>();
             GHContentSearchBuilder search = gitHub.searchContent();
@@ -113,7 +113,6 @@ public class PracticalExamUtils {
             PagedSearchIterable<GHContent> res = searchBuilder.list();
             for (GHContent ghContent : res) {
                 System.out.println(ghContent.getOwner());
-                ;
                 GHRepository ghRepository = ghContent.getOwner();
                 pageUrl.add(ghRepository.getHtmlUrl().toString() + "\r\n");
             }
@@ -142,7 +141,7 @@ public class PracticalExamUtils {
         }
     }
 
-    public static void writeReport(GitHub github, String lineOfCode, String language) throws IOException {
+    public static void writeReport(GitHub github, String lineOfCode, String language) {
         try {
             int i = 0;
             int readLength = 120;
@@ -175,7 +174,7 @@ public class PracticalExamUtils {
 
     }
 
-    public static void checkDuplicatedCodeGithub(String filePath){
+    public static void checkDuplicatedCodeGithub(String filePath) {
         try {
             GitHub github = getConnection("lamthanhphat98", "a6d23ad8a3c5a82870c06142bd8ef0ccba2c62cc");
             //System.out.println(github.getMyself().getEmail());

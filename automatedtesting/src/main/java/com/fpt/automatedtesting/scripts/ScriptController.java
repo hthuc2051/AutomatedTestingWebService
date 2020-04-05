@@ -4,8 +4,8 @@ import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.common.ExcelFileDto;
 import com.fpt.automatedtesting.common.ImportExcelFile;
 import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamTemplateDto;
-import com.fpt.automatedtesting.practicalexams.dtos.UploadFileDto;
-import com.fpt.automatedtesting.common.UploadFile;
+import com.fpt.automatedtesting.practicalexams.dtos.StudentSubmissionDto;
+import com.fpt.automatedtesting.common.FileManager;
 import com.fpt.automatedtesting.scripts.dtos.ScriptRequestDto;
 import com.fpt.automatedtesting.scripts.dtos.ScriptResponseDto;
 
@@ -74,8 +74,8 @@ public class ScriptController {
     }
 
     @PostMapping("/upload")
-    public String uploadFile(@ModelAttribute UploadFileDto file) throws IOException {
-        UploadFile.uploadFile(file);
+    public String uploadFile(@ModelAttribute StudentSubmissionDto file) throws IOException {
+        FileManager.uploadFile(file);
         return "ok";
     }
 
@@ -102,7 +102,7 @@ public class ScriptController {
     @PostMapping("/upload_template")
     public String uploadTemplateExam(@ModelAttribute PracticalExamTemplateDto file) throws IOException {
         {
-            UploadFile.uploadTemplate(file);
+            FileManager.uploadTemplate(file);
         }
         return "ok";
     }

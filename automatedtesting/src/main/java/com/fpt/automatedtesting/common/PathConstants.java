@@ -6,7 +6,8 @@ public class PathConstants {
 
     public static final String PROJECT_DIR = System.getProperty("user.dir");
     public static final String STATIC_DIR = "static/";
-
+    // Log path
+    public static final String PATH_EXCEPTIONS = STATIC_DIR + File.separator + "Exceptions";
 
     // Path server
     public static final String PATH_SERVER_JAVA_WEB = PROJECT_DIR + File.separator + "Server_JavaWeb" + File.separator + "Server";
@@ -89,9 +90,16 @@ public class PathConstants {
             + "C.g4";
 
 
-
     // Log path
     public static final String GITHUB_LOG_PATH = STATIC_DIR + "Github_Log.txt";
 
-
+    // Submission path
+    public static final String PATH_SUBMISSION = PROJECT_DIR + File.separator
+            + "Submissions";
+    // Source path
+    public static final String PATH_SUBMISSION_SOURCE = PROJECT_DIR + File.separator
+            + "Submissions"
+            + File.separator
+            + "Sources"
+            + File.separator;
 }

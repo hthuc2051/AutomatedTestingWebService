@@ -1,33 +1,24 @@
 package com.fpt.automatedtesting.scripts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fpt.automatedtesting.common.CustomConstant;
-import com.fpt.automatedtesting.common.CustomMessages;
-import com.fpt.automatedtesting.common.PathConstants;
+import com.fpt.automatedtesting.common.*;
 import com.fpt.automatedtesting.actions.dtos.CodeDto;
 import com.fpt.automatedtesting.headlecturers.HeadLecturer;
 import com.fpt.automatedtesting.scripts.dtos.ScriptRequestDto;
 import com.fpt.automatedtesting.scripts.dtos.ScriptResponseDto;
 import com.fpt.automatedtesting.subjects.Subject;
 import com.fpt.automatedtesting.exception.CustomException;
-import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.headlecturers.HeadLecturerRepository;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
 import com.fpt.automatedtesting.common.CustomUtils;
-import com.fpt.automatedtesting.common.ZipFile;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -215,7 +206,7 @@ public class ScriptServiceImpl implements ScriptService {
             OutputStream os = null;
             os = response.getOutputStream();
 
-            ZipFile.downloadZip(file, os);
+            FileManager.downloadZip(file, os);
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         } catch (IOException e) {

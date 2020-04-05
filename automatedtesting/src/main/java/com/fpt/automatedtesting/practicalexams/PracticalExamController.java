@@ -1,9 +1,9 @@
 package com.fpt.automatedtesting.practicalexams;
 
 
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamRequest;
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamResponse;
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamResultDto;
+import com.fpt.automatedtesting.common.FileManager;
+import com.fpt.automatedtesting.exception.ExceptionManager;
+import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 import com.fpt.automatedtesting.submissions.Submission;
 import com.fpt.automatedtesting.exception.CustomException;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -48,7 +49,7 @@ public class PracticalExamController {
 
     @DeleteMapping("/practical-exam/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id) {
-                return ResponseEntity
+        return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.delete(id));
     }
@@ -69,6 +70,7 @@ public class PracticalExamController {
 
     @GetMapping("/subjects/{id}/practical-exam")
     public ResponseEntity<List<PracticalExamResponse>> getPracticalExamsOfSubject(@PathVariable Integer id) {
+        ExceptionManager.writeException();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.getPracticalExamsOfSubject(id));
@@ -80,8 +82,6 @@ public class PracticalExamController {
                 .status(HttpStatus.OK)
                 .body(practicalExamService.getPracticalExamsOfLecturer(id));
     }
-
-
 
 
     @GetMapping("/templates/{id}")
@@ -104,4 +104,19 @@ public class PracticalExamController {
         List<Submission> submissionList = submissionRepository.findAllByPracticalExamAndPracticalExam_ActiveAndActiveIsTrue(practicalExamEntity, true);
         return null;
     }
+
+    @PostMapping("/practical-exam/submission")
+    public ResponseEntity<String> getStudentSubmission(@ModelAttribute StudentSubmissionDto file) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.getStudentSubmission(file));
+    }
+
+    @PostMapping("/practical-exam/check-code")
+    public ResponseEntity<String> checkDuplicatedCode(@RequestBody PracticalInfo practicalInfo) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.checkDuplicatedCode(practicalInfo));
+    }
+
 }

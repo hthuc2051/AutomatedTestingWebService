@@ -1,7 +1,7 @@
 package com.fpt.automatedtesting.common;
 
 import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamTemplateDto;
-import com.fpt.automatedtesting.practicalexams.dtos.UploadFileDto;
+import com.fpt.automatedtesting.practicalexams.dtos.StudentSubmissionDto;
 import com.fpt.automatedtesting.exception.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ResourceUtils;
@@ -15,11 +15,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 
-public class UploadFile {
+public class FileManager {
 
-    public static void uploadFile(UploadFileDto dto) {
+    public static void uploadFile(StudentSubmissionDto dto) {
         try {
             MultipartFile file = dto.getFile();
             if (file != null) {
@@ -108,6 +111,86 @@ public class UploadFile {
             System.out.println(ex.getMessage());
             throw new CustomException(HttpStatus.CONFLICT, ex.getMessage());
         }
+    }
+
+    //    Zip folder
+    public static void zipFolder(String folder, String outPath) throws IOException {
+        FileOutputStream fos = new FileOutputStream(outPath + ".zip");
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+        File fileToZip = new File(folder);
+        zipFile(fileToZip, fileToZip.getName(), zipOut);
+        zipOut.close();
+        fos.close();
+    }
+
+    public static void downloadZip(File fileParam, OutputStream output) {
+        try {
+            File file = fileParam;
+            if (file.exists()) {
+                FileInputStream fis = new FileInputStream(file);
+                byte[] buffer = new byte[4096];
+                int b = -1;
+                while ((b = fis.read(buffer)) != -1) {
+                    output.write(buffer, 0, b);
+                }
+                fis.close();
+                output.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteFolder(String folder) {
+        File file = new File(folder);
+        if (file.isDirectory()) {
+            file.delete();
+        }
+    }
+
+    private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+        if (fileToZip.isHidden()) {
+            return;
+        }
+        if (fileToZip.isDirectory()) {
+            if (fileName.endsWith("/")) {
+                zipOut.putNextEntry(new ZipEntry(fileName));
+                zipOut.closeEntry();
+            } else {
+                zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+                zipOut.closeEntry();
+            }
+            File[] children = fileToZip.listFiles();
+            for (File childFile : children) {
+                zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+            }
+            return;
+        }
+        FileInputStream fis = new FileInputStream(fileToZip);
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        zipOut.putNextEntry(zipEntry);
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+        fis.close();
+    }
+
+    public static void getAllFiles(String directoryName, List<File> files, String extension) {
+        // Get all files from a directory.
+        File directory = new File(directoryName);
+        File[] fList = directory.listFiles();
+        if (fList != null)
+            for (File file : fList) {
+                if (file.isFile()) {
+                    if (file.getName().endsWith(extension)) {
+                        files.add(file);
+                    }
+                } else if (file.isDirectory()) {
+                    getAllFiles(file.getAbsolutePath(), files, extension);
+                }
+            }
     }
 }
 

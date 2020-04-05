@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class CustomConstant {
 
+
     // Script type
     public static final String TEMPLATE_TYPE_JAVA = "Java";
     public static final String TEMPLATE_TYPE_JAVA_WEB = "JavaWeb";
@@ -30,10 +31,10 @@ public class CustomConstant {
     public static final String HEAD_LECTURER = "HEAD LECTURER";
     public static final String LECTURER = "LECTURER";
 
-    public static final int JAVA = 0;
-    public static final int JAVA_WEB = 1;
-    public static final int C = 2;
-    public static final int CSHARP = 3;
+    public static final String CODE_PRACTICAL_JAVA = "Practical_Java";
+    public static final String CODE_PRACTICAL_C = "Practical_C";
+    public static final String CODE_PRACTICAL_JAVA_WEB = "Practical_JavaWeb";
+    public static final String CODE_PRACTICAL_CSharp = "Practical_CSharp";
 
     // Language in search api
     public static final String LANGUAGE_JAVA = "JAVA";
