@@ -3,7 +3,9 @@ package com.fpt.automatedtesting.practicalexams;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.fpt.automatedtesting.common.CustomConstant.*;
+import static com.fpt.automatedtesting.common.PathConstants.*;
 
+import com.fpt.automatedtesting.common.FileManager;
 import com.fpt.automatedtesting.common.PathConstants;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.dtos.SubmissionDetailsDto;
@@ -22,33 +24,34 @@ import com.fpt.automatedtesting.subjectclasses.SubjectClassRepository;
 import com.fpt.automatedtesting.submissions.Submission;
 import com.fpt.automatedtesting.submissions.SubmissionRepository;
 import com.fpt.automatedtesting.users.UserRepository;
-import com.fpt.automatedtesting.common.ZipFile;
-
 
 import org.apache.commons.io.FileUtils;
-import org.snt.inmemantlr.exceptions.CompilationException;
-import org.snt.inmemantlr.exceptions.IllegalWorkflowException;
-import org.snt.inmemantlr.exceptions.ParsingException;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.nio.file.*;
+import java.util.*;
 
 
 //TODO:Log file lại toàn bộ
 
+
 @Service
 public class PracticalExamServiceImpl implements PracticalExamService {
+    private static final Logger logger = LogManager.getLogger(PracticalExamServiceImpl.class);
+
+    //    Chứa vector của all SV
+    private Map<String, Map<String, List<Double>>> allVectors = new HashMap<>();
+
 
     private static final String PREFIX_EXAM_CODE = "Practical_";
 
@@ -60,6 +63,9 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     private final LecturerRepository lecturerRepository;
     private final SubjectRepository subjectRepository;
     private final DuplicatedCodeService duplicatedCodeService;
+    private Queue<StudentSubmissionDto> submissionQueue;
+    private boolean isChecking = false;
+    private static final String EXTENSION_ZIP = ".zip";
 
     @Autowired
     public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, LecturerRepository lecturerRepository, SubjectRepository subjectRepository, DuplicatedCodeService duplicatedCodeService) {
@@ -71,6 +77,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         this.lecturerRepository = lecturerRepository;
         this.subjectRepository = subjectRepository;
         this.duplicatedCodeService = duplicatedCodeService;
+        this.submissionQueue = new PriorityQueue<>();
     }
 
     @Override
@@ -326,7 +333,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
             // Zip folder
             try {
-                ZipFile.zipFolder(practicalFol.getAbsolutePath(), practicalFol.getAbsolutePath());
+                FileManager.zipFolder(practicalFol.getAbsolutePath(), practicalFol.getAbsolutePath());
                 downloadTemplate(response, practicalExam.getCode());
             } catch (FileNotFoundException e) {
                 throw new CustomException(HttpStatus.CONFLICT, "Cannot download practical exam ! Please try later");
@@ -338,15 +345,94 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
     @Override
     public String delete(Integer id) {
-        PracticalExam entity = practicalExamRepository
-                .findByIdAndActiveIsTrue(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
-        entity.setActive(false);
-        PracticalExam result = practicalExamRepository.save(entity);
-        if (result == null) {
-            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
-        }
+
+
+//        for (int i = 0; i < 2; i++) {
+//            duplicatedCodeService.getListTree("A.java", CODE_PRACTICAL_JAVA, "SE63155_A.java", vectorsOfStudent);
+//            duplicatedCodeService.getListTree("B.java", CODE_PRACTICAL_JAVA, "SE63155_B.java", vectorsOfStudent);
+//        }
+//        allVectors.put(studentCode, vectorsOfStudent);
+        System.out.println("AAA");
+//        Double result = CosineSimilarity.computeSimilarity(summaryVector, summaryVectorB);
+
+
+//        PracticalExam entity = practicalExamRepository
+//                .findByIdAndActiveIsTrue(id)
+//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
+//        entity.setActive(false);
+//        PracticalExam result = practicalExamRepository.save(entity);
+//        if (result == null) {
+//            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
+//        }
         return "Delete practical exam successfully";
+    }
+
+    private void searchTheMostSimilarity() {
+        List<DuplicatedResult> duplicatedResults = new ArrayList<>();
+        List<String> checkedTokens = new ArrayList<>();
+        for (Map.Entry<String, Map<String, List<Double>>> entry : allVectors.entrySet()) {
+            String studentCode = entry.getKey();
+            DuplicatedResult duplicatedResult = new DuplicatedResult();
+            duplicatedResult.setStudentCode(studentCode);
+            Map<String, Map<String, Double>> comparedResult = new HashMap<>();
+            logger.log(Level.INFO, "-----------------------------------------------------------------");
+            logger.log(Level.INFO, "[CHECKING] - Student Code - " + studentCode);
+            // Lấy danh sách các method vector của student 1
+            Map<String, List<Double>> mapAllVectorOfStudent = entry.getValue();
+
+            for (Map.Entry<String, List<Double>> entryVectorOfStudent : mapAllVectorOfStudent.entrySet()) {
+                logger.log(Level.INFO, "[CHECKING] - Get submission file key " + entryVectorOfStudent.getKey());
+                Map<String, Double> resultAfterComputeWithCosine = new HashMap<>();
+                // Lấy vector thứ n đi so sánh
+                List<Double> vectorsOfStudent = entryVectorOfStudent.getValue();
+                computeCosineSimilarity(studentCode, vectorsOfStudent, resultAfterComputeWithCosine, entryVectorOfStudent.getKey(), checkedTokens);
+                comparedResult.put(entryVectorOfStudent.getKey(), resultAfterComputeWithCosine);
+            }
+            duplicatedResult.setComparedResult(comparedResult);
+            duplicatedResult.setCheckedTokens(checkedTokens);
+            duplicatedResults.add(duplicatedResult);
+
+            // Make info json files
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            try {
+                objectMapper.writeValue(
+                        new FileOutputStream("a.json"),
+                        duplicatedResult.getCheckedTokens());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            logger.log(Level.INFO, "-----------------------------------------------------------------");
+        }
+    }
+
+    private void computeCosineSimilarity(String studentCode, List<Double> inputVector, Map<String, Double> resultAfterComputeWithCosine, String inputToken, List<String> checkedTokens) {
+        for (Map.Entry<String, Map<String, List<Double>>> entry : allVectors.entrySet()) {
+            if (!studentCode.equalsIgnoreCase(entry.getKey())) {
+                logger.log(Level.INFO, "[CHECKING] - Checking with " + entry.getKey());
+                // Lấy danh sách vector của student cần compare;
+                Map<String, List<Double>> mapAllVectorOfOtherStudent = entry.getValue();
+                for (Map.Entry<String, List<Double>> entryVectorOfOtherStudent : mapAllVectorOfOtherStudent.entrySet()) {
+                    String key = entryVectorOfOtherStudent.getKey();
+                    String pairToken = inputToken + "~" + key;
+                    String pairTokenSwap = key + "~" + inputToken;
+                    boolean check = !checkedTokens.contains(pairToken) && !checkedTokens.contains(pairTokenSwap);
+                    if (check) {
+                        List<Double> studentVector = entryVectorOfOtherStudent.getValue();
+                        double computeResult = CosineSimilarity.computeSimilarity(inputVector, studentVector);
+                        logger.log(Level.INFO, "[CHECKING] - Checking with submission file key "
+                                + key + " | " + computeResult * 100 + "%");
+                        if (computeResult > 0.5) {
+                            resultAfterComputeWithCosine.put(key, computeResult);
+                            checkedTokens.add(pairToken);
+                        }
+                    } else {
+                        logger.log(Level.INFO, "[CHECKING] - Meet checked token :" + pairToken);
+                    }
+                }
+            }
+        }
+        logger.log(Level.INFO, "-----------------------------------------");
     }
 
     private void writeDataToCSVFile(String filePath, List<List<String>> data) {
@@ -490,11 +576,76 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
-    public String checkDuplicatedCode(UploadFileDto dto) {
-        List<List<Double>> vectorsOfFile = duplicatedCodeService.getListTree("A.java", JAVA);
+    public String getStudentSubmission(StudentSubmissionDto dto) {
+        MultipartFile file = dto.getFile();
+        Path copyLocation = Paths.get(PATH_SUBMISSION + File.separator + StringUtils.cleanPath(file.getOriginalFilename()));
+        try {
+            Files.copy(file.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        File folder = new File(PATH_SUBMISSION_SOURCE + dto.getStudentCode());
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        if (folder.exists()) {
+            String s = copyLocation.toAbsolutePath().toString();
+            FileManager.unzip(s, folder.getAbsolutePath());
+        }
+
         return "";
     }
 
+    @Override
+    public String checkDuplicatedCode(PracticalInfo info) {
+        List<String> allStudentSubmissionFileName = new ArrayList<>();
+        try {
+            DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(PATH_SUBMISSION_SOURCE));
+            for (Path path : directoryStream) {
+                allStudentSubmissionFileName.add(path.getFileName().toString());
+            }
+        } catch (IOException ex) {
+        }
+        System.out.println(allStudentSubmissionFileName.size());
+
+        String extension = "";
+        switch (info.getSubjectCode()) {
+            case CODE_PRACTICAL_JAVA:
+            case CODE_PRACTICAL_JAVA_WEB:
+                extension = ".java";
+                break;
+            case CODE_PRACTICAL_C:
+                extension = ".c";
+                break;
+            case CODE_PRACTICAL_CSharp:
+                extension = ".cs";
+                break;
+        }
+
+        for (String studentCode : allStudentSubmissionFileName) {
+            List<File> studentFiles = new ArrayList<>();
+            FileManager.getAllFiles(PATH_SUBMISSION_SOURCE + studentCode, studentFiles, extension);
+            System.out.println("");
+            Map<String, List<Double>> vectors = new HashMap<>();
+            if (!studentFiles.isEmpty()) {
+                for (File studentFile : studentFiles) {
+                    String filePath = studentFile.getAbsolutePath();
+                    duplicatedCodeService.getListTree(filePath, CODE_PRACTICAL_JAVA, studentFile.getName(), vectors);
+                }
+            }
+            allVectors.put(studentCode, vectors);
+        }
+        System.out.println();
+        searchTheMostSimilarity();
+
+        return "OK";
+    }
+
+    private List<Double> getSummaryVector(List<List<Double>> vectors) {
+
+        return null;
+    }
 
     private void downloadTemplate(HttpServletResponse response, String practicalExamCode) {
         try {
@@ -507,7 +658,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
                 response.setContentLength((int) file.length());
                 os = response.getOutputStream();
-                ZipFile.downloadZip(file, os);
+                FileManager.downloadZip(file, os);
 
             } else {
                 throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Please try later");

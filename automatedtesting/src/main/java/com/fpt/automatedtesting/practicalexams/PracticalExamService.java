@@ -1,9 +1,6 @@
 package com.fpt.automatedtesting.practicalexams;
 
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamRequest;
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamResponse;
-import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamResultDto;
-import com.fpt.automatedtesting.practicalexams.dtos.UploadFileDto;
+import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +24,7 @@ public interface PracticalExamService {
     List<PracticalExamResponse> getListPracticalExamByLecturer(String enrollKey);
     List<PracticalExamResponse> getPracticalExamsOfLecturer(Integer id);
 
-    String checkDuplicatedCode(UploadFileDto dto);
+    String getStudentSubmission(StudentSubmissionDto dto);
 
+    String checkDuplicatedCode(PracticalInfo info);
 }

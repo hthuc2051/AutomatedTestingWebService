@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.thucnh.student.controllers;
-
-import com.thucnh.student.beans.JavaBean;
+package com.practicalexam.student.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,32 +15,48 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author USER
+ * @author Le Ngoc Tan
  */
-public class DeleteController extends HttpServlet {
+public class DispatcherController extends HttpServlet {
 
-    private static final String SUCCESS ="SearchController";
-    private static final String ERROR ="error.jsp";
+    private final String LOGIN_PAGE = "login.jsp";
+    private final String START_APP_SERVLET = "StartAppServlet";
+    private final String LOGIN_SERVLET = "LoginServlet";
+    private final String LOGOUT_SERVLET = "LogoutServlet";
+    private final String SEARCH_SERVLET = "SearchServlet";
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = ERROR;
+        PrintWriter out = response.getWriter();
+
+        String button = request.getParameter("btAction");
+        String url = LOGIN_PAGE;
         try {
-            String id = request.getParameter("idDelete");
-            JavaBean beans =  new JavaBean();
-            beans.setBookID(id);
-            boolean check = beans.deleteBook();
-            if(check){
-                url = SUCCESS;
-                request.setAttribute("STATUS", "Delete successfully");
-            }else{
-                request.setAttribute("ERROR", "Delete Failed");
+            if (button == null) {
+                url = START_APP_SERVLET;
+            } else if (button.equals("Login")) {
+                url = LOGIN_SERVLET;
+            } else if (button.equals("Logout")) {
+                url = LOGOUT_SERVLET;
+            } else if (button.equals("Search")) {
+                url = SEARCH_SERVLET;
             }
-        } catch (Exception e) {
-            log("Error at DeleteController "+e.getMessage());
-        }finally{
-            request.getRequestDispatcher(url).forward(request, response);
+        } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
+            out.close();
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

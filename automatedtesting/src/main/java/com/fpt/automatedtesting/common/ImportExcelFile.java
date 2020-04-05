@@ -8,14 +8,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class ImportExcelFile {
     public static List<?> importExcelFileByRole(ExcelFileDto dto) throws IOException {
@@ -25,7 +19,7 @@ public class ImportExcelFile {
             if(dto.getRole().equals(CustomConstant.HEAD_LECTURER))
             {
                 List<HeadLecturerExcelDto> listHead = new ArrayList<HeadLecturerExcelDto>();
-                String excelFile = UploadFile.uploadFileToReturnString(dto.getExcelFile());
+                String excelFile = FileManager.uploadFileToReturnString(dto.getExcelFile());
                 workbook = new XSSFWorkbook(excelFile);
                 XSSFSheet worksheet = workbook.getSheetAt(0);
                 for(int i=1;i<worksheet.getPhysicalNumberOfRows() ;i++) {
@@ -50,7 +44,7 @@ public class ImportExcelFile {
             }else if(dto.getRole().equals(CustomConstant.LECTURER))
             {
                 List<LecturerExcelDto> listLecturer = new ArrayList<LecturerExcelDto>();
-                String excelFile = UploadFile.uploadFileToReturnString(dto.getExcelFile());
+                String excelFile = FileManager.uploadFileToReturnString(dto.getExcelFile());
                 workbook = new XSSFWorkbook(excelFile);
                 XSSFSheet worksheet = workbook.getSheetAt(0);
                 for(int i=1;i<worksheet.getPhysicalNumberOfRows() ;i++) {
