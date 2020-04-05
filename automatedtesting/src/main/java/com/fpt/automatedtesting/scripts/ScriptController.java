@@ -39,17 +39,22 @@ public class ScriptController {
     public ResponseEntity<List<ScriptResponseDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.getAll());
     }
-    @GetMapping("/scripts/{subjectId}")
+    @GetMapping("/scripts/subject/{subjectId}")
     public ResponseEntity<List<ScriptResponseDto>> getScriptBySubjectId(@PathVariable Integer subjectId) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.getScriptTestBySubjectId(subjectId));
     }
 
+    @GetMapping("/scripts/{scriptId}")
+    public ResponseEntity<ScriptResponseDto> getScriptByScriptId(@PathVariable Integer scriptId) {
+        return ResponseEntity.status(HttpStatus.OK).body(scriptService.getScriptTestByScriptId(scriptId));
+    }
+
     @PostMapping("/scripts")
-    public ResponseEntity<Boolean> create(@ModelAttribute ScriptRequestDto scriptDto) {
+    public ResponseEntity<String> create(@ModelAttribute ScriptRequestDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.generateScriptTest(scriptDto));
     }
     @PutMapping("/scripts")
-    public ResponseEntity<Boolean> update(@ModelAttribute ScriptRequestDto scriptDto) {
+    public ResponseEntity<String> update(@ModelAttribute ScriptRequestDto scriptDto) {
         return ResponseEntity.status(HttpStatus.OK).body(scriptService.updateScriptTest(scriptDto));
     }
     @DeleteMapping("/scripts/{id}")

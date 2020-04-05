@@ -10,7 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class ScripTestJava {
-    questionPointStrValue
+   String checkQuestion =  "questionPointStrValue";
+   //GLOBAL_VARIABLE
     @Autowired
     private TemplateQuestion templateQuestion;
 

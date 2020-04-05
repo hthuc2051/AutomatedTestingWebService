@@ -11,4 +11,5 @@ public interface ScriptRepository extends JpaRepository<Script,Integer> {
     Optional<Script> findByIdAndActiveIsTrue(Integer id);
     List<Script> findAllByActiveIsTrue();
     List<Script> getAllBySubjectIdAndActiveIsTrueOrderByTimeCreatedDesc(Integer id);
+    Script getById(Integer id);
 }
