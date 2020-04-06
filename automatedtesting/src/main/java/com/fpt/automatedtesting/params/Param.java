@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.params;
 
+import com.fpt.automatedtesting.paramtypes.ParamType;
 import com.fpt.automatedtesting.practicalexams.PracticalExam;
 import lombok.*;
 import com.fpt.automatedtesting.actions.Action;
@@ -21,8 +22,9 @@ public class Param {
     @Column(name = "name", nullable = true)
     private String name;
 
-    @Column(name = "type", nullable = true )
-    private String type;
+    @ManyToOne
+    @JoinColumn(name = "type", referencedColumnName = "id")
+    private ParamType type;
 
     @ManyToMany(targetEntity = Action.class, mappedBy = "params", fetch = FetchType.LAZY)
     private List<Action> actions;
