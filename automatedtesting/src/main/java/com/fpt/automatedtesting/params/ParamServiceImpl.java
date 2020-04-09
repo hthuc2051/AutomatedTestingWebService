@@ -72,18 +72,18 @@ public class ParamServiceImpl implements ParamService {
             return "Update param failed.";
     }
 
-//    @Override
-//    public String deleteParam(Integer id) {
-//
-//        Param deleteEntity = paramRepository.findById(id)
-//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + id));
-//
-//        deleteEntity.setActive(false);
-//        if (paramRepository.save(deleteEntity) != null)
-//            return "Delete param successfully.";
-//        else
-//            return "Delete param failed.";
-//    }
+    @Override
+    public String deleteParam(Integer id) {
+
+        Param deleteEntity = paramRepository.findById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + id));
+
+        deleteEntity.setActive(false);
+        if (paramRepository.save(deleteEntity) != null)
+            return "Delete param successfully.";
+        else
+            return "Delete param failed.";
+    }
 
 
 }

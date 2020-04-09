@@ -10,5 +10,5 @@ public interface ParamService {
     List<ParamResponseDto> getAllParam();
     String createParam(ParamCreateRequestDto dto);
     String updateParam(ParamUpdateRequestDto dto);
-//    String deleteParam(Integer id);
+    String deleteParam(Integer id);
 }
