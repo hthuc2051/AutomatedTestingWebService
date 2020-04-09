@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ParamService {
     List<ParamResponseDto> getAllParam();
-//    String createParam(ParamCreateRequestDto dto);
+    String createParam(ParamCreateRequestDto dto);
 //    String updateParam(ParamUpdateRequestDto dto);
 //    String deleteParam(Integer id);
 }
