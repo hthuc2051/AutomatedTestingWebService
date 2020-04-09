@@ -29,24 +29,24 @@ public class ParamController {
                 .body(paramService.getAllParam());
     }
 
-//    @PostMapping("/param")
-//    public ResponseEntity<String> createParam(@RequestBody ParamCreateRequestDto dto) {
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(paramService.createParam(dto));
-//    }
-//
-//    @PutMapping("/param")
-//    public ResponseEntity<String> updateParam(@RequestBody ParamUpdateRequestDto dto) {
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(paramService.updateParam(dto));
-//    }
-//
-//    @DeleteMapping("/param/{id}")
-//    public ResponseEntity<String> deleteParam(@PathVariable Integer id) {
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(paramService.deleteParam(id));
-//    }
+    @PostMapping("/param")
+    public ResponseEntity<String> createParam(@RequestBody ParamCreateRequestDto dto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(paramService.createParam(dto));
+    }
+
+    @PutMapping("/param")
+    public ResponseEntity<String> updateParam(@RequestBody ParamUpdateRequestDto dto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(paramService.updateParam(dto));
+    }
+
+    @DeleteMapping("/param/{id}")
+    public ResponseEntity<String> deleteParam(@PathVariable Integer id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(paramService.deleteParam(id));
+    }
 }
