@@ -3,10 +3,7 @@ package com.fpt.automatedtesting.paramtypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +24,27 @@ public class ParamTypeController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(paramTypeService.getAllParamType());
+    }
+
+    @PostMapping("/param-type")
+    public ResponseEntity<String> insertNewParamType(@RequestBody ParamTypeRequestDto requestDto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(paramTypeService.insertParamType(requestDto));
+    }
+
+    @PutMapping("/param-type")
+    public ResponseEntity<String> updateParamType(@RequestBody ParamTypeUpdateRequestDto requestDto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(paramTypeService.updateParamType(requestDto));
+    }
+
+    @DeleteMapping("/param-type/{id}")
+    public ResponseEntity<String> deleteParamType(@PathVariable Integer id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(paramTypeService.deleteParamType(id));
     }
 
 }
