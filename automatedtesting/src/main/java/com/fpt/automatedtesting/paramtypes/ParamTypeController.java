@@ -1,5 +1,8 @@
 package com.fpt.automatedtesting.paramtypes;
 
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeUpdateRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.fpt.automatedtesting.paramtypes;
+package com.fpt.automatedtesting.paramtypes.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
