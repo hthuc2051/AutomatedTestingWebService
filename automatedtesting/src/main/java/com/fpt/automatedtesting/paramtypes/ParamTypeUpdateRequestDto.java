@@ -7,12 +7,14 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class ParamTypeRequestDto {
+@NoArgsConstructor
+public class ParamTypeUpdateRequestDto {
+    private Integer id;
+
     private String name;
 
-    private List<String> subjectCode;
+    private List<String> subjectCodes;
 
     private Boolean active;
 }
