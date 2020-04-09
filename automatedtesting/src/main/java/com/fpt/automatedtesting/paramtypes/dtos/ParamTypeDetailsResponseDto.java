@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParamTypeResponseDto {
+public class ParamTypeDetailsResponseDto {
     private Integer id;
 
     private String name;
@@ -17,6 +15,4 @@ public class ParamTypeResponseDto {
     private String subjectCode;
 
     private Boolean active;
-
-    private List<String> listParams;
 }

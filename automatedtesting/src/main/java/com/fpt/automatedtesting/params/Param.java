@@ -1,7 +1,6 @@
 package com.fpt.automatedtesting.params;
 
 import com.fpt.automatedtesting.paramtypes.ParamType;
-import com.fpt.automatedtesting.practicalexams.PracticalExam;
 import lombok.*;
 import com.fpt.automatedtesting.actions.Action;
 import javax.persistence.*;
