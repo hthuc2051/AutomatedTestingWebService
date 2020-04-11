@@ -122,7 +122,7 @@ public class PracticalExamController {
     }
 
     @PostMapping("/practical-exam/check-code/result")
-    public ResponseEntity<List<DuplicatedCodeResponse>> getDuplicatedResult(@ModelAttribute DuplicatedCodeRequest request) {
+    public ResponseEntity<List<DuplicatedCodeResponse>> getDuplicatedResult(@RequestBody DuplicatedCodeRequest request) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.getDuplicatedResult(request));
