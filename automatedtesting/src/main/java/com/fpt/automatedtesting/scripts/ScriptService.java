@@ -10,7 +10,8 @@ public interface ScriptService {
     List<ScriptResponseDto> getAll();
     List<ScriptResponseDto> getScriptTestBySubjectId(Integer subjectId);
     String generateScriptTest(ScriptRequestDto dto);
-    void downloadFile(HttpServletResponse response);
+    void downloadScriptTest(int scriptId,HttpServletResponse response);
+    void downloadTestDocument(int scriptId,HttpServletResponse response);
     String deleteScript(Integer scriptId);
     String updateScriptTest(ScriptRequestDto dto);
     ScriptResponseDto getScriptTestByScriptId(Integer scriptId);

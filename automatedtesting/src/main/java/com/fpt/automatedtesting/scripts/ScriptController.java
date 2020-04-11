@@ -68,9 +68,14 @@ public class ScriptController {
         return "ok";
     }
 
-    @GetMapping("/download")
-    public void downloadFile(HttpServletRequest request, HttpServletResponse response) {
-        scriptService.downloadFile(response);
+    @GetMapping("/scripts/download/{scriptId}")
+    public void downloadTestScript(@PathVariable Integer scriptId, HttpServletResponse response) {
+        scriptService.downloadScriptTest(scriptId,response);
+    }
+
+    @GetMapping("/documents/download/{scriptId}")
+    public void downloadDocFile(@PathVariable Integer scriptId, HttpServletResponse response) {
+        scriptService.downloadTestDocument(scriptId,response);
     }
 
     @PostMapping("/upload")

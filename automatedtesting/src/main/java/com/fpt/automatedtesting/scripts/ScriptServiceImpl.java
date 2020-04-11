@@ -26,10 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ScriptServiceImpl implements ScriptService {
@@ -193,20 +190,44 @@ public class ScriptServiceImpl implements ScriptService {
     }
 
     @Override
-    public void downloadFile(HttpServletResponse response) {
-        String folPath = null;
+    public void downloadScriptTest(int scriptId,HttpServletResponse response) {
         try {
-            folPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
-            String filePath = folPath + File.separator + "SE63155.zip";
-            File file = new File(filePath);
-            String mimeType = "application/octet-stream";
-            response.setContentType(mimeType);
-            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
-            response.setContentLength((int) file.length());
-            OutputStream os = null;
-            os = response.getOutputStream();
+            Optional<Script> script = scriptRepository.findById(scriptId);
+            if(script.isPresent()) {
+                if(script.get().getScriptPath() != null){
+                    File file = new File(script.get().getScriptPath());
+                    String mimeType = "application/octet-stream";
+                    response.setContentType(mimeType);
+                    response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+                    response.setContentLength((int) file.length());
+                    OutputStream os = null;
+                    os = response.getOutputStream();
+                    FileManager.downloadZip(file, os);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
 
-            FileManager.downloadZip(file, os);
+    @Override
+    public void downloadTestDocument(int scriptId, HttpServletResponse response) {
+        try {
+            Optional<Script> script = scriptRepository.findById(scriptId);
+            if(script.isPresent()) {
+                if(script.get().getDocumentPath() != null){
+                    File file = new File(script.get().getDocumentPath());
+                    String mimeType = "application/octet-stream";
+                    response.setContentType(mimeType);
+                    response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+                    response.setContentLength((int) file.length());
+                    OutputStream os = null;
+                    os = response.getOutputStream();
+                    FileManager.downloadZip(file, os);
+                }
+            }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         } catch (IOException e) {
