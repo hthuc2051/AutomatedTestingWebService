@@ -16,4 +16,5 @@ public class ScriptResponseDto {
     private String scriptCode;
     private String code;
     private String scriptData;
+    private String docFileName;
 }

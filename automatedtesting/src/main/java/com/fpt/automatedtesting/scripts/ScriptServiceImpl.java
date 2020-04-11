@@ -26,9 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ScriptServiceImpl implements ScriptService {
@@ -39,6 +37,7 @@ public class ScriptServiceImpl implements ScriptService {
     private static final String EXTENSION_C = ".c";
     private static final String EXTENSION_CSharp = ".cs";
     private static final String QUESTION_POINT_STR_VALUE = "questionPointStrValue";
+    private static final String GLOBAL_VARIABLE_STR= "//GLOBAL_VARIABLE";
 
     private final ScriptRepository scriptRepository;
     private final HeadLecturerRepository headLecturerRepository;
@@ -60,12 +59,27 @@ public class ScriptServiceImpl implements ScriptService {
     @Override
     public List<ScriptResponseDto> getScriptTestBySubjectId(Integer subjectId) {
         List<Script> listScript  =scriptRepository.getAllBySubjectIdAndActiveIsTrueOrderByTimeCreatedDesc(subjectId);
-        List<ScriptResponseDto> result = MapperManager.mapAll(listScript, ScriptResponseDto.class);
+        List<ScriptResponseDto> result = new ArrayList<>();
+        for (Script item :listScript) {
+            String docPath = item.getDocumentPath();
+            String fileName = "";
+            try{
+                File file = new File(docPath);
+                if(file != null){
+                    fileName = file.getName();
+                }
+            }catch(Exception e){
+
+            }
+            ScriptResponseDto dto = MapperManager.map(item,ScriptResponseDto.class);
+            dto.setDocFileName(fileName);
+            result.add(dto);
+        }
         return result;
     }
 
     @Override
-    public Boolean generateScriptTest(ScriptRequestDto dto) {
+    public String generateScriptTest(ScriptRequestDto dto) {
 
         HeadLecturer headLecturer = headLecturerRepository.findById(dto.getHeadLecturerId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found user with id" + dto.getHeadLecturerId()));
@@ -131,10 +145,11 @@ public class ScriptServiceImpl implements ScriptService {
             String endPart = data.substring(endIndex, data.length());
             String tempScript = startPart + "\n" + middlePart + "\n" + endPart;
             String fullScript = tempScript.replace(QUESTION_POINT_STR_VALUE, dto.getQuestionPointStr());
+            fullScript = fullScript.replace(GLOBAL_VARIABLE_STR,dto.getGlobalVariable());
             // Write new file to Scripts_[Language] folder
             Date date = new Date();
             Integer hashCode = CustomUtils.getCurDateTime(date, "Date").hashCode();
-            String code = subject.getCode() + "_" + Math.abs(hashCode) + "_" + dto.getName();
+            String code = subject.getCode() + "_" + Math.abs(hashCode);
             String scriptPath = scriptStorePath + code + fileExtension;
             BufferedWriter writer = new BufferedWriter(
                     new FileWriter(scriptPath,
@@ -147,7 +162,7 @@ public class ScriptServiceImpl implements ScriptService {
             String documentPath = "";
             MultipartFile docsFile = dto.getDocsFile();
             if (docsFile != null) {
-                documentPath = docsFolPath + File.separator + code + ".docx";
+                documentPath = docsFolPath  + code + ".docx";
                 Path copyLocation = Paths.get(documentPath);
                 Files.copy(docsFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -164,31 +179,55 @@ public class ScriptServiceImpl implements ScriptService {
             script.setDocumentPath(documentPath);
             script.setActive(true);
             if (scriptRepository.save(script) != null) {
-                return true;
+                return CustomConstant.CREATE_SCRIPT_SUCCESS;
             }
 
         } catch (IOException e) {
             e.printStackTrace();
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
-        return false;
+        return CustomConstant.CREATE_SCRIPT_FAIL;
     }
 
     @Override
-    public void downloadFile(HttpServletResponse response) {
-        String folPath = null;
+    public void downloadScriptTest(int scriptId,HttpServletResponse response) {
         try {
-            folPath = ResourceUtils.getFile("classpath:static").getAbsolutePath();
-            String filePath = folPath + File.separator + "SE63155.zip";
-            File file = new File(filePath);
-            String mimeType = "application/octet-stream";
-            response.setContentType(mimeType);
-            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
-            response.setContentLength((int) file.length());
-            OutputStream os = null;
-            os = response.getOutputStream();
+            Optional<Script> script = scriptRepository.findById(scriptId);
+            if(script.isPresent()) {
+                if(script.get().getScriptPath() != null){
+                    File file = new File(script.get().getScriptPath());
+                    String mimeType = "application/octet-stream";
+                    response.setContentType(mimeType);
+                    response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+                    response.setContentLength((int) file.length());
+                    OutputStream os = null;
+                    os = response.getOutputStream();
+                    FileManager.downloadZip(file, os);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
 
-            FileManager.downloadZip(file, os);
+    @Override
+    public void downloadTestDocument(int scriptId, HttpServletResponse response) {
+        try {
+            Optional<Script> script = scriptRepository.findById(scriptId);
+            if(script.isPresent()) {
+                if(script.get().getDocumentPath() != null){
+                    File file = new File(script.get().getDocumentPath());
+                    String mimeType = "application/octet-stream";
+                    response.setContentType(mimeType);
+                    response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+                    response.setContentLength((int) file.length());
+                    OutputStream os = null;
+                    os = response.getOutputStream();
+                    FileManager.downloadZip(file, os);
+                }
+            }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         } catch (IOException e) {
@@ -207,7 +246,7 @@ public class ScriptServiceImpl implements ScriptService {
     }
 
     @Override
-    public Boolean updateScriptTest(ScriptRequestDto dto) {
+    public String updateScriptTest(ScriptRequestDto dto) {
         HeadLecturer headLecturer = headLecturerRepository.findById(dto.getHeadLecturerId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found user with id" + dto.getHeadLecturerId()));
         Subject subject = subjectRepository.findById(dto.getSubjectId())
@@ -272,6 +311,7 @@ public class ScriptServiceImpl implements ScriptService {
             String endPart = data.substring(endIndex, data.length());
             String tempScript = startPart + "\n" + middlePart + "\n" + endPart;
             String fullScript = tempScript.replace(QUESTION_POINT_STR_VALUE, dto.getQuestionPointStr());
+            fullScript = fullScript.replace(GLOBAL_VARIABLE_STR,dto.getGlobalVariable());
             // Write new file to Scripts_[Language] folder
 
             Script script = scriptRepository.findById(dto.getId()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script" + dto.getHeadLecturerId()));
@@ -293,20 +333,26 @@ public class ScriptServiceImpl implements ScriptService {
                 Files.copy(docsFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
             }
             // Save to database
-
             script.setName(dto.getName());
             script.setScriptPath(scriptPath);
+            script.setScriptData(dto.getScriptData());
             if (!documentPath.equals("")) {
                 script.setDocumentPath(documentPath);
             }
             if (scriptRepository.save(script) != null) {
-                return true;
+                return CustomConstant.UPDATE_SCRIPT_SUCCESS;
             }
         } catch (IOException e) {
             e.printStackTrace();
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
-        return false;
+        return CustomConstant.UPDATE_SCRIPT_FAIL;
+    }
+
+    @Override
+    public ScriptResponseDto getScriptTestByScriptId(Integer scriptId) {
+        ScriptResponseDto dto =  MapperManager.map(scriptRepository.getById(scriptId),ScriptResponseDto.class);
+        return dto;
     }
 
 

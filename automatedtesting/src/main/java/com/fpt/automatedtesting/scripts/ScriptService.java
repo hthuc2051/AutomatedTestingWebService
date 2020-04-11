@@ -9,8 +9,10 @@ import java.util.List;
 public interface ScriptService {
     List<ScriptResponseDto> getAll();
     List<ScriptResponseDto> getScriptTestBySubjectId(Integer subjectId);
-    Boolean generateScriptTest(ScriptRequestDto dto);
-    void downloadFile(HttpServletResponse response);
+    String generateScriptTest(ScriptRequestDto dto);
+    void downloadScriptTest(int scriptId,HttpServletResponse response);
+    void downloadTestDocument(int scriptId,HttpServletResponse response);
     String deleteScript(Integer scriptId);
-    Boolean updateScriptTest(ScriptRequestDto dto);
+    String updateScriptTest(ScriptRequestDto dto);
+    ScriptResponseDto getScriptTestByScriptId(Integer scriptId);
 }
