@@ -1,17 +1,20 @@
-package com.fpt.automatedtesting.params;
+package com.fpt.automatedtesting.paramtypes.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParamRequestDto implements Serializable {
+public class ParamTypeUpdateRequestDto {
     private Integer id;
+
     private String name;
-    private String type;
-    private Boolean active = true;
+
+    private List<String> subjectCodes;
+
+    private Boolean active;
 }

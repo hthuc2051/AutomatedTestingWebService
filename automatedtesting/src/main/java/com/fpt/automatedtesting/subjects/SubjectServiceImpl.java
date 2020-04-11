@@ -8,6 +8,7 @@ import com.fpt.automatedtesting.subjectclasses.SubjectClass;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.subjectclasses.SubjectClassRepository;
+import com.fpt.automatedtesting.subjects.dtos.SubjectDetailsResponseDto;
 import com.fpt.automatedtesting.subjects.dtos.SubjectResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,11 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public List<SubjectResponseDto> getAll() {
-        List<SubjectResponseDto> result = null;
+    public List<SubjectDetailsResponseDto> getAll() {
+        List<SubjectDetailsResponseDto> result = null;
         List<Subject> subjectEntities = subjectRepository.findAllByActiveIsTrue();
         if (subjectEntities != null && !subjectEntities.isEmpty()) {
-            result = MapperManager.mapAll(subjectEntities, SubjectResponseDto.class);
+            result = MapperManager.mapAll(subjectEntities, SubjectDetailsResponseDto.class);
             if (result != null && !result.isEmpty()) {
                 for (int i = 0; i < result.size(); i++) {
                     List<ClassResponseDto> classResponseDtos = new ArrayList<>();
@@ -55,14 +56,14 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public SubjectResponseDto getAllClassAndScriptsBySubjectId(Integer subjectId) {
+    public SubjectDetailsResponseDto getAllClassAndScriptsBySubjectId(Integer subjectId) {
 
         Subject subject = subjectRepository.findByIdAndActiveIsTrue(subjectId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found subject with id" + subjectId));
 
         List<SubjectClass> subjectClassEntities = subject.getSubjectClasses();
 
-        SubjectResponseDto result = MapperManager.map(subject, SubjectResponseDto.class);
+        SubjectDetailsResponseDto result = MapperManager.map(subject, SubjectDetailsResponseDto.class);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Occur error ! Please try later");
         }
@@ -89,5 +90,17 @@ public class SubjectServiceImpl implements SubjectService {
             }
         }
         return result;
+    }
+
+    @Override
+    public List<SubjectResponseDto> getAllSubjectForParamType() {
+
+        List<Subject> subjectEntities = subjectRepository.findAllByActiveIsTrue();
+        List<SubjectResponseDto> subjects = MapperManager.mapAll(subjectEntities, SubjectResponseDto.class);
+
+        if (subjects != null || subjects.size() > 0)
+            return subjects;
+        else
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any subject.");
     }
 }

@@ -1,6 +1,6 @@
 package com.fpt.automatedtesting.actions.dtos;
 
-import com.fpt.automatedtesting.params.ParamResponseDto;
+import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
