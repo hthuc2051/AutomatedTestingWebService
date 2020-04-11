@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.practicalexams;
 
+import com.fpt.automatedtesting.duplicatedcode.DuplicatedCode;
 import com.fpt.automatedtesting.scripts.Script;
 import com.fpt.automatedtesting.subjectclasses.SubjectClass;
 import com.fpt.automatedtesting.submissions.Submission;
@@ -47,6 +48,7 @@ public class PracticalExam {
             @JoinColumn(name = "script_id", referencedColumnName = "id", nullable = true, updatable = false)})
     private List<Script> scripts;
 
-
+    @OneToMany(mappedBy = "practicalExam", cascade = CascadeType.ALL)
+    private List<DuplicatedCode> duplicatedCodes;
 
 }

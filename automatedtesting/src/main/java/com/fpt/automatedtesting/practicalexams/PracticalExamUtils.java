@@ -2,10 +2,12 @@ package com.fpt.automatedtesting.practicalexams;
 
 import org.kohsuke.github.*;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import java.util.List;
 
 import static com.fpt.automatedtesting.common.PathConstants.*;
 import static com.fpt.automatedtesting.common.CustomConstant.*;
+
 
 public class PracticalExamUtils {
 
@@ -31,14 +34,25 @@ public class PracticalExamUtils {
         try {
             File file = new File(filePath);
             byte[] encoded = Files.readAllBytes(file.toPath());
-            return new String(encoded, Charset.forName("UTF-8"))
-                    .replace("{", "")
-                    .replace("}", "")
-                    .replace(";", "");
+            return replaceAllSpecialChar(encoded);
         } catch (Exception ex) {
             System.out.println("readFile error : " + ex.getMessage());
         }
         return null;
+    }
+
+    public static String replaceAllSpecialChar(byte[] encoded) {
+        String replaceString = new String(encoded, Charset.forName("UTF-8"))
+                .replace("{", "")
+                .replace("}", "")
+                .replace(";", "")
+                .replace("/", "")
+                .replace("*", "")
+                .replace("@", "")
+                .replace("(", "")
+                .replace(")", "")
+                .replace('"', ' ');
+        return replaceString;
     }
 
     public static String removeNullOrBlankElements(String lineOfCode, String language) {
@@ -109,10 +123,10 @@ public class PracticalExamUtils {
         try {
             List<String> pageUrl = new ArrayList<>();
             GHContentSearchBuilder search = gitHub.searchContent();
-            GHContentSearchBuilder searchBuilder = search.q(lineOfCode).in("file").language(language);
+            String q = URLEncoder.encode(lineOfCode, StandardCharsets.UTF_8.name());
+            GHContentSearchBuilder searchBuilder = search.q(q).in("file").language(language);
             PagedSearchIterable<GHContent> res = searchBuilder.list();
             for (GHContent ghContent : res) {
-                System.out.println(ghContent.getOwner());
                 GHRepository ghRepository = ghContent.getOwner();
                 pageUrl.add(ghRepository.getHtmlUrl().toString() + "\r\n");
             }
@@ -144,8 +158,8 @@ public class PracticalExamUtils {
     public static void writeReport(GitHub github, String lineOfCode, String language) {
         try {
             int i = 0;
-            int readLength = 120;
-            int nextRead = 121;
+            int readLength = 100;
+            int nextRead = 101;
             lineOfCode = lineOfCode.replace("[", "").replace("]", "").trim();
             do {
                 if (i < lineOfCode.length() && lineOfCode.length() > readLength) {
@@ -174,13 +188,11 @@ public class PracticalExamUtils {
 
     }
 
+
     public static void checkDuplicatedCodeGithub(String filePath) {
         try {
-            GitHub github = getConnection("lamthanhphat98", "a6d23ad8a3c5a82870c06142bd8ef0ccba2c62cc");
-            //System.out.println(github.getMyself().getEmail());
-            //Map<String,GHBranch> hashMap = new HashMap<>();
-            //read file
-            //String filePath ="C:\\Users\\ADMIN\\Downloads\\student\\ShoeDAO.java";
+            System.out.println("Check online - " + filePath);
+            GitHub github = getConnection("nhthuc1502", "a4c870139a3c172ca70082ca3a3fc0e975f7e1ae");
             String language = "";
             if (filePath.contains(".java")) {
                 language = LANGUAGE_JAVA;
@@ -193,7 +205,34 @@ public class PracticalExamUtils {
             String convertedString = removeNullOrBlankElements(inputString, language).trim();
             writeReport(github, convertedString, language);
         } catch (Exception ex) {
-            System.out.println("logGithub error : " + ex.getMessage());
+            System.out.println("Log Github error : " + ex.getMessage());
+        }
+    }
+
+    public static void pushCodeToGithubStorage(String filePath) {
+        try {
+            String url = "";
+            URL obj = new URL(url);
+            HttpURLConnection myURLConnection = (HttpURLConnection) obj.openConnection();
+            String basicAuth = "token a4c870139a3c172ca70082ca3a3fc0e975f7e1ae";
+            myURLConnection.setRequestProperty("Authorization", basicAuth);
+            myURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            myURLConnection.setRequestProperty("Content-Language", "en-US");
+            myURLConnection.setUseCaches(false);
+            myURLConnection.setDoInput(true);
+            myURLConnection.setDoOutput(true);
+            myURLConnection.setRequestMethod("GET");
+            myURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            BufferedReader in = new BufferedReader(new InputStreamReader(myURLConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            myURLConnection.disconnect();
+            in.close();
+        } catch (Exception ex) {
+            System.out.println("Log Github error : " + ex.getMessage());
         }
     }
 }

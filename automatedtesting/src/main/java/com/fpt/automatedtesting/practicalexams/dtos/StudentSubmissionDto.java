@@ -10,6 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class StudentSubmissionDto {
     private String studentCode;
-    private String subjectCode;
+    private String examCode;
     private MultipartFile file;
 }

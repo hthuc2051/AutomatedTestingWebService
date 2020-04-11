@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.practicalexams;
 
+import com.fpt.automatedtesting.common.FileManager;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.misc.Interval;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +31,7 @@ public class DuplicatedCodeService {
     private static GenericParser gp = null;
 
     public void getListTree(String file, String subjectCode, String fileCode, Map<String, List<Double>> vectors) {
-        System.out.println("Checking file :");
+        System.out.println("Checking offline :");
         System.out.println(file);
         File[] files = null;
         File parserFile = null;
@@ -107,17 +109,42 @@ public class DuplicatedCodeService {
             parserRuleContext = (ParserRuleContext) node;
         } catch (Exception e) {
         }
-        boolean isClassBody = true;
-        if (parserRuleContext != null) {
-            int startToken = parserRuleContext.getStart().getLine();
-            int stopToken = parserRuleContext.getStop().getLine();
-            if (Math.abs((startToken - stopToken)) <= 1) {
-                isClassBody = false;
+        if (className.contains("ClassBodyDeclarationContext")) {
+            boolean check = true;
+            if (parserRuleContext != null) {
+                int startToken = parserRuleContext.getStart().getLine();
+                int stopToken = parserRuleContext.getStop().getLine();
+                int size = Math.abs((startToken - stopToken));
+                System.out.println("Size" + size + ": " + node.getText());
+//            System.out.println(node.getText());
+                // Variables
+                if (size == 0) {
+                    check = false;
+                }
+                if (size > 0 && size <= 3) {
+                    String s = "";
+                    try {
+                        s = FileManager.readFileToString("Ignore_Methods.txt");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (s != "") {
+                        String[] arr = s.split("-");
+                        for (int i = 0; i < arr.length; i++) {
+                            String methodText = node.getText();
+                            if (methodText.contains(arr[i])) {
+                                check = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                fileToken += "_" + startToken + "-" + stopToken;
             }
-            fileToken += "_" + startToken + "-" + stopToken;
-        }
-        if (className.contains("ClassBodyDeclarationContext") && isClassBody) {
-            result.put(fileToken, node);
+            if (check) {
+                result.put(fileToken, node);
+                System.out.println("OK" + node.getText());
+            }
         }
         int count = node.getChildCount();
         if (count > 0) {
