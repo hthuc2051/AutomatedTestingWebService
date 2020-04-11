@@ -1,6 +1,6 @@
 package com.fpt.automatedtesting.practicalexams.dtos;
 
-import com.fpt.automatedtesting.submissions.dtos.SubmissionDetailsDto;
+import com.fpt.automatedtesting.submissions.dtos.request.SubmissionDetailsDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

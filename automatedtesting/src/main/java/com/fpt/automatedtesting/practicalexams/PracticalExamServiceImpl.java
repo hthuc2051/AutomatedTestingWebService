@@ -13,7 +13,7 @@ import com.fpt.automatedtesting.duplicatedcode.DuplicatedCodeRepository;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
-import com.fpt.automatedtesting.submissions.dtos.SubmissionDetailsDto;
+import com.fpt.automatedtesting.submissions.dtos.request.SubmissionDetailsDto;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.lecturers.Lecturer;
