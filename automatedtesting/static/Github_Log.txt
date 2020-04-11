@@ -1,0 +1,73 @@
+System has searched the line of code : To change this license header choose License Headers in Project Properties. To change this templat
+The result is here :
+The total detected : 41
+[https://github.com/pawlikwoj/cymes
+, https://github.com/manideep91/recap
+, https://github.com/Giack30/Informatica2017-18
+, https://github.com/pawlikwoj/cymes
+, https://github.com/Giack30/Informatica2017-18
+, https://github.com/wolf210210/shu-cssd
+, https://github.com/wolf210210/shu-cssd
+, https://github.com/Mhakimamransyah/Bayesian-Decision-Theory
+, https://github.com/pawlikwoj/cymes
+, https://github.com/pawlikwoj/cymes
+, https://github.com/wolf210210/shu-cssd
+, https://github.com/sdsmall/POI_FileParser
+, https://github.com/samiraasgari/nlpAssignment1
+, https://github.com/OpenWebslides/conversion-tool
+, https://github.com/PuginisPerkunas/fixedCodeNEW
+, https://github.com/sergafts/netwmanage
+, https://github.com/Drohno/m7-servidores
+, https://github.com/dafrenchyman/mrsharky
+, https://github.com/Drohno/m7-servidores
+, https://github.com/xuejingdong/KmlParser
+, https://github.com/joaofunes/SISNRI
+, https://github.com/emmanueliv/sicabis
+, https://github.com/kareem-mekhimar/erp
+, https://github.com/shelley113/roadRadarGithub
+, https://github.com/amirrached010/ConnectRevampV1
+, https://github.com/tgraguacion/SISRNI_VF
+, https://github.com/joaofunes/SISNRI
+, https://github.com/tgraguacion/SISRNI_VF
+, https://github.com/joaofunes/SISNRI
+, https://github.com/alcirBarros/DynamicReports
+, https://github.com/tgraguacion/SISRNI_VF
+, https://github.com/joaofunes/SISNRI
+, https://github.com/alcirBarros/DynamicReports
+, https://github.com/alcirBarros/circuit-project
+, https://github.com/JorgeMedina-P77A/DentistProject_GestionDeProyectos
+, https://github.com/tgraguacion/SISRNI_VF
+, https://github.com/joaofunes/SISNRI
+, https://github.com/tgraguacion/SISRNI_VF
+, https://github.com/tgraguacion/SISRNI_VF
+, https://github.com/joaofunes/SISNRI
+, https://github.com/joaofunes/SISNRI
+]
+System has searched the line of code : file choose Tools | Templates and open the template in the editor. package com.practicalexam.stu
+The result is here :
+The total detected : 0
+[]
+System has searched the line of code : ent.khanhkt.cart author Kieu Trong Khanh public class CartObject implements Serializable  private
+The result is here :
+The total detected : 0
+[]
+System has searched the line of code : Map<String Integer> items public Map<String Integer> getItems  return items public void addItem
+The result is here :
+The total detected : 0
+[]
+System has searched the line of code : oCartString title  if title == null  return if title.trim.isEmpty  return if this.items == null
+The result is here :
+The total detected : 0
+[]
+System has searched the line of code : this.items = new HashMap<> int quantity = 1 if this.items.containsKeytitle  quantity = this.ite
+The result is here :
+The total detected : 0
+[]
+System has searched the line of code : s.gettitle + 1 this.items.puttitle quantity public void removeItemFromCartString title  if this.
+The result is here :
+The total detected : 0
+[]
+System has searched the line of code : tems == null  return if this.items.containsKeytitle  this.items.removetitle if this.items.isEmpt
+The result is here :
+The total detected : 0
+[]

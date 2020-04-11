@@ -2,6 +2,8 @@ package com.fpt.automatedtesting.practicalexams;
 
 
 import com.fpt.automatedtesting.common.FileManager;
+import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
+import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.exception.ExceptionManager;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
@@ -113,10 +115,17 @@ public class PracticalExamController {
     }
 
     @PostMapping("/practical-exam/check-code")
-    public ResponseEntity<String> checkDuplicatedCode(@RequestBody PracticalInfo practicalInfo) {
+    public ResponseEntity<String> checkDuplicatedCode(@ModelAttribute PracticalInfo practicalInfo) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.checkDuplicatedCode(practicalInfo));
+    }
+
+    @PostMapping("/practical-exam/check-code/result")
+    public ResponseEntity<List<DuplicatedCodeResponse>> getDuplicatedResult(@ModelAttribute DuplicatedCodeRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.getDuplicatedResult(request));
     }
 
 }

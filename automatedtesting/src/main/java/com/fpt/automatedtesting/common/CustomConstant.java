@@ -46,7 +46,7 @@ public class CustomConstant {
     public static final String IMPORT_CS = "using";
     public static final String IMPORT_C = "#include";
 
-    public static final String DELETE_SCRIPT_SUCCESS = "Delete Script Successfully";
+    public static final String DELETE_SCRIPT_SUCCESS = "Delete Successfully";
     public static final String DELETE_SCRIPT_FAIL = "Delete Script Failed";
     public static final String CREATE_SCRIPT_SUCCESS = "Create Script Successfully";
     public static final String CREATE_SCRIPT_FAIL = "Create Script Failed";

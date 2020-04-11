@@ -9,6 +9,7 @@ import java.util.Optional;
 @Repository
 public interface PracticalExamRepository extends JpaRepository<PracticalExam,Integer> {
     Optional<PracticalExam> findByIdAndActiveIsTrue(Integer id);
+    Optional<PracticalExam> findByCodeAndActiveIsTrue(String id);
     Optional<PracticalExam> findByIdAndStateEqualsAndActiveIsTrue(Integer id, String state);
     List<PracticalExam> findAllByActiveIsTrue();
 }

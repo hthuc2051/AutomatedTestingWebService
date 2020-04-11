@@ -1,5 +1,7 @@
 package com.fpt.automatedtesting.practicalexams;
 
+import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
+import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 
@@ -27,4 +29,6 @@ public interface PracticalExamService {
     String getStudentSubmission(StudentSubmissionDto dto);
 
     String checkDuplicatedCode(PracticalInfo info);
+
+    List<DuplicatedCodeResponse> getDuplicatedResult(DuplicatedCodeRequest practicalInfo);
 }
