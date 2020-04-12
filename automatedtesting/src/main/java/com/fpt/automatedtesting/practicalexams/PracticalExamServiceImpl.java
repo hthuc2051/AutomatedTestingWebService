@@ -397,7 +397,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             logger.log(Level.INFO, "[CHECKING] - Student Code - " + studentCode);
             // Lấy danh sách các method vector của student 1
             Map<String, List<Double>> mapAllVectorOfStudent = entry.getValue();
-
             for (Map.Entry<String, List<Double>> entryVectorOfStudent : mapAllVectorOfStudent.entrySet()) {
                 logger.log(Level.INFO, "[CHECKING] - Get submission file key " + entryVectorOfStudent.getKey());
                 Map<String, Double> resultAfterComputeWithCosine = new HashMap<>();

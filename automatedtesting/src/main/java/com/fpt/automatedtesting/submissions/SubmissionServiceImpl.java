@@ -2,6 +2,7 @@ package com.fpt.automatedtesting.submissions;
 
 import com.fpt.automatedtesting.common.FileManager;
 import com.fpt.automatedtesting.submissions.dtos.request.SubmissionFilesRequest;
+import com.fpt.automatedtesting.submissions.dtos.response.FilesResponse;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -9,7 +10,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.fpt.automatedtesting.common.CustomConstant.*;
 import static com.fpt.automatedtesting.common.PathConstants.*;
@@ -18,10 +21,10 @@ import static com.fpt.automatedtesting.common.PathConstants.*;
 public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
-    public List<List<String>> getSubmissionFiles(SubmissionFilesRequest request) {
-
+    public Map<String, List<String>> getSubmissionFiles(SubmissionFilesRequest request) {
+//         = new ArrayList<>();
         // Check lecturer token later
-        List<List<String>> result = null;
+        Map<String, List<String>> result = null;
         List<File> files = new ArrayList<>();
         String token = request.getFilesToken();
         String[] arr = token.split("~");
@@ -44,14 +47,16 @@ public class SubmissionServiceImpl implements SubmissionService {
                 }
                 FileManager.getAllFiles(PATH_SERVER_REPOSITORY, files, extension);
                 if (files.size() > 0) {
-                    result = new ArrayList<>();
+                    result = new HashMap<>();
                     if (!firstFile.equals("") && !secondFile.equals("")) {
                         for (File file : files) {
                             String fileName = file.getName();
-                            if (fileName.contains(firstFile) || fileName.contains(secondFile)) {
+                            if ((fileName.contains(firstFile) || fileName.contains(secondFile)) && fileName.contains(request.getExamCode())) {
                                 try {
-                                    List<String> fileString = Files.readAllLines(Paths.get(file.getAbsolutePath()));
-                                    result.add(fileString);
+                                    if (!result.containsKey(fileName)) {
+                                        List<String> fileString = Files.readAllLines(Paths.get(file.getAbsolutePath()));
+                                        result.put(fileName, fileString);
+                                    }
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }

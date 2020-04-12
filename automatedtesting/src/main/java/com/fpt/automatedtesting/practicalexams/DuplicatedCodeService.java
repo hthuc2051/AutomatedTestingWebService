@@ -85,19 +85,22 @@ public class DuplicatedCodeService {
                 e.printStackTrace();
                 System.out.println("Parsing | Illegal error");
             }
-            List<ParseTree> trees = ctx.children;
-            // studentCode_fileName_tokenLineStart_tokenLineStop
-            Map<String, ParseTree> methodsTree = new HashMap<>();
-            // Lấy danh sách biến + methods
-            for (ParseTree tree : trees) {
-                getMethodNode(tree, methodsTree, fileCode);
+            if(ctx != null){
+                List<ParseTree> trees = ctx.children;
+                // studentCode_fileName_tokenLineStart_tokenLineStop
+                Map<String, ParseTree> methodsTree = new HashMap<>();
+                // Lấy danh sách biến + methods
+                for (ParseTree tree : trees) {
+                    getMethodNode(tree, methodsTree, fileCode);
+                }
+
+                for (Map.Entry<String, ParseTree> entry : methodsTree.entrySet()) {
+                    List<Double> vector = new ArrayList<>();
+                    walkAllNode(entry.getValue(), vector);
+                    vectors.put(entry.getKey(), vector);
+                }
             }
 
-            for (Map.Entry<String, ParseTree> entry : methodsTree.entrySet()) {
-                List<Double> vector = new ArrayList<>();
-                walkAllNode(entry.getValue(), vector);
-                vectors.put(entry.getKey(), vector);
-            }
         }
     }
 

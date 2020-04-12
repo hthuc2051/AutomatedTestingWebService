@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -21,7 +22,7 @@ public class SubmissionController {
     }
 
     @PostMapping("/submission/file")
-    public ResponseEntity<List<List<String>>> getFile(@RequestBody SubmissionFilesRequest request) {
+    public ResponseEntity<Map<String,List<String>>> getFile(@RequestBody SubmissionFilesRequest request) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(submissionService.getSubmissionFiles(request));

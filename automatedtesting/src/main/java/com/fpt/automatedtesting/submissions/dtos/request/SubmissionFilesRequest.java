@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubmissionFilesRequest {
+    private String examCode;
     private String lecturerToken;
     private String filesToken;
 }

@@ -3,7 +3,8 @@ package com.fpt.automatedtesting.submissions;
 import com.fpt.automatedtesting.submissions.dtos.request.SubmissionFilesRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SubmissionService {
-    List<List<String>> getSubmissionFiles(SubmissionFilesRequest request);
+    Map<String,List<String>> getSubmissionFiles(SubmissionFilesRequest request);
 }
