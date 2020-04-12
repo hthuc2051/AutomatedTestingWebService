@@ -1,4 +1,4 @@
-package com.fpt.automatedtesting.submissions.dtos;
+package com.fpt.automatedtesting.submissions.dtos.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

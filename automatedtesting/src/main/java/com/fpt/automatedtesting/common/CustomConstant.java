@@ -40,11 +40,17 @@ public class CustomConstant {
     public static final String LANGUAGE_JAVA = "JAVA";
     public static final String LANGUAGE_CS = "CS";
     public static final String LANGUAGE_C = "C";
+    public static final String EXTENSION_ZIP =".zip";
+    public static final String EXTENSION_JAVA =".java";
+    public static final String EXTENSION_CSHARP =".cs";
+    public static final String EXTENSION_C =".c";
 
     // Import name
     public static final String IMPORT_JAVA = "import";
     public static final String IMPORT_CS = "using";
     public static final String IMPORT_C = "#include";
+
+
 
     public static final String DELETE_SCRIPT_SUCCESS = "Delete Successfully";
     public static final String DELETE_SCRIPT_FAIL = "Delete Script Failed";

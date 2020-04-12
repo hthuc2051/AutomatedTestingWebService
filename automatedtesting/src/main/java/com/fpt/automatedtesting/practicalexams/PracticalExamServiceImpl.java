@@ -13,7 +13,7 @@ import com.fpt.automatedtesting.duplicatedcode.DuplicatedCodeRepository;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
-import com.fpt.automatedtesting.submissions.dtos.SubmissionDetailsDto;
+import com.fpt.automatedtesting.submissions.dtos.request.SubmissionDetailsDto;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.lecturers.Lecturer;
@@ -397,7 +397,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             logger.log(Level.INFO, "[CHECKING] - Student Code - " + studentCode);
             // Lấy danh sách các method vector của student 1
             Map<String, List<Double>> mapAllVectorOfStudent = entry.getValue();
-
             for (Map.Entry<String, List<Double>> entryVectorOfStudent : mapAllVectorOfStudent.entrySet()) {
                 logger.log(Level.INFO, "[CHECKING] - Get submission file key " + entryVectorOfStudent.getKey());
                 Map<String, Double> resultAfterComputeWithCosine = new HashMap<>();
