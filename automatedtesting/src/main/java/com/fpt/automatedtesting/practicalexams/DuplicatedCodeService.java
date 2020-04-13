@@ -30,8 +30,8 @@ public class DuplicatedCodeService {
 
     private static GenericParser gp = null;
 
-    public void getListTree(String file, String subjectCode, String fileCode, Map<String, List<Double>> vectors) {
-        System.out.println("Checking offline :");
+    public void getListTree(String file, String subjectCode, String fileCode, Map<String, List<Double>> vectors, List<String> studentMethods) {
+        System.out.println("Checking offline :" );
         System.out.println(file);
         File[] files = null;
         File parserFile = null;
@@ -85,15 +85,14 @@ public class DuplicatedCodeService {
                 e.printStackTrace();
                 System.out.println("Parsing | Illegal error");
             }
-            if(ctx != null){
+            if (ctx != null) {
                 List<ParseTree> trees = ctx.children;
                 // studentCode_fileName_tokenLineStart_tokenLineStop
                 Map<String, ParseTree> methodsTree = new HashMap<>();
                 // Lấy danh sách biến + methods
                 for (ParseTree tree : trees) {
-                    getMethodNode(tree, methodsTree, fileCode);
+                    getMethodNode(tree, methodsTree, fileCode, studentMethods);
                 }
-
                 for (Map.Entry<String, ParseTree> entry : methodsTree.entrySet()) {
                     List<Double> vector = new ArrayList<>();
                     walkAllNode(entry.getValue(), vector);
@@ -104,7 +103,7 @@ public class DuplicatedCodeService {
         }
     }
 
-    private Map<String, ParseTree> getMethodNode(ParseTree node, Map<String, ParseTree> result, String fileCode) {
+    private Map<String, ParseTree> getMethodNode(ParseTree node, Map<String, ParseTree> result, String fileCode, List<String> studentMethods) {
         String className = node.getClass().getName();
         ParserRuleContext parserRuleContext = null;
         String fileToken = fileCode;
@@ -118,8 +117,6 @@ public class DuplicatedCodeService {
                 int startToken = parserRuleContext.getStart().getLine();
                 int stopToken = parserRuleContext.getStop().getLine();
                 int size = Math.abs((startToken - stopToken));
-                System.out.println("Size" + size + ": " + node.getText());
-//            System.out.println(node.getText());
                 // Variables
                 if (size == 0) {
                     check = false;
@@ -146,13 +143,13 @@ public class DuplicatedCodeService {
             }
             if (check) {
                 result.put(fileToken, node);
-                System.out.println("OK" + node.getText());
+                studentMethods.add(node.getText());
             }
         }
         int count = node.getChildCount();
         if (count > 0) {
             for (int i = 0; i < count; i++) {
-                getMethodNode(node.getChild(i), result, fileCode);
+                getMethodNode(node.getChild(i), result, fileCode, studentMethods);
             }
         }
         return result;

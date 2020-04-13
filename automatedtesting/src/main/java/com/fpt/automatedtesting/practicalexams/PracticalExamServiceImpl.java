@@ -62,9 +62,6 @@ import java.util.*;
 public class PracticalExamServiceImpl implements PracticalExamService {
     private static final Logger logger = LogManager.getLogger(PracticalExamServiceImpl.class);
 
-    //    Chứa vector của all SV
-    private Map<String, Map<String, List<Double>>> allVectors = new HashMap<>();
-
 
     private static final String PREFIX_EXAM_CODE = "Practical_";
 
@@ -385,156 +382,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         return "Delete practical exam successfully";
     }
 
-    private void searchTheMostSimilarity(PracticalExam practicalExam) {
-        List<DuplicatedResult> duplicatedResults = new ArrayList<>();
-        Map<String, Double> checkedTokens = new HashMap<>();
-        for (Map.Entry<String, Map<String, List<Double>>> entry : allVectors.entrySet()) {
-            String studentCode = entry.getKey();
-            DuplicatedResult duplicatedResult = new DuplicatedResult();
-            duplicatedResult.setStudentCode(studentCode);
-            Map<String, Map<String, Double>> comparedResult = new HashMap<>();
-            logger.log(Level.INFO, "-----------------------------------------------------------------");
-            logger.log(Level.INFO, "[CHECKING] - Student Code - " + studentCode);
-            // Lấy danh sách các method vector của student 1
-            Map<String, List<Double>> mapAllVectorOfStudent = entry.getValue();
-            for (Map.Entry<String, List<Double>> entryVectorOfStudent : mapAllVectorOfStudent.entrySet()) {
-                logger.log(Level.INFO, "[CHECKING] - Get submission file key " + entryVectorOfStudent.getKey());
-                Map<String, Double> resultAfterComputeWithCosine = new HashMap<>();
-                // Lấy vector thứ n đi so sánh
-                List<Double> vectorsOfStudent = entryVectorOfStudent.getValue();
-                computeCosineSimilarity(studentCode,
-                        vectorsOfStudent,
-                        resultAfterComputeWithCosine,
-                        entryVectorOfStudent.getKey(),
-                        checkedTokens);
-                comparedResult.put(entryVectorOfStudent.getKey(), resultAfterComputeWithCosine);
-            }
-            duplicatedResult.setComparedResult(comparedResult);
-//            duplicatedResult.setCheckedTokens(checkedTokens);
-            duplicatedResults.add(duplicatedResult);
 
-            // Make info json files
-            ObjectMapper objectMapper = new ObjectMapper();
 
-            try {
-                objectMapper.writeValue(
-                        new FileOutputStream("a.json"),
-                        checkedTokens);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            logger.log(Level.INFO, "-----------------------------------------------------------------");
-        }
-        insertDuplicatedCode(checkedTokens, practicalExam);
-    }
-
-    private void insertDuplicatedCode(Map<String, Double> checkedTokens, PracticalExam practicalExam) {
-        Map<String, Double> result = new HashMap<>();
-        Map<String, List<Double>> studentSimilarityPercentMap = new HashMap<>();
-        if (checkedTokens != null && checkedTokens.size() > 0) {
-            for (Map.Entry<String, Double> entry : checkedTokens.entrySet()) {
-                String firstStudentCode = "";
-                String secondStudentCode = "";
-                String key = entry.getKey();
-                String[] arr = key.split("~");
-                System.out.println(arr.length);
-                if (arr != null && arr.length >= 2) {
-                    String[] firstStudent = arr[0].split("_");
-                    String[] secondStudent = arr[1].split("_");
-                    if (firstStudent != null && secondStudent != null
-                            && firstStudent.length > 0 && secondStudent.length > 0) {
-                        firstStudentCode = firstStudent[0];
-                        secondStudentCode = secondStudent[0];
-                    }
-                }
-                if (!firstStudentCode.equals("") && !secondStudentCode.equals("")) {
-                    String studentsToken = firstStudentCode + "_" + secondStudentCode;
-                    Double value = entry.getValue();
-                    List<Double> list = studentSimilarityPercentMap.get(studentsToken);
-                    if (list == null) {
-                        list = new ArrayList<>();
-                    }
-                    list.add(value);
-                    studentSimilarityPercentMap.put(studentsToken, list);
-                }
-
-            }
-        }
-
-        for (Map.Entry<String, List<Double>> entry : studentSimilarityPercentMap.entrySet()) {
-            String studentsToken = entry.getKey();
-            List<Double> similarityPercentList = entry.getValue();
-            double summaryPercent = 0;
-            if (similarityPercentList != null && similarityPercentList.size() > 0) {
-                for (Double value : similarityPercentList) {
-                    summaryPercent += value;
-                }
-                result.put(studentsToken, summaryPercent * 100 / similarityPercentList.size());
-            }
-        }
-        for (Map.Entry<String, Double> entry : result.entrySet()) {
-            String studentsToken = entry.getKey();
-            Double similarityPercent = entry.getValue();
-            String[] arr = studentsToken.split("_");
-            DuplicatedCode duplicatedCode = new DuplicatedCode();
-            duplicatedCode.setPracticalExam(practicalExam);
-            duplicatedCode.setStudentsToken(studentsToken);
-            duplicatedCode.setSimilarityPercent(similarityPercent);
-            DuplicatedCode responseEntity = duplicatedCodeRepository.save(duplicatedCode);
-            if (responseEntity != null) {
-                System.out.println("So sánh : " + entry.getKey());
-                if (checkedTokens != null && checkedTokens.size() > 0) {
-                    String firstStudent = arr[0];
-                    String secondStudent = arr[1];
-                    List<DuplicatedCodeDetails> list = new ArrayList<>();
-                    for (Map.Entry<String, Double> entryToken : checkedTokens.entrySet()) {
-                        String filesToken = entryToken.getKey();
-                        if (filesToken.contains(firstStudent) && filesToken.contains(secondStudent)) {
-                            DuplicatedCodeDetails details = new DuplicatedCodeDetails();
-                            details.setDuplicatedCode(responseEntity);
-                            details.setFilesToken(filesToken);
-                            list.add(details);
-                        }
-                    }
-                    responseEntity.setDuplicatedCodeDetails(list);
-                    DuplicatedCode check = duplicatedCodeRepository.saveAndFlush(responseEntity);
-                    if (check != null) {
-                        System.out.println("ok");
-                    }
-                }
-            }
-        }
-        System.out.println(result);
-    }
-
-    private void computeCosineSimilarity(String studentCode, List<Double> inputVector, Map<String, Double> resultAfterComputeWithCosine, String inputToken, Map<String, Double> checkedTokens) {
-        for (Map.Entry<String, Map<String, List<Double>>> entry : allVectors.entrySet()) {
-            if (!studentCode.equalsIgnoreCase(entry.getKey())) {
-                logger.log(Level.INFO, "[CHECKING] - Checking with " + entry.getKey());
-                // Lấy danh sách vector của student cần compare;
-                Map<String, List<Double>> mapAllVectorOfOtherStudent = entry.getValue();
-                for (Map.Entry<String, List<Double>> entryVectorOfOtherStudent : mapAllVectorOfOtherStudent.entrySet()) {
-                    String key = entryVectorOfOtherStudent.getKey();
-                    String pairToken = inputToken + "~" + key;
-                    String pairTokenSwap = key + "~" + inputToken;
-                    boolean check = !checkedTokens.containsKey(pairToken) && !checkedTokens.containsKey(pairTokenSwap);
-                    if (check) {
-                        List<Double> studentVector = entryVectorOfOtherStudent.getValue();
-                        double computeResult = CosineSimilarity.computeSimilarity(inputVector, studentVector);
-                        logger.log(Level.INFO, "[CHECKING] - Checking with submission file key "
-                                + key + " | " + computeResult * 100 + "%");
-                        if (computeResult > 0.5) {
-                            resultAfterComputeWithCosine.put(key, computeResult);
-                            checkedTokens.put(pairToken, (double) Math.round(computeResult * 100) / 100);
-                        }
-                    } else {
-                        logger.log(Level.INFO, "[CHECKING] - Meet checked token :" + pairToken);
-                    }
-                }
-            }
-        }
-        logger.log(Level.INFO, "-----------------------------------------");
-    }
 
     private void writeDataToCSVFile(String filePath, List<List<String>> data) {
         try {
@@ -709,6 +558,9 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     public void processChecking(PracticalInfo info) {
         PracticalExam practicalExam = practicalExamRepository.findByCodeAndActiveIsTrue(info.getExamCode())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + info.getExamCode()));
+        //    Chứa vector của all SV
+        Map<String, Map<String, List<Double>>> allVectors = new HashMap<>();
+        Map<String, List<String>> methods = new HashMap<>();
         List<String> allStudentSubmissionFileName = new ArrayList<>();
         String sourcePath = PATH_SUBMISSIONS + File.separator +
                 info.getExamCode() + File.separator + "Sources";
@@ -741,22 +593,175 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         //TODO: For extend later
 //                    File file = checkValidFile(studentFile);
                         String filePath = studentFile.getAbsolutePath();
+                        String prefixName = info.getExamCode() + "_" + studentCode + "_" + studentFile.getName();
                         try {
                             Files.copy(Paths.get(filePath),
-                                    Paths.get(PATH_SERVER_REPOSITORY + File.separator + info.getExamCode() + "_" + studentCode + "_" + studentFile.getName()),
+                                    Paths.get(PATH_SERVER_REPOSITORY + File.separator + prefixName),
                                     StandardCopyOption.REPLACE_EXISTING
                             );
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
 //                        PracticalExamUtils.checkDuplicatedCodeGithub(filePath);
-                        duplicatedCodeService.getListTree(filePath, CODE_PRACTICAL_JAVA, studentCode + "_" + studentFile.getName(), vectors);
+                        List<String> studentMethods = new ArrayList<>();
+                        duplicatedCodeService.getListTree(filePath, CODE_PRACTICAL_JAVA, studentCode + "_" + studentFile.getName(), vectors, studentMethods);
+                        methods.put(prefixName, studentMethods);
                     }
+                }
+            }
+            // Student code_File - List method
+            // Methods của m đây
+            for (Map.Entry<String, List<String>> entry : methods.entrySet()) {
+                System.out.println("-----------");
+                System.out.println("Student code- File :" + entry.getKey());
+                for (String s : entry.getValue()) {
+                    System.out.println(s);
                 }
             }
             allVectors.put(studentCode, vectors);
         }
-        searchTheMostSimilarity(practicalExam);
+        searchTheMostSimilarity(practicalExam, allVectors);
+    }
+
+    private void searchTheMostSimilarity(PracticalExam practicalExam, Map<String, Map<String, List<Double>>> allVectors) {
+        List<DuplicatedResult> duplicatedResults = new ArrayList<>();
+        Map<String, Double> checkedTokens = new HashMap<>();
+        for (Map.Entry<String, Map<String, List<Double>>> entry : allVectors.entrySet()) {
+            String studentCode = entry.getKey();
+            DuplicatedResult duplicatedResult = new DuplicatedResult();
+            duplicatedResult.setStudentCode(studentCode);
+            Map<String, Map<String, Double>> comparedResult = new HashMap<>();
+            logger.log(Level.INFO, "-----------------------------------------------------------------");
+            logger.log(Level.INFO, "[CHECKING] - Student Code - " + studentCode);
+            // Lấy danh sách các method vector của student 1
+            Map<String, List<Double>> mapAllVectorOfStudent = entry.getValue();
+            for (Map.Entry<String, List<Double>> entryVectorOfStudent : mapAllVectorOfStudent.entrySet()) {
+                logger.log(Level.INFO, "[CHECKING] - Get submission file key " + entryVectorOfStudent.getKey());
+                Map<String, Double> resultAfterComputeWithCosine = new HashMap<>();
+                // Lấy vector thứ n đi so sánh
+                List<Double> vectorsOfStudent = entryVectorOfStudent.getValue();
+                computeCosineSimilarity(studentCode,
+                        vectorsOfStudent,
+                        resultAfterComputeWithCosine,
+                        entryVectorOfStudent.getKey(),
+                        checkedTokens,
+                        allVectors);
+                comparedResult.put(entryVectorOfStudent.getKey(), resultAfterComputeWithCosine);
+            }
+//            duplicatedResult.setComparedResult(comparedResult);
+//            duplicatedResult.setCheckedTokens(checkedTokens);
+//            duplicatedResults.add(duplicatedResult);
+
+            logger.log(Level.INFO, "-----------------------------------------------------------------");
+        }
+        insertDuplicatedCode(checkedTokens, practicalExam);
+    }
+
+    private void computeCosineSimilarity(String studentCode, List<Double> inputVector, Map<String, Double> resultAfterComputeWithCosine, String inputToken, Map<String, Double> checkedTokens, Map<String, Map<String, List<Double>>> allVectors) {
+        for (Map.Entry<String, Map<String, List<Double>>> entry : allVectors.entrySet()) {
+            if (!studentCode.equalsIgnoreCase(entry.getKey())) {
+                logger.log(Level.INFO, "[CHECKING] - Checking with " + entry.getKey());
+                // Lấy danh sách vector của student cần compare;
+                Map<String, List<Double>> mapAllVectorOfOtherStudent = entry.getValue();
+                for (Map.Entry<String, List<Double>> entryVectorOfOtherStudent : mapAllVectorOfOtherStudent.entrySet()) {
+                    String key = entryVectorOfOtherStudent.getKey();
+                    String pairToken = inputToken + "~" + key;
+                    String pairTokenSwap = key + "~" + inputToken;
+                    boolean check = !checkedTokens.containsKey(pairToken) && !checkedTokens.containsKey(pairTokenSwap);
+                    if (check) {
+                        List<Double> studentVector = entryVectorOfOtherStudent.getValue();
+                        double computeResult = CosineSimilarity.computeSimilarity(inputVector, studentVector);
+                        logger.log(Level.INFO, "[CHECKING] - Checking with submission file key "
+                                + key + " | " + computeResult * 100 + "%");
+//                        if (computeResult > 0.5) {
+                            resultAfterComputeWithCosine.put(key, computeResult);
+                            checkedTokens.put(pairToken, (double) Math.round(computeResult * 100) / 100);
+//                        }
+                    } else {
+                        logger.log(Level.INFO, "[CHECKING] - Meet checked token :" + pairToken);
+                    }
+                }
+            }
+        }
+        logger.log(Level.INFO, "-----------------------------------------");
+    }
+
+    private void insertDuplicatedCode(Map<String, Double> checkedTokens, PracticalExam practicalExam) {
+        Map<String, Double> result = new HashMap<>();
+        Map<String, List<Double>> studentSimilarityPercentMap = new HashMap<>();
+        if (checkedTokens != null && checkedTokens.size() > 0) {
+            for (Map.Entry<String, Double> entry : checkedTokens.entrySet()) {
+                String firstStudentCode = "";
+                String secondStudentCode = "";
+                String key = entry.getKey();
+                String[] arr = key.split("~");
+                if (arr != null && arr.length >= 2) {
+                    String[] firstStudent = arr[0].split("_");
+                    String[] secondStudent = arr[1].split("_");
+                    if (firstStudent != null && secondStudent != null
+                            && firstStudent.length > 0 && secondStudent.length > 0) {
+                        firstStudentCode = firstStudent[0];
+                        secondStudentCode = secondStudent[0];
+                    }
+                }
+                if (!firstStudentCode.equals("") && !secondStudentCode.equals("")) {
+                    String studentsToken = firstStudentCode + "_" + secondStudentCode;
+                    Double value = entry.getValue();
+                    List<Double> list = studentSimilarityPercentMap.get(studentsToken);
+                    if (list == null) {
+                        list = new ArrayList<>();
+                    }
+                    list.add(value);
+                    studentSimilarityPercentMap.put(studentsToken, list);
+                }
+
+            }
+        }
+
+        for (Map.Entry<String, List<Double>> entry : studentSimilarityPercentMap.entrySet()) {
+            String studentsToken = entry.getKey();
+            List<Double> similarityPercentList = entry.getValue();
+            double summaryPercent = 0;
+            if (similarityPercentList != null && similarityPercentList.size() > 0) {
+                for (Double value : similarityPercentList) {
+                    summaryPercent += value;
+                }
+                result.put(studentsToken, summaryPercent * 100 / similarityPercentList.size());
+            }
+        }
+        for (Map.Entry<String, Double> entry : result.entrySet()) {
+            String studentsToken = entry.getKey();
+            Double similarityPercent = entry.getValue();
+            String[] arr = studentsToken.split("_");
+            DuplicatedCode duplicatedCode = new DuplicatedCode();
+            duplicatedCode.setPracticalExam(practicalExam);
+            duplicatedCode.setStudentsToken(studentsToken);
+            duplicatedCode.setSimilarityPercent(similarityPercent);
+//            DuplicatedCode responseEntity = duplicatedCodeRepository.save(duplicatedCode);
+//            if (responseEntity != null) {
+                System.out.println("So sánh : " + entry.getKey());
+                if (checkedTokens != null && checkedTokens.size() > 0) {
+                    String firstStudent = arr[0];
+                    String secondStudent = arr[1];
+                    List<DuplicatedCodeDetails> list = new ArrayList<>();
+                    for (Map.Entry<String, Double> entryToken : checkedTokens.entrySet()) {
+                        String filesToken = entryToken.getKey();
+                        if (filesToken.contains(firstStudent) && filesToken.contains(secondStudent)) {
+                            DuplicatedCodeDetails details = new DuplicatedCodeDetails();
+//                            details.setDuplicatedCode(responseEntity);
+                            details.setFilesToken(filesToken);
+                            list.add(details);
+                        }
+//                    }
+//                    responseEntity.setDuplicatedCodeDetails(list);
+//                    DuplicatedCode check = duplicatedCodeRepository.saveAndFlush(responseEntity);
+//                    if (check != null) {
+//                        System.out.println("ok");
+//                    }
+                }
+            }
+        }
+        System.out.println(result);
     }
 
     private File checkValidFile(File studentFile) {
@@ -790,7 +795,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 List<DuplicatedCodeDetails> duplicatedCodeDetails = entity.getDuplicatedCodeDetails();
                 if (duplicatedCodeDetails != null && duplicatedCodeDetails.size() > 0) {
                     List<String> filesTokens = new ArrayList<>();
-                    for (DuplicatedCodeDetails details: duplicatedCodeDetails) {
+                    for (DuplicatedCodeDetails details : duplicatedCodeDetails) {
                         filesTokens.add(details.getFilesToken());
                     }
                     dto.setDuplicatedCodeDetails(filesTokens);
