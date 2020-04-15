@@ -51,7 +51,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map.Entry;
 
 
 //TODO:Log file lại toàn bộ
@@ -383,8 +385,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
 
-
-
     private void writeDataToCSVFile(String filePath, List<List<String>> data) {
         try {
             OutputStream os = new FileOutputStream(filePath);
@@ -556,8 +556,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     @Async
     @EventListener
     public void processChecking(PracticalInfo info) {
-        PracticalExam practicalExam = practicalExamRepository.findByCodeAndActiveIsTrue(info.getExamCode())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + info.getExamCode()));
+//        PracticalExam practicalExam = practicalExamRepository.findByCodeAndActiveIsTrue(info.getExamCode())
+//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + info.getExamCode()));
         //    Chứa vector của all SV
         Map<String, Map<String, List<Double>>> allVectors = new HashMap<>();
         Map<String, List<String>> methods = new HashMap<>();
@@ -602,7 +602,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-//                        PracticalExamUtils.checkDuplicatedCodeGithub(filePath);
                         List<String> studentMethods = new ArrayList<>();
                         duplicatedCodeService.getListTree(filePath, CODE_PRACTICAL_JAVA, studentCode + "_" + studentFile.getName(), vectors, studentMethods);
                         methods.put(prefixName, studentMethods);
@@ -611,16 +610,68 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             }
             // Student code_File - List method
             // Methods của m đây
+            Map<String, GitHubFileDuplicateDTO> listData = new HashMap<>();
+            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = new HashMap<>();
             for (Map.Entry<String, List<String>> entry : methods.entrySet()) {
                 System.out.println("-----------");
-                System.out.println("Student code- File :" + entry.getKey());
+                System.out.println("Student code - File :" + entry.getKey());
+                int fileLength = 0;
                 for (String s : entry.getValue()) {
-                    System.out.println(s);
+                    String convertedString = PracticalExamUtils.removeNullOrBlankElements(s);
+                    fileLength += convertedString.length();
+                    Map<String, GitHubFileDuplicateDTO> result = PracticalExamUtils.checkDuplicatedCodeGithub(convertedString, extension);
+                    for (Map.Entry<String, GitHubFileDuplicateDTO> item : result.entrySet()) {
+                        if (listData.containsKey(item.getKey())) {
+                            GitHubFileDuplicateDTO dto = listData.get(item.getKey());
+                            double currentScore = dto.getScore();
+                            currentScore += item.getValue().getScore();
+                            dto.setScore(currentScore);
+                        } else {
+                            listData.put(item.getKey(), item.getValue());
+                        }
+                    }
+                    String a = "";
                 }
+                System.out.println("Student code - File :" + entry.getKey());
+                ArrayList<GitHubFileDuplicateDTO> listGithubFile = sortSimilarFileByScore(listData, fileLength);
+                // return a map fileName - list githubfile
+                listDuplicate.put(entry.getKey(),listGithubFile);
             }
             allVectors.put(studentCode, vectors);
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            System.out.println(sdf.format(date));
+            String a = "";
+            break;
         }
-        searchTheMostSimilarity(practicalExam, allVectors);
+
+        //   searchTheMostSimilarity(practicalExam, allVectors);
+    }
+
+    private ArrayList<GitHubFileDuplicateDTO> sortSimilarFileByScore(Map<String, GitHubFileDuplicateDTO> listData, int fileLength) {
+        System.out.println("===================SORT=========================");
+        Comparator<Map.Entry<String, GitHubFileDuplicateDTO>> valueComparator = new Comparator<Map.Entry<String, GitHubFileDuplicateDTO>>() {
+            @Override
+            public int compare(Map.Entry<String, GitHubFileDuplicateDTO> first, Map.Entry<String, GitHubFileDuplicateDTO> second) {
+                double firstScore = first.getValue().getScore();
+                double secondScore = second.getValue().getScore();
+                if (firstScore < secondScore) return 1;
+                else if (secondScore < firstScore) return -1;
+                else return 0;
+            }
+        };
+        List<Entry<String, GitHubFileDuplicateDTO>> listOfEntries = new ArrayList<Entry<String, GitHubFileDuplicateDTO>>(listData.entrySet());
+        Collections.sort(listOfEntries, valueComparator);
+//        LinkedHashMap<String, GitHubFileDuplicateDTO> sortedByValue = new LinkedHashMap<String, GitHubFileDuplicateDTO>(listOfEntries.size());
+//        for (Entry<String, GitHubFileDuplicateDTO> entry : listOfEntries) {
+////            System.out.println("File: "+ entry.getValue().getName() + " - Score: " + entry.getValue().getScore()+" - Percent " +(entry.getValue().getScore()/fileLength*100) +"% - " +entry.getKey() );
+////            sortedByValue.put(entry.getKey(), entry.getValue());
+////        }
+        ArrayList listFile =  new ArrayList<GitHubFileDuplicateDTO>();
+        for (Entry<String, GitHubFileDuplicateDTO> entry : listOfEntries) {
+            listFile.add(entry.getValue());
+        }
+        return listFile;
     }
 
     private void searchTheMostSimilarity(PracticalExam practicalExam, Map<String, Map<String, List<Double>>> allVectors) {
@@ -674,8 +725,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         logger.log(Level.INFO, "[CHECKING] - Checking with submission file key "
                                 + key + " | " + computeResult * 100 + "%");
 //                        if (computeResult > 0.5) {
-                            resultAfterComputeWithCosine.put(key, computeResult);
-                            checkedTokens.put(pairToken, (double) Math.round(computeResult * 100) / 100);
+                        resultAfterComputeWithCosine.put(key, computeResult);
+                        checkedTokens.put(pairToken, (double) Math.round(computeResult * 100) / 100);
 //                        }
                     } else {
                         logger.log(Level.INFO, "[CHECKING] - Meet checked token :" + pairToken);
@@ -739,19 +790,19 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             duplicatedCode.setSimilarityPercent(similarityPercent);
 //            DuplicatedCode responseEntity = duplicatedCodeRepository.save(duplicatedCode);
 //            if (responseEntity != null) {
-                System.out.println("So sánh : " + entry.getKey());
-                if (checkedTokens != null && checkedTokens.size() > 0) {
-                    String firstStudent = arr[0];
-                    String secondStudent = arr[1];
-                    List<DuplicatedCodeDetails> list = new ArrayList<>();
-                    for (Map.Entry<String, Double> entryToken : checkedTokens.entrySet()) {
-                        String filesToken = entryToken.getKey();
-                        if (filesToken.contains(firstStudent) && filesToken.contains(secondStudent)) {
-                            DuplicatedCodeDetails details = new DuplicatedCodeDetails();
+            System.out.println("So sánh : " + entry.getKey());
+            if (checkedTokens != null && checkedTokens.size() > 0) {
+                String firstStudent = arr[0];
+                String secondStudent = arr[1];
+                List<DuplicatedCodeDetails> list = new ArrayList<>();
+                for (Map.Entry<String, Double> entryToken : checkedTokens.entrySet()) {
+                    String filesToken = entryToken.getKey();
+                    if (filesToken.contains(firstStudent) && filesToken.contains(secondStudent)) {
+                        DuplicatedCodeDetails details = new DuplicatedCodeDetails();
 //                            details.setDuplicatedCode(responseEntity);
-                            details.setFilesToken(filesToken);
-                            list.add(details);
-                        }
+                        details.setFilesToken(filesToken);
+                        list.add(details);
+                    }
 //                    }
 //                    responseEntity.setDuplicatedCodeDetails(list);
 //                    DuplicatedCode check = duplicatedCodeRepository.saveAndFlush(responseEntity);

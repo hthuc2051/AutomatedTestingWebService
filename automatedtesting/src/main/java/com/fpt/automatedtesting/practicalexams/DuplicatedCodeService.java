@@ -1,10 +1,10 @@
 package com.fpt.automatedtesting.practicalexams;
 
 import com.fpt.automatedtesting.common.FileManager;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.snt.inmemantlr.GenericParser;
 import org.snt.inmemantlr.exceptions.CompilationException;
 import org.snt.inmemantlr.exceptions.IllegalWorkflowException;
@@ -102,7 +102,15 @@ public class DuplicatedCodeService {
 
         }
     }
+    private String sourceTextForContext(ParserRuleContext ctx) {
+        String code ="";
+        try{
+            code = ctx.start.getInputStream().getText(Interval.of(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        }catch (Exception e){
 
+        }
+     return code;
+    }
     private Map<String, ParseTree> getMethodNode(ParseTree node, Map<String, ParseTree> result, String fileCode, List<String> studentMethods) {
         String className = node.getClass().getName();
         ParserRuleContext parserRuleContext = null;
@@ -143,7 +151,8 @@ public class DuplicatedCodeService {
             }
             if (check) {
                 result.put(fileToken, node);
-                studentMethods.add(node.getText());
+               String code =  sourceTextForContext((ParserRuleContext) node);
+                studentMethods.add(code);
             }
         }
         int count = node.getChildCount();
