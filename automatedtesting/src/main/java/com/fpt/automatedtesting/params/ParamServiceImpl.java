@@ -46,7 +46,7 @@ public class ParamServiceImpl implements ParamService {
         Param saveEntity = new Param();
         saveEntity.setName(dto.getName());
         saveEntity.setActive(true);
-        saveEntity.setType(paramTypeEntity);
+        //saveEntity.setType(paramTypeEntity);
 
         if (paramRepository.save(saveEntity) != null)
             return "Create param successfully.";
@@ -57,18 +57,18 @@ public class ParamServiceImpl implements ParamService {
     @Override
     public String updateParam(ParamUpdateRequestDto dto) {
 
-        Param updateEntity = paramRepository.findById(dto.getId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + dto.getId()));
-
-        ParamType paramTypeEntity = paramTypeRepository.findById(dto.getTypeId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + dto.getTypeId()));
-
-        updateEntity.setName(dto.getName());
-        updateEntity.setType(paramTypeEntity);
-
-        if (paramRepository.save(updateEntity) != null)
-            return "Update param successfully.";
-        else
+//        Param updateEntity = paramRepository.findById(dto.getId())
+//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + dto.getId()));
+//
+//        ParamType paramTypeEntity = paramTypeRepository.findById(dto.getTypeId())
+//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + dto.getTypeId()));
+//
+//        updateEntity.setName(dto.getName());
+//        updateEntity.setType(paramTypeEntity);
+//
+//        if (paramRepository.save(updateEntity) != null)
+//            return "Update param successfully.";
+//        else
             return "Update param failed.";
     }
 
