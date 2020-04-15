@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static com.fpt.automatedtesting.common.CustomConstant.*;
 import static com.fpt.automatedtesting.common.PathConstants.*;
 
+import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.FileManager;
 import com.fpt.automatedtesting.common.PathConstants;
 import com.fpt.automatedtesting.duplicatedcode.DuplicatedCode;
@@ -12,6 +13,8 @@ import com.fpt.automatedtesting.duplicatedcode.DuplicatedCodeDetails;
 import com.fpt.automatedtesting.duplicatedcode.DuplicatedCodeRepository;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
+import com.fpt.automatedtesting.githubResult.GithubResultService;
+import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.dtos.request.SubmissionDetailsDto;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
@@ -30,6 +33,7 @@ import com.fpt.automatedtesting.submissions.Submission;
 import com.fpt.automatedtesting.submissions.SubmissionRepository;
 import com.fpt.automatedtesting.users.UserRepository;
 
+import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +55,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -77,12 +80,13 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     private final SubjectRepository subjectRepository;
     private final DuplicatedCodeService duplicatedCodeService;
     private Queue<StudentSubmissionDto> submissionQueue;
+    private final GithubResultService githubResultService;
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, DuplicatedCodeRepository duplicatedCodeRepository, LecturerRepository lecturerRepository, SubjectRepository subjectRepository, DuplicatedCodeService duplicatedCodeService) {
+    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, DuplicatedCodeRepository duplicatedCodeRepository, LecturerRepository lecturerRepository, SubjectRepository subjectRepository, DuplicatedCodeService duplicatedCodeService, GithubResultService githubResultService) {
         this.practicalExamRepository = practicalExamRepository;
         this.scriptRepository = scriptRepository;
         this.submissionRepository = submissionRepository;
@@ -92,6 +96,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         this.lecturerRepository = lecturerRepository;
         this.subjectRepository = subjectRepository;
         this.duplicatedCodeService = duplicatedCodeService;
+        this.githubResultService = githubResultService;
         this.submissionQueue = new PriorityQueue<>();
     }
 
@@ -556,8 +561,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     @Async
     @EventListener
     public void processChecking(PracticalInfo info) {
-//        PracticalExam practicalExam = practicalExamRepository.findByCodeAndActiveIsTrue(info.getExamCode())
-//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + info.getExamCode()));
+        PracticalExam practicalExam = practicalExamRepository.findByCodeAndActiveIsTrue(info.getExamCode())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + info.getExamCode()));
         //    Chứa vector của all SV
         Map<String, Map<String, List<Double>>> allVectors = new HashMap<>();
         Map<String, List<String>> methods = new HashMap<>();
@@ -610,42 +615,43 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             }
             // Student code_File - List method
             // Methods của m đây
-            Map<String, GitHubFileDuplicateDTO> listData = new HashMap<>();
-            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = new HashMap<>();
-            for (Map.Entry<String, List<String>> entry : methods.entrySet()) {
-                System.out.println("-----------");
-                System.out.println("Student code - File :" + entry.getKey());
-                int fileLength = 0;
-                for (String s : entry.getValue()) {
-                    String convertedString = PracticalExamUtils.removeNullOrBlankElements(s);
-                    fileLength += convertedString.length();
-                    Map<String, GitHubFileDuplicateDTO> result = PracticalExamUtils.checkDuplicatedCodeGithub(convertedString, extension);
-                    for (Map.Entry<String, GitHubFileDuplicateDTO> item : result.entrySet()) {
-                        if (listData.containsKey(item.getKey())) {
-                            GitHubFileDuplicateDTO dto = listData.get(item.getKey());
-                            double currentScore = dto.getScore();
-                            currentScore += item.getValue().getScore();
-                            dto.setScore(currentScore);
-                        } else {
-                            listData.put(item.getKey(), item.getValue());
-                        }
-                    }
-                    String a = "";
-                }
-                System.out.println("Student code - File :" + entry.getKey());
-                ArrayList<GitHubFileDuplicateDTO> listGithubFile = sortSimilarFileByScore(listData, fileLength);
-                // return a map fileName - list githubfile
-                listDuplicate.put(entry.getKey(),listGithubFile);
-            }
+            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methods, extension);
+            githubResultService.create(practicalExam.getId(),studentCode,listDuplicate);
             allVectors.put(studentCode, vectors);
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-            System.out.println(sdf.format(date));
-            String a = "";
-            break;
         }
 
         //   searchTheMostSimilarity(practicalExam, allVectors);
+    }
+
+    private Map<String, List<GitHubFileDuplicateDTO>> getGithubResult(Map<String, List<String>> methods, String extension) {
+        Map<String, GitHubFileDuplicateDTO> listData = new HashMap<>();
+        Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : methods.entrySet()) {
+            System.out.println("-----------");
+            System.out.println("Student code - File :" + entry.getKey());
+            int fileLength = 0;
+            for (String s : entry.getValue()) {
+                String convertedString = PracticalExamUtils.removeNullOrBlankElements(s);
+                fileLength += convertedString.length();
+                Map<String, GitHubFileDuplicateDTO> result = PracticalExamUtils.checkDuplicatedCodeGithub(convertedString, extension);
+                for (Map.Entry<String, GitHubFileDuplicateDTO> item : result.entrySet()) {
+                    if (listData.containsKey(item.getKey())) {
+                        GitHubFileDuplicateDTO dto = listData.get(item.getKey());
+                        int currentScore = dto.getScore();
+                        currentScore += item.getValue().getScore();
+                        dto.setScore(currentScore);
+                    } else {
+                        listData.put(item.getKey(), item.getValue());
+                    }
+                }
+                String a = "";
+            }
+            System.out.println("Student code - File :" + entry.getKey());
+            ArrayList<GitHubFileDuplicateDTO> listGithubFile = sortSimilarFileByScore(listData, fileLength);
+            // return a map fileName - list githubfile
+            listDuplicate.put(entry.getKey(), listGithubFile);
+        }
+        return listDuplicate;
     }
 
     private ArrayList<GitHubFileDuplicateDTO> sortSimilarFileByScore(Map<String, GitHubFileDuplicateDTO> listData, int fileLength) {
@@ -662,14 +668,16 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         };
         List<Entry<String, GitHubFileDuplicateDTO>> listOfEntries = new ArrayList<Entry<String, GitHubFileDuplicateDTO>>(listData.entrySet());
         Collections.sort(listOfEntries, valueComparator);
-//        LinkedHashMap<String, GitHubFileDuplicateDTO> sortedByValue = new LinkedHashMap<String, GitHubFileDuplicateDTO>(listOfEntries.size());
-//        for (Entry<String, GitHubFileDuplicateDTO> entry : listOfEntries) {
-////            System.out.println("File: "+ entry.getValue().getName() + " - Score: " + entry.getValue().getScore()+" - Percent " +(entry.getValue().getScore()/fileLength*100) +"% - " +entry.getKey() );
-////            sortedByValue.put(entry.getKey(), entry.getValue());
-////        }
-        ArrayList listFile =  new ArrayList<GitHubFileDuplicateDTO>();
+        ArrayList listFile = new ArrayList<GitHubFileDuplicateDTO>();
+        int count = 0;
         for (Entry<String, GitHubFileDuplicateDTO> entry : listOfEntries) {
+            int score = entry.getValue().getScore();
+            double percent = (double)score /fileLength * 100;
+            entry.getValue().setPercent(percent);
             listFile.add(entry.getValue());
+            if(++count == NUMBER_TOP_SIMILAR_FILE){
+                break;
+            }
         }
         return listFile;
     }

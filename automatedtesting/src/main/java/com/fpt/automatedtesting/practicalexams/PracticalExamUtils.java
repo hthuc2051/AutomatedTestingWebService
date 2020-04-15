@@ -1,7 +1,8 @@
 package com.fpt.automatedtesting.practicalexams;
 
-import com.fpt.automatedtesting.practicalexams.dtos.GitHubFileDuplicateDTO;
-import com.fpt.automatedtesting.practicalexams.dtos.GitHubResponseDTO;
+import com.fpt.automatedtesting.common.CustomConstant;
+import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
+import com.fpt.automatedtesting.githubResult.dtos.GitHubResponseDTO;
 import com.google.gson.Gson;
 import org.kohsuke.github.*;
 
@@ -176,7 +177,8 @@ public class PracticalExamUtils {
                 //    writeToFile("", lineOfCode, pageUrl);
                 //write to file;
             } catch (Exception ex) {
-                ex.printStackTrace();
+                // IF exception is "length is not longer than 128" THEN continue ELSE break
+                if(!ex.getMessage().contains("response code: 422")) break;
                 readLengthBase -= 10;
                 int newIndex = findCodeStatementIndex(lineOfCode,0,readLengthBase);
                 readingIndex  = readingIndex  - lineOfCode.length() + newIndex;
@@ -189,7 +191,7 @@ public class PracticalExamUtils {
     private static void addResultToListFunctionSimilarity(List<GitHubFileDuplicateDTO> listFile,int length) {
         for (GitHubFileDuplicateDTO dto : listFile) {
             if (functionSimilarityToFile.containsKey(dto.getHtml_url())) {
-                double lastSimilarity =  functionSimilarityToFile.get(dto.getHtml_url()).getScore();
+                int lastSimilarity =  functionSimilarityToFile.get(dto.getHtml_url()).getScore();
                 functionSimilarityToFile.get(dto.getHtml_url()).setScore(lastSimilarity + length);
             } else {
                 dto.setScore(length);
@@ -201,7 +203,7 @@ public class PracticalExamUtils {
     public static String search(String url) throws IOException {
         URL obj = new URL(url);
         myURLConnection = (HttpURLConnection) obj.openConnection();
-        String basicAuth = "token d85504b05b9f3fb33bb108138e9c11e503dc9deb";
+        String basicAuth = "token " + AUTH_TOKEN;
         myURLConnection.setRequestProperty("Authorization", basicAuth);
         myURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         myURLConnection.setRequestProperty("Content-Language", "en-US");
@@ -292,10 +294,6 @@ public class PracticalExamUtils {
                 }else{
                    int index =  findCodeStatementIndex(lineOfCode,readingIndex,readLengthBase);
                    sendString = lineOfCode.substring(readingIndex,index);
-//                   int a = sendString.length();
-////                   int b =  lineOfCode.length();
-////                   double weight = (double) a/b;
-                    double weight = sendString.length();
                    readingIndex = index;
                    searchRepo(sendString,language);
                 }
@@ -371,10 +369,6 @@ public class PracticalExamUtils {
                 language = LANGUAGE_C;
             }
             writeReport(code, language);
-//            for (Map.Entry<String, GitHubFileDuplicateDTO> item : functionSimilarityToFile.entrySet()) {
-//                item.getValue().setScore(item.getValue().calculateAverageScore());
-//                System.out.println(item.getValue());
-//            }
         } catch (Exception ex) {
             System.out.println("Log Github error : " + ex.getMessage());
         }
@@ -386,7 +380,7 @@ public class PracticalExamUtils {
             String url = "";
             URL obj = new URL(url);
             HttpURLConnection myURLConnection = (HttpURLConnection) obj.openConnection();
-            String basicAuth = "token a4c870139a3c172ca70082ca3a3fc0e975f7e1ae";
+            String basicAuth = "token b72ee1f1156a3a546de9004dcb60821c74cd5738";
             myURLConnection.setRequestProperty("Authorization", basicAuth);
             myURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             myURLConnection.setRequestProperty("Content-Language", "en-US");

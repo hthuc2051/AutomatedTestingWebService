@@ -1,10 +1,11 @@
 package com.fpt.automatedtesting.practicalexams;
 
 
-import com.fpt.automatedtesting.common.FileManager;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.exception.ExceptionManager;
+import com.fpt.automatedtesting.githubResult.GithubResultService;
+import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 import com.fpt.automatedtesting.submissions.Submission;
@@ -16,8 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -27,12 +28,14 @@ public class PracticalExamController {
     private final PracticalExamService practicalExamService;
     private final SubmissionRepository submissionRepository;
     private final PracticalExamRepository practicalExamRepository;
+    private final GithubResultService githubResultService;
 
     @Autowired
-    public PracticalExamController(PracticalExamService practicalExamService, SubmissionRepository submissionRepository, SubmissionRepository submissionRepository1, PracticalExamRepository practicalExamRepository) {
+    public PracticalExamController(PracticalExamService practicalExamService, SubmissionRepository submissionRepository, SubmissionRepository submissionRepository1, PracticalExamRepository practicalExamRepository, GithubResultService githubResultService) {
         this.practicalExamService = practicalExamService;
         this.submissionRepository = submissionRepository1;
         this.practicalExamRepository = practicalExamRepository;
+        this.githubResultService = githubResultService;
     }
 
     @PostMapping("/practical-exam")
@@ -126,6 +129,13 @@ public class PracticalExamController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.getDuplicatedResult(request));
+    }
+
+    @PostMapping("/practical-exam/check-code/resultOnline")
+    public ResponseEntity<Map<String, List<GitHubFileDuplicateDTO>>> getDuplicatedResultOnline(@RequestBody DuplicatedCodeRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(githubResultService.getListByPracticalCodeAndStudentCode(request));
     }
 
 }

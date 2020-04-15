@@ -58,4 +58,8 @@ public class CustomConstant {
     public static final String CREATE_SCRIPT_FAIL = "Create Script Failed";
     public static final String UPDATE_SCRIPT_SUCCESS = "Update Script Successfully";
     public static final String UPDATE_SCRIPT_FAIL = "Update Script Failed";
+
+    // Github Result
+    public static final int NUMBER_TOP_SIMILAR_FILE = 20;
+    public static final String AUTH_TOKEN = "b72ee1f1156a3a546de9004dcb60821c74cd5738";
 }

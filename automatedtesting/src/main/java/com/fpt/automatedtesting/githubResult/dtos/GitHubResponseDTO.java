@@ -1,4 +1,4 @@
-package com.fpt.automatedtesting.practicalexams.dtos;
+package com.fpt.automatedtesting.githubResult.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

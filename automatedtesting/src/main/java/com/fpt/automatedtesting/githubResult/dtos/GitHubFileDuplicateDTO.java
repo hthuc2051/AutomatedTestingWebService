@@ -1,4 +1,4 @@
-package com.fpt.automatedtesting.practicalexams.dtos;
+package com.fpt.automatedtesting.githubResult.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,5 +13,6 @@ import java.util.ArrayList;
 public class GitHubFileDuplicateDTO implements Serializable {
     private String name;
     private String html_url;
-    private double score;
+    private int score;
+    private double percent;
 }
