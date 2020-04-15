@@ -31,8 +31,7 @@ public class ParamType {
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
-    @ManyToOne
-    @JoinColumn(name = "subject_action_param_id", referencedColumnName = "id")
-    private SubjectActionParam subjectActionParam;
+    @OneToMany(mappedBy = "paramType", cascade = CascadeType.ALL)
+    private List<SubjectActionParam> subjectActionParams;
 
 }

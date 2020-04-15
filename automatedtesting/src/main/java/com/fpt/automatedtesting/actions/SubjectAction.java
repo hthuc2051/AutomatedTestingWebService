@@ -24,7 +24,6 @@ public class SubjectAction {
     @OneToMany(mappedBy = "subjectAction", cascade = CascadeType.ALL)
     private List<Subject> subjects;
 
-    @ManyToOne
-    @JoinColumn(name = "subject_action_id", referencedColumnName = "id", nullable = false)
-    private SubjectActionParam subjectActionParam;
+    @OneToMany(mappedBy = "subjectAction", cascade = CascadeType.ALL)
+    private List<SubjectActionParam> subjectActionParams;
 }

@@ -3,6 +3,7 @@ package com.fpt.automatedtesting.params;
 import com.fpt.automatedtesting.actions.SubjectActionParam;
 import lombok.*;
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,7 +23,6 @@ public class Param {
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
-    @ManyToOne
-    @JoinColumn(name = "param_id", referencedColumnName = "id", nullable = false)
-    private SubjectActionParam subjectActionParam;
+    @OneToMany(mappedBy = "param", cascade = CascadeType.ALL)
+    private List<SubjectActionParam> subjectActionParams;
 }

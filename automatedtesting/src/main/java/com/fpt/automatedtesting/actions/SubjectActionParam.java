@@ -22,12 +22,15 @@ public class SubjectActionParam {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToMany(mappedBy = "subjectActionParam", cascade = CascadeType.ALL)
-    private List<SubjectAction> subjectActions;
+    @ManyToOne
+    @JoinColumn(name = "subject_action_id", referencedColumnName = "id")
+    private SubjectAction subjectAction;
 
-    @OneToMany(mappedBy = "subjectActionParam", cascade = CascadeType.ALL)
-    private List<Param> params;
+    @ManyToOne
+    @JoinColumn(name = "param_id", referencedColumnName = "id")
+    private Param param;
 
-    @OneToMany(mappedBy = "subjectActionParam", cascade = CascadeType.ALL)
-    private List<ParamType> paramTypes;
+    @ManyToOne
+    @JoinColumn(name = "param_type_id", referencedColumnName = "id")
+    private ParamType paramType;
 }
