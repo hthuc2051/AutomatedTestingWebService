@@ -6,6 +6,7 @@ import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.exception.ExceptionManager;
 import com.fpt.automatedtesting.githubResult.GithubResultService;
 import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
+import com.fpt.automatedtesting.githubResult.dtos.GithubResultDTO;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 import com.fpt.automatedtesting.submissions.Submission;
@@ -132,7 +133,7 @@ public class PracticalExamController {
     }
 
     @PostMapping("/practical-exam/check-code/resultOnline")
-    public ResponseEntity<Map<String, List<GitHubFileDuplicateDTO>>> getDuplicatedResultOnline(@RequestBody DuplicatedCodeRequest request) {
+    public ResponseEntity<List<GithubResultDTO>> getDuplicatedResultOnline(@RequestBody DuplicatedCodeRequest request) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(githubResultService.getListByPracticalCodeAndStudentCode(request));

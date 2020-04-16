@@ -589,6 +589,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         }
 
         for (String studentCode : allStudentSubmissionFileName) {
+            Map<String, List<String>> methodForGitHub = new HashMap<>();
             List<File> studentFiles = new ArrayList<>();
             FileManager.getAllFiles(sourcePath + File.separator + studentCode, studentFiles, extension);
             Map<String, List<Double>> vectors = new HashMap<>();
@@ -610,12 +611,13 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         List<String> studentMethods = new ArrayList<>();
                         duplicatedCodeService.getListTree(filePath, CODE_PRACTICAL_JAVA, studentCode + "_" + studentFile.getName(), vectors, studentMethods);
                         methods.put(prefixName, studentMethods);
+                        methodForGitHub.put(prefixName,studentMethods);
                     }
                 }
             }
             // Student code_File - List method
             // Methods của m đây
-            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methods, extension);
+            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methodForGitHub, extension);
             githubResultService.create(practicalExam.getId(),studentCode,listDuplicate);
             allVectors.put(studentCode, vectors);
         }
@@ -624,9 +626,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     private Map<String, List<GitHubFileDuplicateDTO>> getGithubResult(Map<String, List<String>> methods, String extension) {
-        Map<String, GitHubFileDuplicateDTO> listData = new HashMap<>();
+
         Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = new HashMap<>();
         for (Map.Entry<String, List<String>> entry : methods.entrySet()) {
+            Map<String, GitHubFileDuplicateDTO> listData = new HashMap<>();
             System.out.println("-----------");
             System.out.println("Student code - File :" + entry.getKey());
             int fileLength = 0;

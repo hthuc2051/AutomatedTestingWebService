@@ -61,5 +61,5 @@ public class CustomConstant {
 
     // Github Result
     public static final int NUMBER_TOP_SIMILAR_FILE = 20;
-    public static final String AUTH_TOKEN = "b72ee1f1156a3a546de9004dcb60821c74cd5738";
+    public static final String AUTH_TOKEN = "212222f614818a99b5e69b017f77617fa3081f96";
 }

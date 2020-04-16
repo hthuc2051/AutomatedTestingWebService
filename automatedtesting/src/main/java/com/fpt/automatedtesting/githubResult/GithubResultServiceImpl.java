@@ -2,6 +2,8 @@ package com.fpt.automatedtesting.githubResult;
 
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
+import com.fpt.automatedtesting.githubResult.dtos.GitHubResponseDTO;
+import com.fpt.automatedtesting.githubResult.dtos.GithubResultDTO;
 import com.fpt.automatedtesting.practicalexams.PracticalExam;
 import com.fpt.automatedtesting.practicalexams.PracticalExamRepository;
 import com.google.common.reflect.TypeToken;
@@ -9,10 +11,7 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class GithubResultServiceImpl implements GithubResultService {
@@ -50,13 +49,24 @@ public class GithubResultServiceImpl implements GithubResultService {
     }
 
     @Override
-    public Map<String, List<GitHubFileDuplicateDTO>> getListByPracticalCodeAndStudentCode(DuplicatedCodeRequest request) {
+    public  List<GithubResultDTO> getListByPracticalCodeAndStudentCode(DuplicatedCodeRequest request) {
+        ArrayList<GithubResultDTO> listResult = new ArrayList<>();
         Map<String, List<GitHubFileDuplicateDTO>> result = new HashMap<>();
         GithubResult githubResult = githubResultRepository.findByPracticalExamCodeAndStudentCode(request.getPracticalExamCode(),request.getStudentCode());
-        String json = githubResult.getResult();
-        if(!"".equals(json)){
-          result = gson.fromJson(json, new TypeToken<Map<String, List<GitHubFileDuplicateDTO>>>(){}.getType());
+        if(githubResult != null){
+            String json = githubResult.getResult();
+            if(!"".equals(json)){
+                result = gson.fromJson(json, new TypeToken<Map<String, List<GitHubFileDuplicateDTO>>>(){}.getType());
+                for (Map.Entry<String,List<GitHubFileDuplicateDTO>> entry: result.entrySet()) {
+                    GithubResultDTO dto = new GithubResultDTO();
+                    dto.setStudentFile(entry.getKey());
+                    dto.setListFile(entry.getValue());
+                    listResult.add(dto);
+                }
+            }
         }
-        return result;
+
+
+        return listResult;
     }
 }

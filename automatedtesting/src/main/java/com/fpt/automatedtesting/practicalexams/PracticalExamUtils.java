@@ -178,6 +178,7 @@ public class PracticalExamUtils {
                 //write to file;
             } catch (Exception ex) {
                 // IF exception is "length is not longer than 128" THEN continue ELSE break
+                ex.printStackTrace();
                 if(!ex.getMessage().contains("response code: 422")) break;
                 readLengthBase -= 10;
                 int newIndex = findCodeStatementIndex(lineOfCode,0,readLengthBase);
