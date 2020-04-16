@@ -18,11 +18,13 @@ public class SubjectAction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToMany(mappedBy = "subjectAction", cascade = CascadeType.ALL)
-    private List<Action> actions;
+    @ManyToOne
+    @JoinColumn(name = "action_id", referencedColumnName = "id", nullable = false)
+    private Action action;
 
-    @OneToMany(mappedBy = "subjectAction", cascade = CascadeType.ALL)
-    private List<Subject> subjects;
+    @ManyToOne
+    @JoinColumn(name = "subject_id", referencedColumnName = "id", nullable = false)
+    private Subject subject;
 
     @OneToMany(mappedBy = "subjectAction", cascade = CascadeType.ALL)
     private List<SubjectActionParam> subjectActionParams;

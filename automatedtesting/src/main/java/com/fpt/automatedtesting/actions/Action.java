@@ -4,6 +4,7 @@ import com.fpt.automatedtesting.admins.Admin;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Action")
@@ -30,7 +31,7 @@ public class Action {
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
-    @ManyToOne
-    @JoinColumn(name = "action_id", referencedColumnName = "id", nullable = false)
-    private SubjectAction subjectAction;
+
+    @OneToMany(mappedBy = "action",cascade = CascadeType.ALL)
+    private List<SubjectAction> subjectActions;
 }

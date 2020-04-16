@@ -28,9 +28,8 @@ public class Subject {
     @Column(name = "code")
     private String code;
 
-    @ManyToOne
-    @JoinColumn(name = "subject_id", referencedColumnName = "id", nullable = false)
-    private SubjectAction subjectAction;
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    private List<SubjectAction> subjectActions;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<Script> scripts;

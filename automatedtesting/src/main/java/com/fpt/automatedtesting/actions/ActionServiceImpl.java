@@ -126,19 +126,18 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public List<ActionResponseSubjectIdDto> getAllActionBySubject(int subjectId) {
-//        Subject subject = subjectRepository
-//                .findByIdAndActiveIsTrue(subjectId)
-//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
-//        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
-//        List<ActionResponseSubjectIdDto> response = new ArrayList<>();
-//        if (actions.size() > 0) {
-//            response = MapperManager.mapAll(actions, ActionResponseSubjectIdDto.class);
-//            List<Integer> subjects = new ArrayList<>();
-//            subjects.add(subjectId);
-//            response.forEach(element -> element.setSubjectId(subjects));
-//        }
-//        return response;
-        return null;
+        Subject subject = subjectRepository
+                .findByIdAndActiveIsTrue(subjectId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
+        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
+        List<ActionResponseSubjectIdDto> response = new ArrayList<>();
+        if (actions.size() > 0) {
+            response = MapperManager.mapAll(actions, ActionResponseSubjectIdDto.class);
+            List<Integer> subjects = new ArrayList<>();
+            subjects.add(subjectId);
+            response.forEach(element -> element.setSubjectId(subjects));
+        }
+        return response;
     }
 
     @Override
