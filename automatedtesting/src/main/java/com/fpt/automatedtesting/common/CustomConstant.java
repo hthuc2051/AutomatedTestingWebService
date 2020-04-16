@@ -59,6 +59,13 @@ public class CustomConstant {
     public static final String UPDATE_SCRIPT_SUCCESS = "Update Script Successfully";
     public static final String UPDATE_SCRIPT_FAIL = "Update Script Failed";
 
+    public static final String CREATE_PARAM_SUCCESS = "Create Param Successfully";
+    public static final String CREATE_PARAM_FAIL = "Create Param Failed";
+    public static final String UPDATE_PARAM_SUCCESS = "Update Param Successfully";
+    public static final String UPDATE_PARAM_FAIL = "Update Param Failed";
+    public static final String DELETE_PARAM_SUCCESS = "Delete Param Successfully";
+    public static final String DELETE_PARAM_FAIL = "Delete Param Failed";
+
     // Github Result
     public static final int NUMBER_TOP_SIMILAR_FILE = 20;
     public static final String AUTH_TOKEN = "212222f614818a99b5e69b017f77617fa3081f96";
