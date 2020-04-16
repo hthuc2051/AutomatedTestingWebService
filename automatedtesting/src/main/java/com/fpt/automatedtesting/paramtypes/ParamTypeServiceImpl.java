@@ -106,26 +106,28 @@ public class ParamTypeServiceImpl implements ParamTypeService {
 
         List<String> subjectCodes = dto.getSubjectCodes();
         List<ParamType> updateEntities;
+        boolean duplicatedParamType = false;
 
         if (subjectCodes != null && subjectCodes.size() > 0) {
 
             updateEntities = new ArrayList<>();
-            // get param type by id to retrieve the old data
-            ParamType paramType = paramTypeRepository.findById(dto.getId())
+
+            // get param type by id to retrieve the old data of param type
+            ParamType updateParamType = paramTypeRepository.findById(dto.getId())
                     .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + dto.getId()));
 
             // check if list subjects contains the subject of old param type
-            if (subjectCodes.contains(paramType.getSubjectCode())) {
+            if (subjectCodes.contains(updateParamType.getSubjectCode())) {
 
-                //check if name - subject existed
-                ParamType checkExistedEntity = paramTypeRepository.findByNameAndSubjectCode(dto.getName(), paramType.getSubjectCode());
+                //check if name - subject from dto existed
+                ParamType checkExistedEntity = paramTypeRepository.findByNameAndSubjectCode(dto.getName(), updateParamType.getSubjectCode());
 
                 // if name - subject not existed
                 if (checkExistedEntity == null) {
 
                     // update the old param type's name
-                    paramType.setName(dto.getName());
-                    updateEntities.add(paramType);
+                    updateParamType.setName(dto.getName());
+                    updateEntities.add(updateParamType);
 
                 } else { // if name - subject existed
 
@@ -133,22 +135,24 @@ public class ParamTypeServiceImpl implements ParamTypeService {
                     if (!checkExistedEntity.getActive()) {
 
                         // set active status of old param type above to false
-                        paramType.setActive(false);
-                        updateEntities.add(paramType);
+                        updateParamType.setActive(false);
+                        updateEntities.add(updateParamType);
 
                         // set existed data's active status to true
                         checkExistedEntity.setActive(true);
                         updateEntities.add(checkExistedEntity);
+                    } else {
+                        duplicatedParamType = true;
                     }
                 }
 
                 // remove the subject in the list subjects if there are more than 1 subject in the list subjects
                 if (subjectCodes.size() > 1) {
-                    subjectCodes.remove(paramType.getSubjectCode());
+                    subjectCodes.remove(updateParamType.getSubjectCode());
                 }
             } else { // if list subjects does not contains the subject of old param type -> set active status to false
-                paramType.setActive(false);
-                updateEntities.add(paramType);
+                updateParamType.setActive(false);
+                updateEntities.add(updateParamType);
             }
 
             for (String subjectCode : subjectCodes) {
@@ -174,7 +178,7 @@ public class ParamTypeServiceImpl implements ParamTypeService {
                 }
             }
 
-            if (updateEntities.size() < 1) {
+            if (updateEntities.size() == 0 && duplicatedParamType) {
                 return "Update param type successfully.";
             }
 
@@ -192,7 +196,7 @@ public class ParamTypeServiceImpl implements ParamTypeService {
 
     @Override
     public String deleteParamType(Integer id) {
-        
+
         ParamType paramTypeEntity = paramTypeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + id));
 
