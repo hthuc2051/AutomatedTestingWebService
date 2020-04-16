@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.actions;
 
+import com.fpt.automatedtesting.actions.dtos.ActionParamDTO;
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseSubjectIdDto;
@@ -8,12 +9,16 @@ import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.params.Param;
 import com.fpt.automatedtesting.admins.AdminRepository;
+import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
+import com.fpt.automatedtesting.params.dtos.ParamTypeDTO;
+import com.fpt.automatedtesting.paramtypes.ParamType;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
 import com.fpt.automatedtesting.subjects.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,17 +130,34 @@ public class ActionServiceImpl implements ActionService {
     }
 
     @Override
-    public List<ActionResponseSubjectIdDto> getAllActionBySubject(int subjectId) {
+    public List<ActionParamDTO> getAllActionBySubject(int subjectId) {
         Subject subject = subjectRepository
                 .findByIdAndActiveIsTrue(subjectId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
-        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
-        List<ActionResponseSubjectIdDto> response = new ArrayList<>();
-        if (actions.size() > 0) {
-            response = MapperManager.mapAll(actions, ActionResponseSubjectIdDto.class);
-            List<Integer> subjects = new ArrayList<>();
-            subjects.add(subjectId);
-            response.forEach(element -> element.setSubjectId(subjects));
+//        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
+//        List<ActionResponseSubjectIdDto> response = new ArrayList<>();
+//        if (actions.size() > 0) {
+//            response = MapperManager.mapAll(actions, ActionResponseSubjectIdDto.class);
+//            List<Integer> subjects = new ArrayList<>();
+//            subjects.add(subjectId);
+//            response.forEach(element -> element.setSubjectId(subjects));
+//        }
+        List<ActionParamDTO> response = new ArrayList<>();
+        List<SubjectAction> subjectActions =  subject.getSubjectActions();
+        for (SubjectAction item: subjectActions) {
+            Action action = item.getAction();
+            ActionParamDTO actionParamDTO = MapperManager.map(action, ActionParamDTO.class);
+            List<SubjectActionParam> subjectActionParam = item.getSubjectActionParams();
+            for (SubjectActionParam element: subjectActionParam) {
+                String param = element.getParam().getName();
+                String  type = element.getParamType().getName();
+                ParamTypeDTO paramTypeDTO = new ParamTypeDTO();
+                paramTypeDTO.setParam(param);
+                paramTypeDTO.setType(type);
+                paramTypeDTO.setValue(param);
+                actionParamDTO.getParams().add(paramTypeDTO);
+            }
+            response.add(actionParamDTO);
         }
         return response;
     }
