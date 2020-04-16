@@ -34,7 +34,7 @@ public class ParamTypeController {
     public ResponseEntity<String> insertNewParamType(@RequestBody ParamTypeRequestDto requestDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(paramTypeService.insertParamType(requestDto));
+                .body(paramTypeService.createParamType(requestDto));
     }
 
     @PutMapping("/param-type")

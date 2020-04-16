@@ -39,19 +39,35 @@ public class ParamServiceImpl implements ParamService {
     @Override
     public String createParam(ParamCreateRequestDto dto) {
 
-        ParamType paramTypeEntity = paramTypeRepository.findById(dto.getTypeId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + dto.getTypeId()));
+        boolean checkExistedParam = false;
 
-        paramTypeEntity.setId(dto.getTypeId());
-        Param saveEntity = new Param();
-        saveEntity.setName(dto.getName());
-        saveEntity.setActive(true);
-        //saveEntity.setType(paramTypeEntity);
+        if (dto.getName() == null || dto.getName().length() <= 0)
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any param name.");
+        else {
+            // find param by case-sensitive name
+            Param saveParamEntity = paramRepository.findParamByName(dto.getName());
 
-        if (paramRepository.save(saveEntity) != null)
-            return "Create param successfully.";
-        else
-            return "Create param failed.";
+            // if param found with given name
+            if (saveParamEntity != null) {
+
+                // check if active status is false -> set to true
+                if (!saveParamEntity.getActive()) {
+                    saveParamEntity.setActive(true);
+                } // else do nothing
+
+            } else {
+                // not found any param with the given name -> create new param
+                saveParamEntity = new Param();
+                saveParamEntity.setName(dto.getName());
+                saveParamEntity.setActive(true);
+            }
+
+            // save new param to Database
+            if (paramRepository.save(saveParamEntity) != null)
+                return "Create param successfully.";
+            else
+                return "Create param failed.";
+        }
     }
 
     @Override
@@ -75,11 +91,11 @@ public class ParamServiceImpl implements ParamService {
     @Override
     public String deleteParam(Integer id) {
 
-        Param deleteEntity = paramRepository.findById(id)
+        Param deleteParamEntity = paramRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + id));
 
-        deleteEntity.setActive(false);
-        if (paramRepository.save(deleteEntity) != null)
+        deleteParamEntity.setActive(false);
+        if (paramRepository.save(deleteParamEntity) != null)
             return "Delete param successfully.";
         else
             return "Delete param failed.";

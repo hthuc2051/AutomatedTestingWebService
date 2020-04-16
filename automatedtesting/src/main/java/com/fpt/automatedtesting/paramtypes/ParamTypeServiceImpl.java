@@ -45,7 +45,7 @@ public class ParamTypeServiceImpl implements ParamTypeService {
 
     @Transactional
     @Override
-    public String insertParamType(ParamTypeRequestDto dto) {
+    public String createParamType(ParamTypeRequestDto dto) {
 
         List<ParamType> saveEntities;
         List<String> subjectCodes = dto.getSubjectCode();
