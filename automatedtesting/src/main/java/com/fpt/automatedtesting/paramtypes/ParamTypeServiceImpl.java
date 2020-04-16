@@ -3,6 +3,7 @@ package com.fpt.automatedtesting.paramtypes;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.params.Param;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeUpdateRequestDto;
@@ -25,27 +26,15 @@ public class ParamTypeServiceImpl implements ParamTypeService {
     }
 
     @Override
-    public List<ParamTypeResponseDto> getAllParamType() {
+    public List<ParamTypeDetailsResponseDto> getAllParamType() {
 
         List<ParamType> paramTypes = paramTypeRepository.findAllByActiveIsTrue();
 
         if (paramTypes != null && paramTypes.size() > 0) {
-            List<ParamTypeResponseDto> paramTypeResponseDtos = MapperManager.mapAll(paramTypes, ParamTypeResponseDto.class);
+            List<ParamTypeDetailsResponseDto> responseDtos = MapperManager.mapAll(paramTypes, ParamTypeDetailsResponseDto.class);
 
-            if (paramTypeResponseDtos != null && paramTypeResponseDtos.size() > 0) {
-                for (int index = 0; index < paramTypes.size(); index++) {
-
-                    List<Param> params = paramTypes.get(index).getParams();
-                    List<String> paramNames = new ArrayList<>();
-
-                    if (params != null && params.size() > 0) {
-                        for (Param paramEntity : params) {
-                            paramNames.add(paramEntity.getName());
-                        }
-                    }
-                    paramTypeResponseDtos.get(index).setListParams(paramNames);
-                }
-                return paramTypeResponseDtos;
+            if (responseDtos != null && responseDtos.size() > 0) {
+                return responseDtos;
             } else {
                 throw new CustomException(HttpStatus.NOT_FOUND, "Not found any param type.");
             }

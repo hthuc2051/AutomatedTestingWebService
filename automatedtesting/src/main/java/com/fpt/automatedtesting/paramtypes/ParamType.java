@@ -1,5 +1,7 @@
 package com.fpt.automatedtesting.paramtypes;
 
+import com.fpt.automatedtesting.actions.SubjectAction;
+import com.fpt.automatedtesting.actions.SubjectActionParam;
 import com.fpt.automatedtesting.params.Param;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "ParamType")
 public class ParamType {
 
     @Id
@@ -19,15 +22,16 @@ public class ParamType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = true)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "subject_code", nullable = true)
+    @Column(name = "subject_code")
     private String subjectCode;
 
-    @Column(name = "active", nullable = true)
+    @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
-    private List<Param> params;
+    @OneToMany(mappedBy = "paramType", cascade = CascadeType.ALL)
+    private List<SubjectActionParam> subjectActionParams;
+
 }
