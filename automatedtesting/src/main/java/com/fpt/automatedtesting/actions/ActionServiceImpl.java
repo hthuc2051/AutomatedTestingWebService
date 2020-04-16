@@ -12,6 +12,7 @@ import com.fpt.automatedtesting.admins.AdminRepository;
 import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
 import com.fpt.automatedtesting.params.dtos.ParamTypeDTO;
 import com.fpt.automatedtesting.paramtypes.ParamType;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
 import com.fpt.automatedtesting.subjects.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,14 +150,17 @@ public class ActionServiceImpl implements ActionService {
             ActionParamDTO actionParamDTO = MapperManager.map(action, ActionParamDTO.class);
             List<SubjectActionParam> subjectActionParam = item.getSubjectActionParams();
             for (SubjectActionParam element: subjectActionParam) {
-                String param = element.getParam().getName();
-                String  type = element.getParamType().getName();
+                Param param = element.getParam();
+                ParamType typeEntity = element.getParamType();
                 ParamTypeDTO paramTypeDTO = new ParamTypeDTO();
-                paramTypeDTO.setParam(param);
-                paramTypeDTO.setType(type);
-                paramTypeDTO.setValue(param);
+                paramTypeDTO.setId(param.getId());
+                paramTypeDTO.setName(param.getName());
+                ParamTypeDetailsResponseDto type = MapperManager.map(typeEntity, ParamTypeDetailsResponseDto.class);
+               // paramTypeDTO.setType(type);
+                paramTypeDTO.setType(type.getName());
                 actionParamDTO.getParams().add(paramTypeDTO);
             }
+            actionParamDTO.getSubjectId().add(subjectId);
             response.add(actionParamDTO);
         }
         return response;

@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.params.dtos;
 
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParamTypeDTO {
-    String param;
+    Integer id;
+    String name;
     String type;
-    String value;
 }

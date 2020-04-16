@@ -13,7 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActionParamDTO {
+    private Integer id;
     private String name;
     private String code;
     private List<ParamTypeDTO> params =  new ArrayList<>();
+    private List<Integer> subjectId =  new ArrayList<>();
 }
