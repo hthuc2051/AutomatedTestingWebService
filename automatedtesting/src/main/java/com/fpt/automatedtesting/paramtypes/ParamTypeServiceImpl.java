@@ -49,6 +49,7 @@ public class ParamTypeServiceImpl implements ParamTypeService {
 
         List<ParamType> saveEntities;
         List<String> subjectCodes = dto.getSubjectCode();
+        boolean duplicatedParamType = false;
 
         if (subjectCodes != null && subjectCodes.size() > 0) {
 
@@ -58,31 +59,33 @@ public class ParamTypeServiceImpl implements ParamTypeService {
 
                 // check the existence of a pair values (name - subject code)
                 ParamType checkExistedEntity = paramTypeRepository.findByNameAndSubjectCode(dto.getName(), subjectCode);
+                ParamType saveParamTypeEntity;
 
                 if (checkExistedEntity != null) {
-
-                    ParamType saveParamTypeEntity = new ParamType();
-                    saveParamTypeEntity.setName(dto.getName());
-                    saveParamTypeEntity.setSubjectCode(subjectCode);
-                    saveParamTypeEntity.setActive(true);
 
                     // if active status is false -> set it back to true
                     if (!checkExistedEntity.getActive()) {
 
-                        saveParamTypeEntity.setId(checkExistedEntity.getId());
+                        checkExistedEntity.setActive(true);
 
-                        saveEntities.add(saveParamTypeEntity);
-                    }// else active status is true -> do nothing
+                        saveEntities.add(checkExistedEntity);
+                    } else {// else - active status is true -> do nothing
+                        duplicatedParamType = true;
+                    }
                 } else {
 
                     // if name - subject code does not exist in DB -> create new row in DB
-                    ParamType saveParamTypeEntity = new ParamType();
+                    saveParamTypeEntity = new ParamType();
                     saveParamTypeEntity.setName(dto.getName());
                     saveParamTypeEntity.setSubjectCode(subjectCode);
                     saveParamTypeEntity.setActive(true);
 
                     saveEntities.add(saveParamTypeEntity);
                 }
+            }
+
+            if (saveEntities.size() == 0 && duplicatedParamType) {
+                return "Create param type successfully.";
             }
 
             List<ParamType> paramTypeEntities = paramTypeRepository.saveAll(saveEntities);
@@ -189,9 +192,12 @@ public class ParamTypeServiceImpl implements ParamTypeService {
 
     @Override
     public String deleteParamType(Integer id) {
+        
         ParamType paramTypeEntity = paramTypeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + id));
+
         paramTypeEntity.setActive(false);
+
         if (paramTypeRepository.save(paramTypeEntity) != null) {
             return "Delete param type successfully.";
         } else
