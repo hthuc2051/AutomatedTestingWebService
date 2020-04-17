@@ -23,7 +23,7 @@ public interface PracticalExamService {
     List<StudentSubmissionDetails> getListStudentInPracticalExam(Integer id);
 
     List<PracticalExamResponse> getPracticalExamsOfSubject(Integer id);
-    List<PracticalExamResponse> getListPracticalExamByLecturer(String enrollKey);
+    List<PracticalExamResponse> enrollPracticalExam(String enrollKey);
     List<PracticalExamResponse> getPracticalExamsOfLecturer(Integer id);
 
     String getStudentSubmission(StudentSubmissionDto dto);
@@ -31,4 +31,7 @@ public interface PracticalExamService {
     String checkDuplicatedCode(PracticalInfo info);
 
     List<DuplicatedCodeResponse> getDuplicatedResult(DuplicatedCodeRequest practicalInfo);
+    List<OnlineTestResult> getResultFromAzure(Integer code);
+
+    String test();
 }

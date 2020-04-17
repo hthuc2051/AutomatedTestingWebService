@@ -50,7 +50,7 @@ public class DuplicatedCodeService {
                 parserFile = new File(PATH_GRAMMAR_C_PARSER);
                 files[0] = parserFile;
                 break;
-            case CODE_PRACTICAL_CSharp:
+            case CODE_PRACTICAL_CSHARP:
                 files = new File[2];
                 parserFile = new File(PATH_GRAMMAR_CSHARP_PARSER);
                 lexerFile = new File(PATH_GRAMMAR_CSHARP_LEXER);

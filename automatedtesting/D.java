@@ -1,85 +1,59 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.thucnh.student.controllers;
+class Main{
+    public static void main(String args[]){
+        String name = "Saito";
+        String password = "a1c2bf1890eb";
+        String url = "http://localhost:9292/Saito/simba.git";
 
-import com.thucnh.student.beans.JavaBean;
-
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-/**
- *
- * @author USER
- */
-public class DeleteController extends HttpServlet {
-
-    private static final String SUCCESS ="SearchController";
-    private static final String ERROR ="error.jsp";
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        String url = ERROR;
+        // credentials
+        CredentialsProvider cp = new UsernamePasswordCredentialsProvider(name, password);
+        // clone
+        File dir = new File("/tmp/abc");
+        CloneCommand cc = new CloneCommand()
+                .setCredentialsProvider(cp)
+                .setDirectory(dir)
+                .setURI(url);
+        Git git = cc.call();
+        // add
+        AddCommand ac = git.add();
+        ac.addFilepattern(".");
         try {
-            String id = request.getParameter("idDelete");
-            JavaBean beans =  new JavaBean();
-            beans.setBookID(id);
-            boolean check = beans.deleteBook();
-            if(check){
-                url = SUCCESS;
-                request.setAttribute("STATUS", "Delete successfully");
-            }else{
-                request.setAttribute("ERROR", "Delete Failed");
-            }
-        } catch (Exception e) {
-            log("Error at DeleteController "+e.getMessage());
-        }finally{
-            request.getRequestDispatcher(url).forward(request, response);
+            ac.call();
+        } catch (NoFilepatternException e) {
+            e.printStackTrace();
         }
+
+        // commit
+        CommitCommand commit = git.commit();
+        commit.setCommitter("TMall", "open@tmall.com")
+                .setMessage("push war");
+        try {
+            commit.call();
+        } catch (NoHeadException e) {
+            e.printStackTrace();
+        } catch (NoMessageException e) {
+            e.printStackTrace();
+        } catch (UnmergedPathException e) {
+            e.printStackTrace();
+        } catch (ConcurrentRefUpdateException e) {
+            e.printStackTrace();
+        } catch (WrongRepositoryStateException e) {
+            e.printStackTrace();
+        }
+        // push
+        PushCommand pc = git.push();
+        pc.setCredentialsProvider(cp)
+                .setForce(true)
+                .setPushAll();
+        try {
+            Iterator<PushResult> it = pc.call().iterator();
+            if(it.hasNext()){
+                System.out.println(it.next().toString());
+            }
+        } catch (InvalidRemoteException e) {
+            e.printStackTrace();
+        }
+
+        // cleanup
+        dir.deleteOnExit();
     }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

@@ -29,8 +29,14 @@ public class Submission {
     @Column(name = "script_code")
     private String scriptCode;
 
+    @Column(name = "date")
+    private String date;
+
     @Column(name = "point")
     private Double point;
+
+    @Column(name = "evaluated_online")
+    private Boolean evaluatedOnline;
 
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id")

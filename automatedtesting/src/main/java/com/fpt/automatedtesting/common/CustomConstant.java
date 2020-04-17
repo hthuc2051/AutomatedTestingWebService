@@ -5,6 +5,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class CustomConstant {
 
+    // Prefix
+    public static final String PREFIX_BRANCH = "students/";
+
 
     // Script type
     public static final String TEMPLATE_TYPE_JAVA = "Java";
@@ -34,7 +37,7 @@ public class CustomConstant {
     public static final String CODE_PRACTICAL_JAVA = "Practical_Java";
     public static final String CODE_PRACTICAL_C = "Practical_C";
     public static final String CODE_PRACTICAL_JAVA_WEB = "Practical_JavaWeb";
-    public static final String CODE_PRACTICAL_CSharp = "Practical_CSharp";
+    public static final String CODE_PRACTICAL_CSHARP = "Practical_CSharp";
 
     // Language in search api
     public static final String LANGUAGE_JAVA = "JAVA";
@@ -51,12 +54,21 @@ public class CustomConstant {
     public static final String IMPORT_C = "#include";
 
 
+    public static final String AZURE_PROJECT_JAVA = "headlecturer2020/PE2A_Project_Java/";
+    public static final String AZURE_PROJECT_C = "headlecturer2020/PE2A_Project_C/";
+    public static final String AZURE_PROJECT_JAVA_WEB = "headlecturer2020/PE2A_Project_JavaWeb/";
+    public static final String AZURE_PROJECT_CSHARP = "headlecturer2020/PE2A_Project_CSharp/";
+
     public static final String DELETE_SCRIPT_SUCCESS = "Delete Successfully";
     public static final String DELETE_SCRIPT_FAIL = "Delete Script Failed";
     public static final String CREATE_SCRIPT_SUCCESS = "Create Script Successfully";
     public static final String CREATE_SCRIPT_FAIL = "Create Script Failed";
     public static final String UPDATE_SCRIPT_SUCCESS = "Update Script Successfully";
     public static final String UPDATE_SCRIPT_FAIL = "Update Script Failed";
+
+    public static final String SCRIPT_NAME_JAVA ="Script.java";
+    public static final String DB_NAME_JAVA ="DBUtilities.java";
+
 
     public static final String CREATE_PARAM_SUCCESS = "Create Param Successfully";
     public static final String CREATE_PARAM_FAIL = "Create Param Failed";

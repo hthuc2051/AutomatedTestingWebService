@@ -2,6 +2,7 @@ package com.fpt.automatedtesting.actions;
 
 import com.fpt.automatedtesting.subjects.Subject;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Table(name = "Subject_Action")
 public class SubjectAction {
 

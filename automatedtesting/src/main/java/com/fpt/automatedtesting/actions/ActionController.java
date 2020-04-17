@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.actions;
 
+import com.fpt.automatedtesting.actions.dtos.ActionParamDTO;
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseSubjectIdDto;
@@ -30,7 +31,7 @@ public class ActionController {
     }
 
     @GetMapping("/actions/subjects/{subjectId}")
-    public ResponseEntity<List<ActionResponseSubjectIdDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
+    public ResponseEntity<List<ActionParamDTO>> getAllActionsBySubject(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionBySubject(subjectId));

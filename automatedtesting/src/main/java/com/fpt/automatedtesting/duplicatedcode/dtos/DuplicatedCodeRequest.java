@@ -10,7 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DuplicatedCodeRequest {
-
     private String practicalExamCode;
     private String studentCode;
 }
