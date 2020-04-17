@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ParamTypeRepository extends JpaRepository<ParamType,Integer> {
     List<ParamType> findAllByActiveIsTrue();
     ParamType findByNameAndSubjectCode(String name, String subjectCode);
+    List<ParamType> findAllBySubjectCodeAndActiveIsTrue(String subjectCode);
 }

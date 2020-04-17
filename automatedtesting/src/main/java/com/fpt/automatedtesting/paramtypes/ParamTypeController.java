@@ -30,6 +30,13 @@ public class ParamTypeController {
                 .body(paramTypeService.getAllParamType());
     }
 
+    @GetMapping("/param-type/{subjectId}")
+    public ResponseEntity<List<ParamTypeDetailsResponseDto>> getParamTypeBySubjectId(@PathVariable Integer subjectId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(paramTypeService.getParamTypeBySubjectId(subjectId));
+    }
+
     @PostMapping("/param-type")
     public ResponseEntity<String> insertNewParamType(@RequestBody ParamTypeRequestDto requestDto) {
         return ResponseEntity
