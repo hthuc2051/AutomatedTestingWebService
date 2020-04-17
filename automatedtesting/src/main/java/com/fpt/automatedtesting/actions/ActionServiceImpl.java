@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.actions;
 
+import com.fpt.automatedtesting.actions.dtos.ActionParamDTO;
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseSubjectIdDto;
@@ -8,12 +9,17 @@ import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.params.Param;
 import com.fpt.automatedtesting.admins.AdminRepository;
+import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
+import com.fpt.automatedtesting.params.dtos.ParamTypeDTO;
+import com.fpt.automatedtesting.paramtypes.ParamType;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
 import com.fpt.automatedtesting.subjects.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,82 +40,84 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public List<ActionResponseDto> getAll() {
-        List<Action> actions = actionRepository.findAllByActiveIsTrue();
-        if (actions != null && actions.size() > 0) {
-            List<ActionResponseDto> actionResponseDtos = MapperManager.mapAll(actions, ActionResponseDto.class);
-            for (int i = 0; i < actions.size(); i++) {
-                List<Subject> subjects = actions.get(i).getSubjects();
-                ArrayList<String> subjectNames = new ArrayList<>();
-                for (Subject subject : subjects) {
-                    subjectNames.add(subject.getName());
-                }
-                actionResponseDtos.get(i).setSubjectName(subjectNames);
-            }
-            return actionResponseDtos;
-        } else {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any action");
-        }
+//        List<Action> actions = actionRepository.findAllByActiveIsTrue();
+//        if (actions != null && actions.size() > 0) {
+//            List<ActionResponseDto> actionResponseDtos = MapperManager.mapAll(actions, ActionResponseDto.class);
+//            for (int i = 0; i < actions.size(); i++) {
+//                List<Subject> subjects = actions.get(i).getSubjects();
+//                ArrayList<String> subjectNames = new ArrayList<>();
+//                for (Subject subject : subjects) {
+//                    subjectNames.add(subject.getName());
+//                }
+//                actionResponseDtos.get(i).setSubjectName(subjectNames);
+//            }
+//            return actionResponseDtos;
+//        } else {
+//            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any action");
+//        }
+        return null;
     }
 
     @Override
     public ActionResponseDto insert(ActionRequestDto dto) {
-        Admin admin = adminRepository
-                .findByIdAndActiveIsTrue(dto.getAdminId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Action is not found with Id " + dto.getAdminId()));
-        Action action = MapperManager.map(dto, Action.class);
-        action.setAdmin(admin);
-        List<Param> params = MapperManager.mapAll(dto.getParams(), Param.class);
-        action.setParams(params);
-        Subject subject = subjectRepository
-                .findByIdAndActiveIsTrue(dto.getSubjectId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + dto.getAdminId()));
-        List<Subject> subjects = action.getSubjects();
-        if (subjects == null) {
-            List<Subject> newSubjects = new ArrayList<>();
-            newSubjects.add(subject);
-            action.setSubjects(newSubjects);
-        } else {
-            action.getSubjects().add(subject);
-        }
-        for (Param param : params) {
-            List<Action> actions = param.getActions();
-            if (actions == null) {
-                List<Action> newActions = new ArrayList<>();
-                newActions.add(action);
-                param.setActions(newActions);
-            } else {
-                param.getActions().add(action);
-            }
-        }
-        Action result = actionRepository.saveAndFlush(action);
-        if (result == null) {
-            throw new CustomException(HttpStatus.CONFLICT, "Save new action failed ! Please try later");
-        }
-        return MapperManager.map(result, ActionResponseDto.class);
+//        Admin admin = adminRepository
+//                .findByIdAndActiveIsTrue(dto.getAdminId())
+//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Action is not found with Id " + dto.getAdminId()));
+//        Action action = MapperManager.map(dto, Action.class);
+//        action.setAdmin(admin);
+//        List<Param> params = MapperManager.mapAll(dto.getParams(), Param.class);
+//        action.setParams(params);
+//        Subject subject = subjectRepository
+//                .findByIdAndActiveIsTrue(dto.getSubjectId())
+//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + dto.getAdminId()));
+//        List<Subject> subjects = action.getSubjects();
+//        if (subjects == null) {
+//            List<Subject> newSubjects = new ArrayList<>();
+//            newSubjects.add(subject);
+//            action.setSubjects(newSubjects);
+//        } else {
+//            action.getSubjects().add(subject);
+//        }
+//        for (Param param : params) {
+//            List<Action> actions = param.getActions();
+//            if (actions == null) {
+//                List<Action> newActions = new ArrayList<>();
+//                newActions.add(action);
+//                param.setActions(newActions);
+//            } else {
+//                param.getActions().add(action);
+//            }
+//        }
+//        Action result = actionRepository.saveAndFlush(action);
+//        if (result == null) {
+//            throw new CustomException(HttpStatus.CONFLICT, "Save new action failed ! Please try later");
+//        }
+//        return MapperManager.map(result, ActionResponseDto.class);
+        return null;
     }
 
     @Override
     public ActionResponseDto update(ActionRequestDto dto) {
-        if (findById(dto.getId()) != null) {
-            Action action = MapperManager.map(dto, Action.class);
-            List<Param> params = MapperManager.mapAll(dto.getParams(), Param.class);
-            action.setParams(params);
-            Admin admin = adminRepository
-                    .findByIdAndActiveIsTrue(dto.getAdminId())
-                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Action is not found with Id " + dto.getAdminId()));
-            Subject subject = subjectRepository
-                    .findByIdAndActiveIsTrue(dto.getSubjectId())
-                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + dto.getAdminId()));
-            action.setActive(true);
-            action.setAdmin(admin);
-            action.getSubjects().add(subject);
-            params.forEach(param -> param.getActions().add(action));
-            Action result = actionRepository.saveAndFlush(action);
-            if (result == null) {
-                throw new CustomException(HttpStatus.CONFLICT, "Save new action failed ! Please try later");
-            }
-            return MapperManager.map(result, ActionResponseDto.class);
-        }
+//        if (findById(dto.getId()) != null) {
+//            Action action = MapperManager.map(dto, Action.class);
+//            List<Param> params = MapperManager.mapAll(dto.getParams(), Param.class);
+//            action.setParams(params);
+//            Admin admin = adminRepository
+//                    .findByIdAndActiveIsTrue(dto.getAdminId())
+//                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Action is not found with Id " + dto.getAdminId()));
+//            Subject subject = subjectRepository
+//                    .findByIdAndActiveIsTrue(dto.getSubjectId())
+//                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + dto.getAdminId()));
+//            action.setActive(true);
+//            action.setAdmin(admin);
+//            action.getSubjects().add(subject);
+//            params.forEach(param -> param.getActions().add(action));
+//            Action result = actionRepository.saveAndFlush(action);
+//            if (result == null) {
+//                throw new CustomException(HttpStatus.CONFLICT, "Save new action failed ! Please try later");
+//            }
+//            return MapperManager.map(result, ActionResponseDto.class);
+//        }
         return null;
     }
 
@@ -123,17 +131,37 @@ public class ActionServiceImpl implements ActionService {
     }
 
     @Override
-    public List<ActionResponseSubjectIdDto> getAllActionBySubject(int subjectId) {
+    public List<ActionParamDTO> getAllActionBySubject(int subjectId) {
         Subject subject = subjectRepository
                 .findByIdAndActiveIsTrue(subjectId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
-        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
-        List<ActionResponseSubjectIdDto> response = new ArrayList<>();
-        if (actions.size() > 0) {
-            response = MapperManager.mapAll(actions, ActionResponseSubjectIdDto.class);
-            List<Integer> subjects = new ArrayList<>();
-            subjects.add(subjectId);
-            response.forEach(element -> element.setSubjectId(subjects));
+//        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
+//        List<ActionResponseSubjectIdDto> response = new ArrayList<>();
+//        if (actions.size() > 0) {
+//            response = MapperManager.mapAll(actions, ActionResponseSubjectIdDto.class);
+//            List<Integer> subjects = new ArrayList<>();
+//            subjects.add(subjectId);
+//            response.forEach(element -> element.setSubjectId(subjects));
+//        }
+        List<ActionParamDTO> response = new ArrayList<>();
+        List<SubjectAction> subjectActions =  subject.getSubjectActions();
+        for (SubjectAction item: subjectActions) {
+            Action action = item.getAction();
+            ActionParamDTO actionParamDTO = MapperManager.map(action, ActionParamDTO.class);
+            List<SubjectActionParam> subjectActionParam = item.getSubjectActionParams();
+            for (SubjectActionParam element: subjectActionParam) {
+                Param param = element.getParam();
+                ParamType typeEntity = element.getParamType();
+                ParamTypeDTO paramTypeDTO = new ParamTypeDTO();
+                paramTypeDTO.setId(param.getId());
+                paramTypeDTO.setName(param.getName());
+                ParamTypeDetailsResponseDto type = MapperManager.map(typeEntity, ParamTypeDetailsResponseDto.class);
+               // paramTypeDTO.setType(type);
+                paramTypeDTO.setType(type.getName());
+                actionParamDTO.getParams().add(paramTypeDTO);
+            }
+            actionParamDTO.getSubjectId().add(subjectId);
+            response.add(actionParamDTO);
         }
         return response;
     }

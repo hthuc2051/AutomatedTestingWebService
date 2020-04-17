@@ -1,7 +1,6 @@
 package com.fpt.automatedtesting.subjects;
 
-
-import com.fpt.automatedtesting.actions.Action;
+import com.fpt.automatedtesting.actions.SubjectAction;
 import com.fpt.automatedtesting.subjectclasses.SubjectClass;
 import com.fpt.automatedtesting.scripts.Script;
 import lombok.AllArgsConstructor;
@@ -29,8 +28,8 @@ public class Subject {
     @Column(name = "code")
     private String code;
 
-    @ManyToMany(targetEntity = Action.class, mappedBy = "subjects", fetch = FetchType.LAZY)
-    private List<Action> actions;
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    private List<SubjectAction> subjectActions;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<Script> scripts;

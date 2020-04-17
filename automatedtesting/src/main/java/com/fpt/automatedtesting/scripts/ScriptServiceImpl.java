@@ -235,6 +235,52 @@ public class ScriptServiceImpl implements ScriptService {
     }
 
     @Override
+    public void downloadTemplateQuestion(int scriptId, HttpServletResponse response) {
+        try {
+            Optional<Script> script = scriptRepository.findById(scriptId);
+            if(script.isPresent()) {
+                if(script.get().getDocumentPath() != null){
+                    File file = new File(script.get().getDocumentPath());
+                    String mimeType = "application/octet-stream";
+                    response.setContentType(mimeType);
+                    response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+                    response.setContentLength((int) file.length());
+                    OutputStream os = null;
+                    os = response.getOutputStream();
+                    FileManager.downloadZip(file, os);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    @Override
+    public void downloadDatabaseScript(int scriptId, HttpServletResponse response) {
+        try {
+            Optional<Script> script = scriptRepository.findById(scriptId);
+            if(script.isPresent()) {
+                if(script.get().getDocumentPath() != null){
+                    File file = new File(script.get().getDocumentPath());
+                    String mimeType = "application/octet-stream";
+                    response.setContentType(mimeType);
+                    response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+                    response.setContentLength((int) file.length());
+                    OutputStream os = null;
+                    os = response.getOutputStream();
+                    FileManager.downloadZip(file, os);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    @Override
     public String deleteScript(Integer scriptId) {
         Script script = scriptRepository.findById(scriptId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script with id" + scriptId));
         script.setActive(false);

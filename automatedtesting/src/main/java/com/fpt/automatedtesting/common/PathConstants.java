@@ -105,6 +105,17 @@ public class PathConstants {
     public static final String PATH_DOCS_C = DOCS_PREFIX + "Docs_C" + File.separator;
     public static final String PATH_DOCS_CSHARP = DOCS_PREFIX + "Docs_CSharp" + File.separator;
 
+    // Path TEMPLATE QUESTION
+    public static final String PATH_TEMPLATE_QUESTION_JAVA_WEB = PROJECT_DIR + File.separator + "Docs_JavaWeb" + File.separator;
+    public static final String PATH_TEMPLATE_QUESTION_JAVA = PROJECT_DIR + File.separator + "Docs_Java" + File.separator;
+    public static final String PATH_TEMPLATE_QUESTION_C = PROJECT_DIR + File.separator + "Docs_C" + File.separator;
+    public static final String PATH_TEMPLATE_QUESTION_C_SHARP = PROJECT_DIR + File.separator + "Docs_CSharp" + File.separator;
+
+    // Path TEMPLATE QUESTION
+    public static final String PATH_DATABASE_SCRIPT_JAVA_WEB = PROJECT_DIR + File.separator + "Docs_JavaWeb" + File.separator;
+    public static final String PATH_DATABASE_SCRIPT_JAVA = PROJECT_DIR + File.separator + "Docs_Java" + File.separator;
+    public static final String PATH_DATABASE_SCRIPT_C = PROJECT_DIR + File.separator + "Docs_C" + File.separator;
+    public static final String PATH_DATABASE_SCRIPT_C_SHARP = PROJECT_DIR + File.separator + "Docs_CSharp" + File.separator;
 
     // Path template
     public static final String PATH_TEMPLATE_JAVA_WEB = STATIC_DIR

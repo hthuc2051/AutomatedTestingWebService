@@ -1,5 +1,6 @@
 package com.fpt.automatedtesting.paramtypes;
 
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeUpdateRequestDto;
@@ -23,7 +24,7 @@ public class ParamTypeController {
     }
 
     @GetMapping("/param-type")
-    public ResponseEntity<List<ParamTypeResponseDto>> getAllParamTypes() {
+    public ResponseEntity<List<ParamTypeDetailsResponseDto>> getAllParamTypes() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(paramTypeService.getAllParamType());
@@ -33,7 +34,7 @@ public class ParamTypeController {
     public ResponseEntity<String> insertNewParamType(@RequestBody ParamTypeRequestDto requestDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(paramTypeService.insertParamType(requestDto));
+                .body(paramTypeService.createParamType(requestDto));
     }
 
     @PutMapping("/param-type")

@@ -43,10 +43,10 @@ public class CustomConstant {
     public static final String LANGUAGE_JAVA = "JAVA";
     public static final String LANGUAGE_CS = "CS";
     public static final String LANGUAGE_C = "C";
-    public static final String EXTENSION_ZIP =".zip";
-    public static final String EXTENSION_JAVA =".java";
-    public static final String EXTENSION_CSHARP =".cs";
-    public static final String EXTENSION_C =".c";
+    public static final String EXTENSION_ZIP = ".zip";
+    public static final String EXTENSION_JAVA = ".java";
+    public static final String EXTENSION_CSHARP = ".cs";
+    public static final String EXTENSION_C = ".c";
 
     // Import name
     public static final String IMPORT_JAVA = "import";
@@ -69,4 +69,22 @@ public class CustomConstant {
     public static final String SCRIPT_NAME_JAVA ="Script.java";
     public static final String DB_NAME_JAVA ="DBUtilities.java";
 
+
+    public static final String CREATE_PARAM_SUCCESS = "Create Param Successfully";
+    public static final String CREATE_PARAM_FAIL = "Create Param Failed";
+    public static final String UPDATE_PARAM_SUCCESS = "Update Param Successfully";
+    public static final String UPDATE_PARAM_FAIL = "Update Param Failed";
+    public static final String DELETE_PARAM_SUCCESS = "Delete Param Successfully";
+    public static final String DELETE_PARAM_FAIL = "Delete Param Failed";
+
+    public static final String CREATE_PARAM_TYPE_SUCCESS = "Create Param Type Successfully";
+    public static final String CREATE_PARAM_TYPE_FAIL = "Create Param Type Failed";
+    public static final String UPDATE_PARAM_TYPE_SUCCESS = "Update Param Type Successfully";
+    public static final String UPDATE_PARAM_TYPE_FAIL = "Update Param Type Failed";
+    public static final String DELETE_PARAM_TYPE_SUCCESS = "Delete Param Type Successfully";
+    public static final String DELETE_PARAM_TYPE_FAIL = "Delete Param Type Failed";
+
+    // Github Result
+    public static final int NUMBER_TOP_SIMILAR_FILE = 20;
+    public static final String AUTH_TOKEN = "212222f614818a99b5e69b017f77617fa3081f96";
 }

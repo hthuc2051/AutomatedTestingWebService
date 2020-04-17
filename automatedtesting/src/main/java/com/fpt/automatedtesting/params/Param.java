@@ -1,16 +1,15 @@
 package com.fpt.automatedtesting.params;
 
-import com.fpt.automatedtesting.paramtypes.ParamType;
+import com.fpt.automatedtesting.actions.SubjectActionParam;
 import lombok.*;
-import com.fpt.automatedtesting.actions.Action;
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Param")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "Param")
 public class Param {
 
     @Id
@@ -21,13 +20,9 @@ public class Param {
     @Column(name = "name", nullable = true)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "type", referencedColumnName = "id")
-    private ParamType type;
-
-    @ManyToMany(targetEntity = Action.class, mappedBy = "params", fetch = FetchType.LAZY)
-    private List<Action> actions;
-
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
+
+    @OneToMany(mappedBy = "param", cascade = CascadeType.ALL)
+    private List<SubjectActionParam> subjectActionParams;
 }

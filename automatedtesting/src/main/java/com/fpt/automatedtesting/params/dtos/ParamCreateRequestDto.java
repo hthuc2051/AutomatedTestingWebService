@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ParamCreateRequestDto {
     private String name;
-    private Integer typeId;
     private Boolean active;
 }

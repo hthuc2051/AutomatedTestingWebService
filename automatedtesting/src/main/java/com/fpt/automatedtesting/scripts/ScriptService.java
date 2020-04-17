@@ -12,6 +12,8 @@ public interface ScriptService {
     String generateScriptTest(ScriptRequestDto dto);
     void downloadScriptTest(int scriptId,HttpServletResponse response);
     void downloadTestDocument(int scriptId,HttpServletResponse response);
+    void downloadTemplateQuestion(int scriptId,HttpServletResponse response);
+    void downloadDatabaseScript(int scriptId,HttpServletResponse response);
     String deleteScript(Integer scriptId);
     String updateScriptTest(ScriptRequestDto dto);
     ScriptResponseDto getScriptTestByScriptId(Integer scriptId);
