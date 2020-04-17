@@ -48,6 +48,10 @@ public class CustomConstant {
     public static final String EXTENSION_CSHARP = ".cs";
     public static final String EXTENSION_C = ".c";
 
+    // File extensions
+    public static final String EXTENSION_SQL_SERVER = ".sql";
+    public static final String EXTENSION_DOCUMENT = ".docx";
+
     // Import name
     public static final String IMPORT_JAVA = "import";
     public static final String IMPORT_CS = "using";

@@ -159,9 +159,10 @@ public class ScriptServiceImpl implements ScriptService {
 
             // Copy docs file to Docs_[Language] folder
             String documentPath = "";
+            String documentExtesion = CustomConstant.EXTENSION_DOCUMENT;
             MultipartFile docsFile = dto.getDocsFile();
             if (docsFile != null) {
-                documentPath = docsFolPath  + code + ".docx";
+                documentPath = docsFolPath  + code + documentExtesion;
                 Path copyLocation = Paths.get(documentPath);
                 Files.copy(docsFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -239,8 +240,29 @@ public class ScriptServiceImpl implements ScriptService {
         try {
             Optional<Script> script = scriptRepository.findById(scriptId);
             if(script.isPresent()) {
-                if(script.get().getDocumentPath() != null){
-                    File file = new File(script.get().getDocumentPath());
+                String subjectCode = script.get().getSubject().getCode();
+                String templateQuestionFol = "";
+                String extension = "";
+                switch (subjectCode){
+                    case CustomConstant.TEMPLATE_TYPE_JAVA:
+                        templateQuestionFol = PathConstants.PATH_TEMPLATE_QUESTION_JAVA;
+                        extension = CustomConstant.EXTENSION_JAVA;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
+                        templateQuestionFol = PathConstants.PATH_TEMPLATE_QUESTION_JAVA_WEB;
+                        extension = CustomConstant.EXTENSION_JAVA;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_CSHARP:
+                        templateQuestionFol = PathConstants.PATH_TEMPLATE_QUESTION_C_SHARP;
+                        extension = CustomConstant.EXTENSION_CSHARP;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_C:
+                        templateQuestionFol = PathConstants.PATH_TEMPLATE_QUESTION_C;
+                        extension = CustomConstant.EXTENSION_C;
+                        break;
+                }
+                if(!"".equals(templateQuestionFol)){
+                    File file = new File(templateQuestionFol + script.get().getCode() + extension);
                     String mimeType = "application/octet-stream";
                     response.setContentType(mimeType);
                     response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
@@ -262,8 +284,25 @@ public class ScriptServiceImpl implements ScriptService {
         try {
             Optional<Script> script = scriptRepository.findById(scriptId);
             if(script.isPresent()) {
-                if(script.get().getDocumentPath() != null){
-                    File file = new File(script.get().getDocumentPath());
+                String subjectCode = script.get().getSubject().getCode();
+                String databaseFol = "";
+                String extension = CustomConstant.EXTENSION_SQL_SERVER;
+                switch (subjectCode){
+                    case CustomConstant.TEMPLATE_TYPE_JAVA:
+                        databaseFol = PathConstants.PATH_DATABASE_SCRIPT_JAVA;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
+                        databaseFol = PathConstants.PATH_DATABASE_SCRIPT_JAVA_WEB;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_CSHARP:
+                        databaseFol = PathConstants.PATH_DATABASE_SCRIPT_C_SHARP;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_C:
+                        databaseFol = PathConstants.PATH_DATABASE_SCRIPT_C;
+                        break;
+                }
+                if(!"".equals(databaseFol)){
+                    File file = new File(databaseFol + script.get().getCode() + extension);
                     String mimeType = "application/octet-stream";
                     response.setContentType(mimeType);
                     response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());

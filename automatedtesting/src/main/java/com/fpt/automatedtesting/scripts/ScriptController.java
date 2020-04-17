@@ -78,7 +78,15 @@ public class ScriptController {
         scriptService.downloadTestDocument(scriptId,response);
     }
 
+    @GetMapping("/templateQuestion/download/{scriptId}")
+    public void downloadTemplateQuestion(@PathVariable Integer scriptId, HttpServletResponse response) {
+        scriptService.downloadTemplateQuestion(scriptId,response);
+    }
 
+    @GetMapping("/database/download/{scriptId}")
+    public void downloadDatabase(@PathVariable Integer scriptId, HttpServletResponse response) {
+        scriptService.downloadDatabaseScript(scriptId,response);
+    }
 
     @PostMapping("/upload")
     public String uploadFile(@ModelAttribute StudentSubmissionDto file) throws IOException {
