@@ -78,6 +78,8 @@ public class ScriptController {
         scriptService.downloadTestDocument(scriptId,response);
     }
 
+
+
     @PostMapping("/upload")
     public String uploadFile(@ModelAttribute StudentSubmissionDto file) throws IOException {
         FileManager.uploadFile(file);
