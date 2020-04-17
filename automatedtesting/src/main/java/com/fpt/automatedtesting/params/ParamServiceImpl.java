@@ -1,12 +1,12 @@
 package com.fpt.automatedtesting.params;
 
+import com.fpt.automatedtesting.actions.SubjectActionParam;
+import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.params.dtos.ParamCreateRequestDto;
 import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
 import com.fpt.automatedtesting.params.dtos.ParamUpdateRequestDto;
-import com.fpt.automatedtesting.paramtypes.ParamType;
-import com.fpt.automatedtesting.paramtypes.ParamTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,12 +17,10 @@ import java.util.List;
 public class ParamServiceImpl implements ParamService {
 
     private final ParamRepository paramRepository;
-    private final ParamTypeRepository paramTypeRepository;
 
     @Autowired
-    public ParamServiceImpl(ParamRepository paramRepository, ParamTypeRepository paramTypeRepository) {
+    public ParamServiceImpl(ParamRepository paramRepository) {
         this.paramRepository = paramRepository;
-        this.paramTypeRepository = paramTypeRepository;
     }
 
     @Override
@@ -39,50 +37,80 @@ public class ParamServiceImpl implements ParamService {
     @Override
     public String createParam(ParamCreateRequestDto dto) {
 
-        ParamType paramTypeEntity = paramTypeRepository.findById(dto.getTypeId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + dto.getTypeId()));
+        if (dto.getName() == null || dto.getName().length() <= 0)
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any param name.");
+        else {
+            // find param by case-sensitive name
+            Param saveParamEntity = paramRepository.findParamByName(dto.getName());
 
-        paramTypeEntity.setId(dto.getTypeId());
-        Param saveEntity = new Param();
-        saveEntity.setName(dto.getName());
-        saveEntity.setActive(true);
-        //saveEntity.setType(paramTypeEntity);
+            // if param found with given name
+            if (saveParamEntity != null) {
 
-        if (paramRepository.save(saveEntity) != null)
-            return "Create param successfully.";
-        else
-            return "Create param failed.";
+                return "Param name \"" + dto.getName() + "\" is already existed.";
+            } else {
+                // not found any param with the given name -> create new param
+                saveParamEntity = new Param();
+                saveParamEntity.setName(dto.getName());
+                saveParamEntity.setActive(true);
+            }
+
+            // save new param to Database
+            if (paramRepository.save(saveParamEntity) != null)
+                return CustomConstant.CREATE_PARAM_SUCCESS;
+            else
+                return CustomConstant.CREATE_PARAM_FAIL;
+        }
     }
 
     @Override
     public String updateParam(ParamUpdateRequestDto dto) {
 
-//        Param updateEntity = paramRepository.findById(dto.getId())
-//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + dto.getId()));
-//
-//        ParamType paramTypeEntity = paramTypeRepository.findById(dto.getTypeId())
-//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + dto.getTypeId()));
-//
-//        updateEntity.setName(dto.getName());
-//        updateEntity.setType(paramTypeEntity);
-//
-//        if (paramRepository.save(updateEntity) != null)
-//            return "Update param successfully.";
-//        else
-            return "Update param failed.";
+        Param updateEntity = paramRepository.findById(dto.getId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + dto.getId()));
+
+        if (dto.getName().equals(updateEntity.getName()))
+            return CustomConstant.UPDATE_PARAM_SUCCESS;
+
+        // find param by case-sensitive name
+        Param paramEntity = paramRepository.findParamByName(dto.getName());
+
+        // if found param with the given name
+        if (paramEntity != null) {
+
+            // if found param is not update param
+            if (paramEntity.getId() != updateEntity.getId()) {
+
+                return "Param name \"" + dto.getName() + "\" is already existed.";
+            } // else do nothing
+        } else {
+            updateEntity.setName(dto.getName());
+        }
+
+        if (paramRepository.save(updateEntity) != null)
+            return CustomConstant.UPDATE_PARAM_SUCCESS;
+        else
+            return CustomConstant.UPDATE_PARAM_FAIL;
     }
 
     @Override
     public String deleteParam(Integer id) {
 
-        Param deleteEntity = paramRepository.findById(id)
+        Param deleteParamEntity = paramRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + id));
 
-        deleteEntity.setActive(false);
-        if (paramRepository.save(deleteEntity) != null)
-            return "Delete param successfully.";
-        else
-            return "Delete param failed.";
+        // get relationship of param
+        List<SubjectActionParam> subjectActionParams = deleteParamEntity.getSubjectActionParams();
+
+        // if param is not in use -> set active status to false
+        if (subjectActionParams == null || subjectActionParams.size() <= 0) {
+            deleteParamEntity.setActive(false);
+            if (paramRepository.save(deleteParamEntity) != null)
+                return CustomConstant.DELETE_PARAM_SUCCESS;
+            else
+                return CustomConstant.DELETE_PARAM_FAIL;
+        } else { // param is already in use
+            return "Param name \"" + deleteParamEntity.getName() + "\" is already in use.";
+        }
     }
 
 

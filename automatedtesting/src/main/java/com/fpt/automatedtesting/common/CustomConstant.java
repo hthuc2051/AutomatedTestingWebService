@@ -40,16 +40,15 @@ public class CustomConstant {
     public static final String LANGUAGE_JAVA = "JAVA";
     public static final String LANGUAGE_CS = "CS";
     public static final String LANGUAGE_C = "C";
-    public static final String EXTENSION_ZIP =".zip";
-    public static final String EXTENSION_JAVA =".java";
-    public static final String EXTENSION_CSHARP =".cs";
-    public static final String EXTENSION_C =".c";
+    public static final String EXTENSION_ZIP = ".zip";
+    public static final String EXTENSION_JAVA = ".java";
+    public static final String EXTENSION_CSHARP = ".cs";
+    public static final String EXTENSION_C = ".c";
 
     // Import name
     public static final String IMPORT_JAVA = "import";
     public static final String IMPORT_CS = "using";
     public static final String IMPORT_C = "#include";
-
 
 
     public static final String DELETE_SCRIPT_SUCCESS = "Delete Successfully";
@@ -58,6 +57,20 @@ public class CustomConstant {
     public static final String CREATE_SCRIPT_FAIL = "Create Script Failed";
     public static final String UPDATE_SCRIPT_SUCCESS = "Update Script Successfully";
     public static final String UPDATE_SCRIPT_FAIL = "Update Script Failed";
+
+    public static final String CREATE_PARAM_SUCCESS = "Create Param Successfully";
+    public static final String CREATE_PARAM_FAIL = "Create Param Failed";
+    public static final String UPDATE_PARAM_SUCCESS = "Update Param Successfully";
+    public static final String UPDATE_PARAM_FAIL = "Update Param Failed";
+    public static final String DELETE_PARAM_SUCCESS = "Delete Param Successfully";
+    public static final String DELETE_PARAM_FAIL = "Delete Param Failed";
+
+    public static final String CREATE_PARAM_TYPE_SUCCESS = "Create Param Type Successfully";
+    public static final String CREATE_PARAM_TYPE_FAIL = "Create Param Type Failed";
+    public static final String UPDATE_PARAM_TYPE_SUCCESS = "Update Param Type Successfully";
+    public static final String UPDATE_PARAM_TYPE_FAIL = "Update Param Type Failed";
+    public static final String DELETE_PARAM_TYPE_SUCCESS = "Delete Param Type Successfully";
+    public static final String DELETE_PARAM_TYPE_FAIL = "Delete Param Type Failed";
 
     // Github Result
     public static final int NUMBER_TOP_SIMILAR_FILE = 20;

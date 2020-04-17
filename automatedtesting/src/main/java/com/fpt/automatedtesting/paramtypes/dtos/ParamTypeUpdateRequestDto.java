@@ -14,7 +14,5 @@ public class ParamTypeUpdateRequestDto {
 
     private String name;
 
-    private List<String> subjectCodes;
-
     private Boolean active;
 }

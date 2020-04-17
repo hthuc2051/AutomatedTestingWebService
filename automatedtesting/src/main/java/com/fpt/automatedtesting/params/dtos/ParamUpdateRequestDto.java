@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 public class ParamUpdateRequestDto {
     private Integer id;
     private String name;
-    private Integer typeId;
     private Boolean active;
 }

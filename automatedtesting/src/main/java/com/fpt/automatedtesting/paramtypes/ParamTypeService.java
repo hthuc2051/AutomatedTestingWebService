@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ParamTypeService {
     List<ParamTypeDetailsResponseDto> getAllParamType();
-    String insertParamType(ParamTypeRequestDto dto);
+    String createParamType(ParamTypeRequestDto dto);
     String updateParamType(ParamTypeUpdateRequestDto dto);
     String deleteParamType(Integer id);
 
