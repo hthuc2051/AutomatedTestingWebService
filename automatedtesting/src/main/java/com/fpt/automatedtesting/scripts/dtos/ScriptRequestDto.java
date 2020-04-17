@@ -18,4 +18,6 @@ public class ScriptRequestDto {
     private Integer subjectId;
     private String scriptData;
     private MultipartFile docsFile;
+    private ConnectionObj onlineObj;
+    private ConnectionObj offlineObj;
 }

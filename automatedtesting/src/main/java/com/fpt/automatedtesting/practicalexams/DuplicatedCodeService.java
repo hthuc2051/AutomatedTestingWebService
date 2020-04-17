@@ -2,14 +2,11 @@ package com.fpt.automatedtesting.practicalexams;
 
 import com.fpt.automatedtesting.common.FileManager;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.snt.inmemantlr.GenericParser;
 import org.snt.inmemantlr.exceptions.CompilationException;
 import org.snt.inmemantlr.exceptions.IllegalWorkflowException;
 import org.snt.inmemantlr.exceptions.ParsingException;
-import org.snt.inmemantlr.listener.DefaultTreeListener;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -50,7 +47,7 @@ public class DuplicatedCodeService {
                 parserFile = new File(PATH_GRAMMAR_C_PARSER);
                 files[0] = parserFile;
                 break;
-            case CODE_PRACTICAL_CSharp:
+            case CODE_PRACTICAL_CSHARP:
                 files = new File[2];
                 parserFile = new File(PATH_GRAMMAR_CSHARP_PARSER);
                 lexerFile = new File(PATH_GRAMMAR_CSHARP_LEXER);

@@ -30,3 +30,4 @@ build/
 ### VS Code ###
 .vscode/
 /automatedtesting/src/main/resources/static/JavaConsoleApplication/nbproject/private/
+*.log

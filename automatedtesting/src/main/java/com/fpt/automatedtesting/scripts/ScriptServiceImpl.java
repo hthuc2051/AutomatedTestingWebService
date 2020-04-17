@@ -17,7 +17,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -107,9 +106,9 @@ public class ScriptServiceImpl implements ScriptService {
                     fileExtension = EXTENSION_JAVA;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
-                    templatePath = PathConstants.PATH_TEMPLATE_C_SHARP;
-                    scriptStorePath = PathConstants.PATH_SCRIPT_C_SHARP;
-                    docsFolPath = PathConstants.PATH_DOCS_C_SHARP;
+                    templatePath = PathConstants.PATH_TEMPLATE_CSHARP;
+                    scriptStorePath = PathConstants.PATH_SCRIPT_CSHARP;
+                    docsFolPath = PathConstants.PATH_DOCS_CSHARP;
                     fileExtension = EXTENSION_CSharp;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_C:
@@ -273,9 +272,9 @@ public class ScriptServiceImpl implements ScriptService {
                     fileExtension = EXTENSION_JAVA;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
-                    templatePath = PathConstants.PATH_TEMPLATE_C_SHARP;
-                    scriptStorePath = PathConstants.PATH_SCRIPT_C_SHARP;
-                    docsFolPath = PathConstants.PATH_DOCS_C_SHARP;
+                    templatePath = PathConstants.PATH_TEMPLATE_CSHARP;
+                    scriptStorePath = PathConstants.PATH_SCRIPT_CSHARP;
+                    docsFolPath = PathConstants.PATH_DOCS_CSHARP;
                     fileExtension = EXTENSION_CSharp;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_C:

@@ -1,7 +1,6 @@
 package com.fpt.automatedtesting.practicalexams;
 
 
-import com.fpt.automatedtesting.common.FileManager;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.exception.ExceptionManager;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -67,7 +65,7 @@ public class PracticalExamController {
     public ResponseEntity<List<PracticalExamResponse>> enrollPracticalExam(String code) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(practicalExamService.getListPracticalExamByLecturer(code));
+                .body(practicalExamService.enrollPracticalExam(code));
     }
 
     @GetMapping("/subjects/{id}/practical-exam")
@@ -87,7 +85,7 @@ public class PracticalExamController {
 
 
     @GetMapping("/templates/{id}")
-    public void downLoadImportFile(@PathVariable Integer id, HttpServletResponse response) {
+    public void downloadPracticalTemplate(@PathVariable Integer id, HttpServletResponse response) {
         practicalExamService.downloadPracticalTemplate(id, response);
     }
 
@@ -126,6 +124,16 @@ public class PracticalExamController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.getDuplicatedResult(request));
+    }
+
+    @GetMapping("/practical-exam/online-result/{id}")
+    public List<OnlineTestResult> getResultFromAzure(@PathVariable Integer id) {
+        return practicalExamService.getResultFromAzure(id);
+    }
+
+    @GetMapping("/test/check-online")
+    public String testaa() {
+        return practicalExamService.test();
     }
 
 }

@@ -1,10 +1,13 @@
 package com.fpt.automatedtesting.practicalexams;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.fpt.automatedtesting.common.CustomConstant.*;
 import static com.fpt.automatedtesting.common.PathConstants.*;
 
+import com.fpt.automatedtesting.common.CustomUtils;
 import com.fpt.automatedtesting.common.FileManager;
 import com.fpt.automatedtesting.common.PathConstants;
 import com.fpt.automatedtesting.duplicatedcode.DuplicatedCode;
@@ -12,6 +15,8 @@ import com.fpt.automatedtesting.duplicatedcode.DuplicatedCodeDetails;
 import com.fpt.automatedtesting.duplicatedcode.DuplicatedCodeRepository;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
+import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeDto;
+import com.fpt.automatedtesting.duplicatedcode.dtos.FileVectors;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.dtos.request.SubmissionDetailsDto;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
@@ -28,12 +33,15 @@ import com.fpt.automatedtesting.subjectclasses.SubjectClass;
 import com.fpt.automatedtesting.subjectclasses.SubjectClassRepository;
 import com.fpt.automatedtesting.submissions.Submission;
 import com.fpt.automatedtesting.submissions.SubmissionRepository;
+import com.fpt.automatedtesting.submissions.dtos.response.SubmissionResponse;
 import com.fpt.automatedtesting.users.UserRepository;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -51,6 +59,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -108,7 +118,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
                 String practicalExamCode = PREFIX_EXAM_CODE + subjectClass.getSubject().getCode() + "_"
                         + subjectClass.getAClass().getClassCode() + "_" + dto.getDate().replace("-", "");
-
+                File fol = new File(PATH_SUBMISSIONS + File.separator + practicalExamCode);
+                if (!fol.exists()) {
+                    fol.mkdirs();
+                }
                 if (studentList != null && studentList.size() > 0) {
                     List<Script> scriptEntities = null;
                     List<Integer> listScriptId = dto.getListScripts();
@@ -129,6 +142,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         submission.setStudent(student);
                         submission.setPracticalExam(practicalExam);
                         submission.setActive(true);
+                        submission.setEvaluatedOnline(false);
                         submission.setScriptCode(getScriptCodeRandom(scriptEntities));
                         submissionList.add(submission);
                     }
@@ -146,10 +160,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 }
             }
 
-//            List<PracticalExam> result = practicalExamRepository.saveAll(saveEntities);
-//            if (result == null) {
-//                return "Create practical exam failed";
-//            }
+            List<PracticalExam> result = practicalExamRepository.saveAll(saveEntities);
+            if (result == null) {
+                return "Create practical exam failed";
+            }
         } else {
             throw new CustomException(HttpStatus.NOT_FOUND, "No student from this class");
         }
@@ -250,10 +264,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
     @Override
     public void downloadPracticalTemplate(Integer practicalExamId, HttpServletResponse response) {
-        String examCode = "";
         PracticalExam practicalExam = practicalExamRepository.
                 findByIdAndActiveIsTrue(practicalExamId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for Id:" + practicalExamId));
+        String examCode = practicalExam.getCode();
 
         // Create practical folder
         File practicalFol = new File(PathConstants.PATH_PRACTICAL_EXAMS + File.separator + practicalExam.getCode());
@@ -267,12 +281,18 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             if (!check) {
                 throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Please try later");
             }
+            // Create submission folder
+            File dbToolsFol = new File(practicalFol.getAbsolutePath() + File.separator + "DBTools");
+            check = dbToolsFol.mkdir();
+            if (!check) {
+                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Please try later");
+            }
             List<Student> students = practicalExam.getSubjectClass().getStudents();
             if (students == null) {
                 throw new CustomException(HttpStatus.NOT_FOUND, "There are no student join this practical exam");
             }
 
-            // write students details in practical exams to csv
+            // Write students details in practical exams to csv
             List<List<String>> rowsStudentsList = new ArrayList<>();
             List<List<String>> rowsStudentsResult = new ArrayList<>();
 
@@ -295,40 +315,77 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 rowsStudentsList.add(Arrays.asList(String.valueOf(i + 1), student.getCode().trim(), fullName, submission.getScriptCode().trim()));
                 rowsStudentsResult.add(Arrays.asList(String.valueOf(i + 1), student.getCode().trim(), fullName));
             }
-            writeDataToCSVFile(practicalFol.getAbsolutePath() + File.separator + "Student_List.csv", rowsStudentsList);
-            writeDataToCSVFile(practicalFol.getAbsolutePath() + File.separator + "Student_Results.csv", rowsStudentsResult);
-
-            // Copy script files
-            File scriptFol = new File(practicalFol.getAbsolutePath() + File.separator + "TestScripts");
-            File docsFol = new File(practicalFol.getAbsolutePath() + File.separator + "ExamDocuments");
-            boolean checkScriptFolCreated = scriptFol.mkdir();
-            boolean checkDocFolCreate = docsFol.mkdir();
-            if (!checkScriptFolCreated || !checkDocFolCreate) {
-                throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Please try later");
-            }
             //copy source to target using Files Class
             try {
+
+                writeDataToCSVFile(practicalFol.getAbsolutePath() + File.separator + "Student_List.csv", rowsStudentsList);
+                writeDataToCSVFile(practicalFol.getAbsolutePath() + File.separator + "Student_Results.csv", rowsStudentsResult);
+
+                // Copy script files
+                File scriptFol = new File(practicalFol.getAbsolutePath() + File.separator + "TestScripts");
+                File docsFol = new File(practicalFol.getAbsolutePath() + File.separator + "ExamDocuments");
+                boolean checkScriptFolCreated = scriptFol.mkdir();
+                boolean checkDocFolCreate = docsFol.mkdir();
+                if (!checkScriptFolCreated || !checkDocFolCreate) {
+                    throw new CustomException(HttpStatus.CONFLICT, "Occur error ! Please try later");
+                }
+
+                String pathScript = "";
+                String pathDocs = "";
+                String pathServer = "";
+                String extension = "";
+                if (examCode.contains(CODE_PRACTICAL_JAVA_WEB)) {
+                    pathScript = PATH_SCRIPT_JAVA_WEB;
+                    pathDocs = PATH_DOCS_JAVA_WEB;
+                    pathServer = PATH_SERVER_JAVA_WEB;
+                    extension = EXTENSION_JAVA;
+                } else if (examCode.contains(CODE_PRACTICAL_JAVA)) {
+                    pathScript = PATH_SCRIPT_JAVA;
+                    pathDocs = PATH_DOCS_JAVA;
+                    pathServer = PATH_SERVER_JAVA;
+                    extension = EXTENSION_JAVA;
+                } else if (examCode.contains(CODE_PRACTICAL_C)) {
+                    pathScript = PATH_SCRIPT_C;
+                    pathDocs = PATH_DOCS_C;
+                    pathServer = PATH_SERVER_C;
+                    extension = EXTENSION_C;
+                } else if (examCode.contains(CODE_PRACTICAL_CSHARP)) {
+                    pathScript = PATH_SCRIPT_CSHARP;
+                    pathDocs = PATH_DOCS_CSHARP;
+                    pathServer = PATH_SERVER_CSHARP;
+                    extension = EXTENSION_CSHARP;
+                }
                 // loop by list script test đã assign
                 List<Script> scripts = practicalExam.getScripts();
                 if (scripts != null) {
                     for (Script script : practicalExam.getScripts()) {
                         // For Test Scripts
-                        Path sourceScriptPath = Paths.get(PathConstants.PATH_SCRIPT_JAVA + script.getCode() + ".java");
+                        Path sourceScriptPath = Paths.get(pathScript + script.getCode() + ".java");
                         Path targetScriptPath = Paths.get(scriptFol.getAbsolutePath() + File.separator + script.getCode() + ".java");
                         Files.copy(sourceScriptPath, targetScriptPath);
 
                         // For docs
-                        Path sourceDocPath = Paths.get(PathConstants.PATH_DOCS_JAVA + script.getCode() + ".docx");
+                        Path sourceDocPath = Paths.get(pathDocs + script.getCode() + ".docx");
                         Path targetDocPath = Paths.get(docsFol.getAbsolutePath() + File.separator + script.getCode() + ".docx");
                         Files.copy(sourceDocPath, targetDocPath);
                         examCode = PREFIX_EXAM_CODE + script.getSubject().getCode();
                     }
 
                     //copy server
-                    File sourceServerPath = new File(PathConstants.PATH_SERVER_JAVA_WEB);
+                    File sourceServerPath = new File(pathServer);
                     File targetServerPath = new File(practicalFol.getAbsolutePath() + File.separator + "Server");
 
                     FileUtils.copyDirectory(sourceServerPath, targetServerPath);
+
+                    // Copy DBTools
+                    try {
+                        String dbPath = dbToolsFol.getAbsolutePath() + File.separator + "DBUtilities" + extension;
+                        Files.copy(Paths.get(PATH_DB_TOOLS + File.separator + practicalExam.getCode() + "_Online" + extension),
+                                Paths.get(dbPath));
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     // Make info json files
                     ObjectMapper objectMapper = new ObjectMapper();
@@ -341,48 +398,32 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                                     + PRACTICAL_INFO_FILE_NAME),
                             practicalInfo);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new CustomException(HttpStatus.CONFLICT, "Path incorrect");
-            }
 
-            // Zip folder
-            try {
+                // Zip folder
+
                 FileManager.zipFolder(practicalFol.getAbsolutePath(), practicalFol.getAbsolutePath());
                 downloadTemplate(response, practicalExam.getCode());
-            } catch (FileNotFoundException e) {
-                throw new CustomException(HttpStatus.CONFLICT, "Cannot download practical exam ! Please try later");
-            } catch (IOException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                FileManager.deleteFolder(practicalFol);
                 throw new CustomException(HttpStatus.CONFLICT, "Cannot download practical exam ! Please try later");
             }
         }
     }
 
+
     @Override
     public String delete(Integer id) {
-
-
-//        for (int i = 0; i < 2; i++) {
-//            duplicatedCodeService.getListTree("A.java", CODE_PRACTICAL_JAVA, "SE63155_A.java", vectorsOfStudent);
-//            duplicatedCodeService.getListTree("B.java", CODE_PRACTICAL_JAVA, "SE63155_B.java", vectorsOfStudent);
-//        }
-//        allVectors.put(studentCode, vectorsOfStudent);
-        System.out.println("AAA");
-//        Double result = CosineSimilarity.computeSimilarity(summaryVector, summaryVectorB);
-
-
-//        PracticalExam entity = practicalExamRepository
-//                .findByIdAndActiveIsTrue(id)
-//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
-//        entity.setActive(false);
-//        PracticalExam result = practicalExamRepository.save(entity);
-//        if (result == null) {
-//            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
-//        }
+        PracticalExam entity = practicalExamRepository
+                .findByIdAndActiveIsTrue(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Practical exam is not found with Id " + id));
+        entity.setActive(false);
+        PracticalExam result = practicalExamRepository.save(entity);
+        if (result == null) {
+            throw new CustomException(HttpStatus.CONFLICT, "Delete practical exam failed ! Please try later");
+        }
         return "Delete practical exam successfully";
     }
-
-
 
 
     private void writeDataToCSVFile(String filePath, List<List<String>> data) {
@@ -470,7 +511,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     @Override
-    public List<PracticalExamResponse> getListPracticalExamByLecturer(String code) {
+    public List<PracticalExamResponse> enrollPracticalExam(String code) {
         Lecturer lecturer = lecturerRepository.findByCodeAndActiveIsTrue(code);
         if (lecturer == null) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Not found lecturer for code " + code);
@@ -530,23 +571,17 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
         MultipartFile file = dto.getFile();
         String copyLocation = PATH_SUBMISSIONS + File.separator +
-                dto.getExamCode() + File.separator;
-        Path pathLocation = Paths.get(copyLocation
+                dto.getExamCode();
+        File fol = new File(copyLocation);
+        if (!fol.exists()) {
+            fol.mkdirs();
+        }
+        Path filePath = Paths.get(copyLocation + File.separator
                 + StringUtils.cleanPath(file.getOriginalFilename()));
         try {
-            Files.copy(file.getInputStream(), pathLocation, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        File folder = new File(copyLocation + "Sources" + File.separator + dto.getStudentCode());
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
-
-        if (folder.exists()) {
-            String s = pathLocation.toAbsolutePath().toString();
-            FileManager.unzip(s, folder.getAbsolutePath());
         }
 
         return "Successfully";
@@ -558,8 +593,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     public void processChecking(PracticalInfo info) {
         PracticalExam practicalExam = practicalExamRepository.findByCodeAndActiveIsTrue(info.getExamCode())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + info.getExamCode()));
-        //    Chứa vector của all SV
-        Map<String, Map<String, List<Double>>> allVectors = new HashMap<>();
         Map<String, List<String>> methods = new HashMap<>();
         List<String> allStudentSubmissionFileName = new ArrayList<>();
         String sourcePath = PATH_SUBMISSIONS + File.separator +
@@ -577,21 +610,34 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         String extension = "";
         if (info.getExamCode().contains(CODE_PRACTICAL_JAVA) || info.getExamCode().contains(CODE_PRACTICAL_JAVA)) {
             extension = ".java";
-        } else if (info.getExamCode().contains(CODE_PRACTICAL_CSharp)) {
+        } else if (info.getExamCode().contains(CODE_PRACTICAL_CSHARP)) {
             extension = ".cs";
         } else if (info.getExamCode().contains(CODE_PRACTICAL_C)) {
             extension = ".c";
         }
 
+        // Declare duplicated code details
+        List<DuplicatedCodeDto> duplicatedCodeDtoList = new ArrayList<>();
+
         for (String studentCode : allStudentSubmissionFileName) {
+
             List<File> studentFiles = new ArrayList<>();
             FileManager.getAllFiles(sourcePath + File.separator + studentCode, studentFiles, extension);
-            Map<String, List<Double>> vectors = new HashMap<>();
+
+            DuplicatedCodeDto dto = new DuplicatedCodeDto();
+            List<FileVectors> studentFileVectors = new ArrayList<>();
+            dto.setStudentCode(studentCode);
+
             if (!studentFiles.isEmpty()) {
                 for (File studentFile : studentFiles) {
                     if (!studentFile.getName().contains("TemplateQuestion")) {
+
+                        Map<String, List<Double>> vectors = new HashMap<>();
+                        FileVectors fileVectors = new FileVectors();
+
                         //TODO: For extend later
 //                    File file = checkValidFile(studentFile);
+
                         String filePath = studentFile.getAbsolutePath();
                         String prefixName = info.getExamCode() + "_" + studentCode + "_" + studentFile.getName();
                         try {
@@ -602,88 +648,82 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-//                        PracticalExamUtils.checkDuplicatedCodeGithub(filePath);
                         List<String> studentMethods = new ArrayList<>();
+
+                        // Lấy vectors của file A
                         duplicatedCodeService.getListTree(filePath, CODE_PRACTICAL_JAVA, studentCode + "_" + studentFile.getName(), vectors, studentMethods);
+
+                        fileVectors.setMethodVectors(vectors);
+                        fileVectors.setFileName(studentFile.getName());
+                        studentFileVectors.add(fileVectors);
+                        // Methods String for check online
                         methods.put(prefixName, studentMethods);
                     }
                 }
+                dto.setStudentFileVectors(studentFileVectors);
             }
-            // Student code_File - List method
-            // Methods của m đây
-            for (Map.Entry<String, List<String>> entry : methods.entrySet()) {
-                System.out.println("-----------");
-                System.out.println("Student code- File :" + entry.getKey());
-                for (String s : entry.getValue()) {
-                    System.out.println(s);
+            duplicatedCodeDtoList.add(dto);
+
+        }
+        processStudentDuplicatedCode(duplicatedCodeDtoList, practicalExam);
+    }
+
+
+    private void processStudentDuplicatedCode(List<DuplicatedCodeDto> duplicatedCodeDtoList, PracticalExam practicalExam) {
+        List<String> tokenChecked = new ArrayList<>();
+        Map<String, Double> similarityMethods = new HashMap<>();
+        for (DuplicatedCodeDto dto : duplicatedCodeDtoList) {
+            List<FileVectors> listFileVector = dto.getStudentFileVectors();
+            for (FileVectors fileVectors : listFileVector) {
+                Map<String, List<Double>> methodVectors = fileVectors.getMethodVectors();
+                for (Map.Entry<String, List<Double>> entry : methodVectors.entrySet()) {
+                    computeMaxSimilarityBetweenMethods(dto.getStudentCode(),
+                            entry.getKey(),
+                            entry.getValue(),
+                            similarityMethods,
+                            duplicatedCodeDtoList,
+                            tokenChecked);
                 }
             }
-            allVectors.put(studentCode, vectors);
         }
-        searchTheMostSimilarity(practicalExam, allVectors);
+        insertDuplicatedCode(similarityMethods, practicalExam);
     }
 
-    private void searchTheMostSimilarity(PracticalExam practicalExam, Map<String, Map<String, List<Double>>> allVectors) {
-        List<DuplicatedResult> duplicatedResults = new ArrayList<>();
-        Map<String, Double> checkedTokens = new HashMap<>();
-        for (Map.Entry<String, Map<String, List<Double>>> entry : allVectors.entrySet()) {
-            String studentCode = entry.getKey();
-            DuplicatedResult duplicatedResult = new DuplicatedResult();
-            duplicatedResult.setStudentCode(studentCode);
-            Map<String, Map<String, Double>> comparedResult = new HashMap<>();
-            logger.log(Level.INFO, "-----------------------------------------------------------------");
-            logger.log(Level.INFO, "[CHECKING] - Student Code - " + studentCode);
-            // Lấy danh sách các method vector của student 1
-            Map<String, List<Double>> mapAllVectorOfStudent = entry.getValue();
-            for (Map.Entry<String, List<Double>> entryVectorOfStudent : mapAllVectorOfStudent.entrySet()) {
-                logger.log(Level.INFO, "[CHECKING] - Get submission file key " + entryVectorOfStudent.getKey());
-                Map<String, Double> resultAfterComputeWithCosine = new HashMap<>();
-                // Lấy vector thứ n đi so sánh
-                List<Double> vectorsOfStudent = entryVectorOfStudent.getValue();
-                computeCosineSimilarity(studentCode,
-                        vectorsOfStudent,
-                        resultAfterComputeWithCosine,
-                        entryVectorOfStudent.getKey(),
-                        checkedTokens,
-                        allVectors);
-                comparedResult.put(entryVectorOfStudent.getKey(), resultAfterComputeWithCosine);
-            }
-//            duplicatedResult.setComparedResult(comparedResult);
-//            duplicatedResult.setCheckedTokens(checkedTokens);
-//            duplicatedResults.add(duplicatedResult);
 
-            logger.log(Level.INFO, "-----------------------------------------------------------------");
-        }
-        insertDuplicatedCode(checkedTokens, practicalExam);
-    }
-
-    private void computeCosineSimilarity(String studentCode, List<Double> inputVector, Map<String, Double> resultAfterComputeWithCosine, String inputToken, Map<String, Double> checkedTokens, Map<String, Map<String, List<Double>>> allVectors) {
-        for (Map.Entry<String, Map<String, List<Double>>> entry : allVectors.entrySet()) {
-            if (!studentCode.equalsIgnoreCase(entry.getKey())) {
-                logger.log(Level.INFO, "[CHECKING] - Checking with " + entry.getKey());
-                // Lấy danh sách vector của student cần compare;
-                Map<String, List<Double>> mapAllVectorOfOtherStudent = entry.getValue();
-                for (Map.Entry<String, List<Double>> entryVectorOfOtherStudent : mapAllVectorOfOtherStudent.entrySet()) {
-                    String key = entryVectorOfOtherStudent.getKey();
-                    String pairToken = inputToken + "~" + key;
-                    String pairTokenSwap = key + "~" + inputToken;
-                    boolean check = !checkedTokens.containsKey(pairToken) && !checkedTokens.containsKey(pairTokenSwap);
-                    if (check) {
-                        List<Double> studentVector = entryVectorOfOtherStudent.getValue();
-                        double computeResult = CosineSimilarity.computeSimilarity(inputVector, studentVector);
-                        logger.log(Level.INFO, "[CHECKING] - Checking with submission file key "
-                                + key + " | " + computeResult * 100 + "%");
-//                        if (computeResult > 0.5) {
-                            resultAfterComputeWithCosine.put(key, computeResult);
-                            checkedTokens.put(pairToken, (double) Math.round(computeResult * 100) / 100);
-//                        }
+    private Map<String, List<Double>> computeMaxSimilarityBetweenMethods(String firstStudentCode, String firstFileToken,
+                                                                         List<Double> firstMethodVector, Map<String, Double> similarityMethods,
+                                                                         List<DuplicatedCodeDto> duplicatedCodeDtoList, List<String> tokenChecked) {
+        for (DuplicatedCodeDto dto : duplicatedCodeDtoList) {
+            String secondStudentCode = dto.getStudentCode();
+            if (!secondStudentCode.equalsIgnoreCase(firstStudentCode)) {
+                List<FileVectors> listFileVector = dto.getStudentFileVectors();
+                for (FileVectors fileVectors : listFileVector) {
+                    Map<String, List<Double>> methodVectors = fileVectors.getMethodVectors();
+                    double maxMethodSimilarityPercent = 0;
+                    String token = "";
+                    for (Map.Entry<String, List<Double>> entry : methodVectors.entrySet()) {
+                        String secondFileToken = entry.getKey();
+                        String pairToken = firstFileToken + "~" + secondFileToken;
+                        String pairTokenSwap = secondFileToken + "~" + firstFileToken;
+                        if (!tokenChecked.contains(pairToken) && !tokenChecked.contains(pairTokenSwap)) {
+                            tokenChecked.add(pairToken);
+                            List<Double> secondMethodVector = entry.getValue();
+                            double similarityPercent = CosineSimilarity.computeSimilarity(firstMethodVector, secondMethodVector);
+                            if (similarityPercent > maxMethodSimilarityPercent) {
+                                maxMethodSimilarityPercent = similarityPercent;
+                                token = pairToken;
+                            }
+                        }
+                    }
+                    if (!token.equals("") && maxMethodSimilarityPercent >= 0.3) {
+                        similarityMethods.put(token, maxMethodSimilarityPercent);
                     } else {
-                        logger.log(Level.INFO, "[CHECKING] - Meet checked token :" + pairToken);
+                        similarityMethods.put(token, 0.0);
                     }
                 }
             }
         }
-        logger.log(Level.INFO, "-----------------------------------------");
+        return null;
     }
 
     private void insertDuplicatedCode(Map<String, Double> checkedTokens, PracticalExam practicalExam) {
@@ -714,7 +754,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                     list.add(value);
                     studentSimilarityPercentMap.put(studentsToken, list);
                 }
-
             }
         }
 
@@ -729,6 +768,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 result.put(studentsToken, summaryPercent * 100 / similarityPercentList.size());
             }
         }
+
+        List<DuplicatedCode> duplicatedCodes = new ArrayList<>();
         for (Map.Entry<String, Double> entry : result.entrySet()) {
             String studentsToken = entry.getKey();
             Double similarityPercent = entry.getValue();
@@ -737,41 +778,36 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             duplicatedCode.setPracticalExam(practicalExam);
             duplicatedCode.setStudentsToken(studentsToken);
             duplicatedCode.setSimilarityPercent(similarityPercent);
-//            DuplicatedCode responseEntity = duplicatedCodeRepository.save(duplicatedCode);
-//            if (responseEntity != null) {
-                System.out.println("So sánh : " + entry.getKey());
+            DuplicatedCode responseEntity = duplicatedCodeRepository.save(duplicatedCode);
+            if (responseEntity != null) {
                 if (checkedTokens != null && checkedTokens.size() > 0) {
                     String firstStudent = arr[0];
                     String secondStudent = arr[1];
                     List<DuplicatedCodeDetails> list = new ArrayList<>();
                     for (Map.Entry<String, Double> entryToken : checkedTokens.entrySet()) {
-                        String filesToken = entryToken.getKey();
-                        if (filesToken.contains(firstStudent) && filesToken.contains(secondStudent)) {
-                            DuplicatedCodeDetails details = new DuplicatedCodeDetails();
-//                            details.setDuplicatedCode(responseEntity);
-                            details.setFilesToken(filesToken);
-                            list.add(details);
+                        Double value = entryToken.getValue();
+                        if (value > 0.45) {
+                            String filesToken = entryToken.getKey();
+                            if (filesToken.contains(firstStudent) && filesToken.contains(secondStudent)) {
+                                DuplicatedCodeDetails details = new DuplicatedCodeDetails();
+                                details.setDuplicatedCode(responseEntity);
+                                details.setFilesToken(filesToken + " : " + value);
+                                list.add(details);
+                            }
+                            duplicatedCode.setDuplicatedCodeDetails(list);
                         }
-//                    }
-//                    responseEntity.setDuplicatedCodeDetails(list);
-//                    DuplicatedCode check = duplicatedCodeRepository.saveAndFlush(responseEntity);
-//                    if (check != null) {
-//                        System.out.println("ok");
-//                    }
+                    }
+                    responseEntity.setDuplicatedCodeDetails(list);
+                    DuplicatedCode check = duplicatedCodeRepository.saveAndFlush(responseEntity);
+                    if (check != null) {
+                        System.out.println("ok");
+                    }
                 }
             }
+            duplicatedCodes.add(duplicatedCode);
         }
-        System.out.println(result);
-    }
-
-    private File checkValidFile(File studentFile) {
-        File result = null;
-        try {
-            String s = FileManager.readFileToString(studentFile.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
+        // Process evaluate online
+        processEvaluateOnline(practicalExam);
     }
 
 
@@ -804,6 +840,230 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             }
         }
         return result;
+    }
+
+
+    private void processEvaluateOnline(PracticalExam practicalExam) {
+        List<Submission> submissions = practicalExam.getSubmissions();
+        String examCode = practicalExam.getCode();
+        if (submissions != null && submissions.size() > 0) {
+            for (Submission submission : submissions) {
+                Date date = new Date();
+                String curTime = CustomUtils.getCurDateTime(date, "");
+                String scriptCode = submission.getScriptCode();
+                String studentCode = submission.getStudent().getCode();
+                if (!submission.getEvaluatedOnline() &&
+                        processGitRepo(examCode, scriptCode, studentCode)) {
+                    submission.setDate(curTime);
+                    submission.setEvaluatedOnline(true);
+                }
+            }
+//            submissionRepository.saveAll(submissions);
+        }
+    }
+
+    private boolean processGitRepo(String examCode, String scriptCode, String studentCode) {
+        boolean check = false;
+        String testScriptName = "";
+        String scriptFormatted = scriptCode.substring(0, scriptCode.lastIndexOf("_"));
+
+        // TODO: Get from DB later
+        String name = "headlecturer2020";
+        String password = "Capstone12345678";
+
+        String pathServer = "";
+        String pathConnection = "";
+        String pathScriptOnline = "";
+        String pathOnlineTestFol = "";
+        String pathDBOnline = "";
+        if (examCode.contains(CODE_PRACTICAL_JAVA_WEB)) {
+            pathServer = PATH_SERVER_ONLINE_JAVA_WEB;
+            pathDBOnline = PATH_DB_TOOLS + File.separator + scriptFormatted + "_Online" + EXTENSION_JAVA;
+            pathConnection = PATH_SERVER_ONLINE_JAVA_WEB_CONNECTION + File.separator + DB_NAME_JAVA;
+
+            pathScriptOnline = PATH_SCRIPT_JAVA_WEB_ONLINE + scriptFormatted + "_Online" + EXTENSION_JAVA;
+            pathOnlineTestFol = PATH_SERVER_ONLINE_JAVA_WEB_TEST + File.separator;
+
+
+        } else if (examCode.contains(CODE_PRACTICAL_JAVA)) {
+            pathServer = PATH_SERVER_ONLINE_JAVA;
+            pathConnection = "";
+            pathScriptOnline = PATH_SCRIPT_JAVA + File.separator + scriptFormatted + EXTENSION_JAVA;
+
+            pathDBOnline = "EXTENSION_JAVA";
+            pathOnlineTestFol = PATH_SERVER_ONLINE_JAVA_TEST + File.separator;
+
+        } else if (examCode.contains(CODE_PRACTICAL_C)) {
+            pathServer = PATH_SERVER_ONLINE_C;
+            pathScriptOnline = PATH_SCRIPT_C + scriptFormatted + EXTENSION_C;
+
+        } else if (examCode.contains(CODE_PRACTICAL_CSHARP)) {
+            pathServer = PATH_SERVER_ONLINE_CSHARP;
+            pathConnection = "";
+            pathScriptOnline = PATH_SCRIPT_CSHARP + scriptFormatted + EXTENSION_CSHARP;
+            pathDBOnline += EXTENSION_CSHARP;
+        }
+
+        // Credentials
+        CredentialsProvider cp = new UsernamePasswordCredentialsProvider(name, password);
+        File dir = new File(pathServer);
+
+        try {
+            Git git = Git.open(dir);
+            // Check out to default server branch
+//            CheckoutCommand checkoutServer = git.checkout();
+//            checkoutServer.setName("master");
+//            checkoutServer.call();
+//
+//            // Create new branch base on student code
+//            String brandName = PREFIX_BRANCH + "/" + examCode + "/" + studentCode;
+//
+//            CreateBranchCommand branchCommand = git.branchCreate();
+//            branchCommand.setName(brandName);
+//            branchCommand.call();
+//
+//            // Check out to that branch and add new file
+//            CheckoutCommand checkout = git.checkout();
+//            checkout.setName(brandName);
+//            checkout.call();
+
+            // Set up copy submission files
+            if (studentCode.equals("SE63155")) {
+                prepareStudentSubmission(studentCode, examCode, pathServer, pathDBOnline, pathConnection,
+                        pathScriptOnline, pathOnlineTestFol);
+            }
+
+//            AddCommand ac = git.add();
+//            ac.addFilepattern(".");
+//            ac.call();
+//
+//            // commit
+//            CommitCommand commit = git.commit();
+//            commit.setCommitter(brandName, brandName)
+//                    .setMessage(brandName);
+//            commit.call();
+//
+//            // push
+//            PushCommand pc = git.push();
+//            pc.setCredentialsProvider(cp)
+//                    .setForce(true)
+//                    .setPushAll();
+//            pc.call().iterator();
+//
+//            // Check out to default server branch
+//            CheckoutCommand finalCheckOut = git.checkout();
+//            finalCheckOut.setName("master");
+//            finalCheckOut.call();
+            check = true;
+        } catch (Exception e) {
+        }
+        return check;
+    }
+
+
+    private boolean prepareStudentSubmission(String studentCode, String examCode, String pathServer,
+                                             String pathDBOnline, String pathConnection, String pathScriptOnline,
+                                             String pathOnlineTestFol) {
+        boolean check = false;
+        try {
+            String studentSubmissionPath = PATH_SUBMISSIONS + File.separator
+                    + examCode
+                    + File.separator + studentCode + EXTENSION_ZIP;
+
+            FileManager.unzip(studentSubmissionPath, pathServer);
+            Files.copy(Paths.get(pathDBOnline), Paths.get(pathConnection), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Paths.get(pathScriptOnline), Paths.get(pathOnlineTestFol + SCRIPT_NAME_JAVA), StandardCopyOption.REPLACE_EXISTING);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return check;
+    }
+
+
+    @Override
+    public List<OnlineTestResult> getResultFromAzure(Integer id) {
+
+        PracticalExam practicalExam = practicalExamRepository.findById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + id));
+        List<OnlineTestResult> results = null;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String examCode = practicalExam.getCode();
+        String azureProject = "";
+        if (examCode.contains(CODE_PRACTICAL_JAVA)) {
+            azureProject = AZURE_PROJECT_JAVA;
+        } else if (examCode.contains(CODE_PRACTICAL_JAVA_WEB)) {
+            azureProject = AZURE_PROJECT_JAVA_WEB;
+        } else if (examCode.contains(CODE_PRACTICAL_C)) {
+            azureProject = AZURE_PROJECT_C;
+        } else if (examCode.contains(CODE_PRACTICAL_CSHARP)) {
+            azureProject = AZURE_PROJECT_CSHARP;
+        }
+
+        List<Submission> submissions = practicalExam.getSubmissions();
+        if (submissions != null && submissions.size() > 0) {
+            results = new ArrayList<>();
+            List<SubmissionResponse> submissionResponses = MapperManager.mapAll(submissions, SubmissionResponse.class);
+            if (submissionResponses != null && submissionResponses.size() > 0) {
+
+                for (SubmissionResponse dto : submissionResponses) {
+                    //Getting current date
+                    String evaluatedDate = dto.getDate();
+
+                    //Specifying date format that matches the given date
+                    Calendar c = Calendar.getInstance();
+                    try {
+                        //Setting the date to the given date
+                        c.setTime(sdf.parse(evaluatedDate));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    c.add(Calendar.DAY_OF_MONTH, 6);
+                    String next6Date = sdf.format(c.getTime());
+                    String studentCode = dto.getStudent().getCode();
+                    String brandName = PREFIX_BRANCH + "/" + examCode + "/" + studentCode;
+                    String url = "https://dev.azure.com/" +
+                            azureProject +
+                            "_apis/test/Runs?branchName=" +
+                            "refs/heads/" + brandName +
+                            "&minLastUpdatedDate=" + evaluatedDate +
+                            "&maxLastUpdatedDate=" + next6Date;
+                    String testRunResponse = CustomUtils.sendRequest(url, "");
+                    List<AzureTestResult> azureTestResults = null;
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        JsonNode root = null;
+                        root = mapper.readTree(testRunResponse);
+                        String value = root.findPath("value").toString();
+                        RunTestDto[] runTestArr = mapper.readValue(value, RunTestDto[].class);
+                        if (runTestArr != null && runTestArr.length > 0) {
+                            azureTestResults = new ArrayList<>();
+                            for (int i = 0; i < runTestArr.length; i++) {
+                                String testResultResponse = CustomUtils.sendRequest(runTestArr[i].getUrl() + "/results", "");
+                                JsonNode testResultNode = mapper.readTree(testResultResponse);
+                                String testResultValue = testResultNode.findPath("value").toString();
+                                TestRunResult[] arr = mapper.readValue(testResultValue, TestRunResult[].class);
+                                if (arr != null && arr.length > 0) {
+                                    azureTestResults.add(new AzureTestResult(arr[0].getStartedDate(), arr));
+                                }
+                            }
+                        }
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
+    @Override
+    public String test() {
+        PracticalExam practicalExam = practicalExamRepository.findByCodeAndActiveIsTrue("Practical_JavaWeb_SE9999_20200417")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:"));
+        processEvaluateOnline(practicalExam);
+        return "null";
     }
 
 

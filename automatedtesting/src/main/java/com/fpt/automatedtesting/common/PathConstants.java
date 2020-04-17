@@ -7,28 +7,103 @@ public class PathConstants {
     public static final String PROJECT_DIR = System.getProperty("user.dir");
     public static final String STATIC_DIR = "static/";
     // Log path
-    public static final String PATH_EXCEPTIONS = PROJECT_DIR + File.separator + "Exceptions";
+    public static final String PATH_DB_TOOLS = PROJECT_DIR + File.separator + "DBTools";
 
+    public static final String PATH_EXCEPTIONS = PROJECT_DIR + File.separator + "Exceptions";
     public static final String PATH_SUBMISSIONS = PROJECT_DIR + File.separator + "Submissions";
     public static final String PATH_SERVER_REPOSITORY = PROJECT_DIR + File.separator + "ServerRepository";
 
     // Path server
-    public static final String PATH_SERVER_JAVA_WEB = PROJECT_DIR + File.separator + "Server_JavaWeb" + File.separator + "Server";
-    public static final String PATH_SERVER_JAVA = PROJECT_DIR + File.separator + "Server_Java" + File.separator + "Server";
-    public static final String PATH_SERVER_C = PROJECT_DIR + File.separator + "Server_C" + File.separator + "Server";
-    public static final String PATH_SERVER_C_SHARP = PROJECT_DIR + File.separator + "Server_CSharp" + File.separator + "Server";
+    private static final String SERVER_PREFIX = PROJECT_DIR + File.separator + "Servers" + File.separator;
+
+    // Server template
+    public static final String PATH_SERVER_JAVA_WEB = SERVER_PREFIX + "Server_JavaWeb" + File.separator + "Server";
+    public static final String PATH_SERVER_JAVA = SERVER_PREFIX + "Server_Java" + File.separator + "Server";
+    public static final String PATH_SERVER_C = SERVER_PREFIX + "Server_C" + File.separator + "Server";
+    public static final String PATH_SERVER_CSHARP = SERVER_PREFIX + "Server_CSharp" + File.separator + "Server";
+
+    // Server check online
+    public static final String PATH_SERVER_ONLINE_JAVA_WEB = SERVER_PREFIX + "Server_JavaWeb" + File.separator + "Server_Online";
+    public static final String PATH_SERVER_ONLINE_JAVA = SERVER_PREFIX + "Server_Java" + File.separator + "Server_Online";
+    public static final String PATH_SERVER_ONLINE_C = SERVER_PREFIX + "Server_C" + File.separator + "Server_Online";
+    public static final String PATH_SERVER_ONLINE_CSHARP = SERVER_PREFIX + "Server_CSharp" + File.separator + "Server_Online";
+
+    // Prefix path;
+
+    private static final String SRC_MAIN_JAVA_COM_PRACTICAL_EXAM_STUDENT = "Server" + File.separator
+            + "src" + File.separator
+            + "main" + File.separator
+            + "java" + File.separator
+            + "com" + File.separator
+            + "practicalexam" + File.separator
+            + "student" + File.separator;
+
+    // Java
+    public static final String PATH_SERVER_ONLINE_JAVA_STUDENT = PATH_SERVER_ONLINE_JAVA + File.separator
+            + "src" + File.separator
+            + "main" + File.separator
+            + "java" + File.separator
+            + "com" + File.separator
+            + "practicalexam";
+
+    public static final String PATH_SERVER_ONLINE_JAVA_TEST = PATH_SERVER_ONLINE_JAVA + File.separator
+            + "src" + File.separator
+            + "test" + File.separator
+            + "java" + File.separator
+            + "com" + File.separator
+            + "practicalexam";
+
+
+    // Java web
+    public static final String PATH_SERVER_ONLINE_JAVA_WEB_STUDENT = PATH_SERVER_ONLINE_JAVA_WEB + File.separator
+            + "src" + File.separator
+            + "main" + File.separator
+            + "java" + File.separator
+            + "com" + File.separator
+            + "practicalexam";
+
+    public static final String PATH_SERVER_ONLINE_JAVA_WEB_TEST = PATH_SERVER_ONLINE_JAVA_WEB + File.separator
+            + "Server" + File.separator
+            + "src" + File.separator
+            + "test" + File.separator
+            + "java" + File.separator
+            + "server" + File.separator;
+
+    public static final String PATH_SERVER_ONLINE_JAVA_WEB_CONNECTION = PATH_SERVER_ONLINE_JAVA_WEB + File.separator
+            + SRC_MAIN_JAVA_COM_PRACTICAL_EXAM_STUDENT
+            + "connection";
+
+
+    public static final String PATH_SERVER_ONLINE_CSHARP_STUDENT = "";
+
+    public static final String PATH_SERVER_ONLINE_C_STUDENT = "";
+
+    //    Link repo
+    public static final String LINK_GITHUB_REPO_JAVA_WEB = "https://github.com/headlecturer2020/PE2A_Practical_JavaWeb";
+    public static final String LINK_GITHUB_REPO_JAVA = "https://github.com/headlecturer2020/PE2A_Practical_Java";
+    public static final String LINK_GITHUB_REPO_C = "https://github.com/headlecturer2020/PE2A_Practical_C";
+    public static final String LINK_GITHUB_REPO_CSHARP = "https://github.com/headlecturer2020/PE2A_Practical_CSharp";
 
     // Path scripts
-    public static final String PATH_SCRIPT_JAVA_WEB = PROJECT_DIR + File.separator + "Scripts_JavaWeb" + File.separator;
-    public static final String PATH_SCRIPT_JAVA = PROJECT_DIR + File.separator + "Scripts_Java" + File.separator;
-    public static final String PATH_SCRIPT_C = PROJECT_DIR + File.separator + "Scripts_C" + File.separator;
-    public static final String PATH_SCRIPT_C_SHARP = PROJECT_DIR + File.separator + "Scripts_CSharp" + File.separator;
+    private static final String SCRIPTS_PREFIX = PROJECT_DIR + File.separator + "Scripts" + File.separator;
+    public static final String PATH_SCRIPT_JAVA_WEB = SCRIPTS_PREFIX + "Scripts_JavaWeb" + File.separator;
+    public static final String PATH_SCRIPT_JAVA = SCRIPTS_PREFIX + "Scripts_Java" + File.separator;
+    public static final String PATH_SCRIPT_C = SCRIPTS_PREFIX + "Scripts_C" + File.separator;
+    public static final String PATH_SCRIPT_CSHARP = SCRIPTS_PREFIX + "Scripts_CSharp" + File.separator;
+
+    // Path scripts
+    public static final String PATH_SCRIPT_JAVA_WEB_ONLINE = SCRIPTS_PREFIX + "Scripts_JavaWeb_Online" + File.separator;
+    public static final String PATH_SCRIPT_JAVA_ONLINE = SCRIPTS_PREFIX + "Scripts_Java_Online" + File.separator;
+    public static final String PATH_SCRIPT_C_ONLINE = SCRIPTS_PREFIX + "Scripts_C_Online" + File.separator;
+    public static final String PATH_SCRIPT_CSHARP_ONLINE = SCRIPTS_PREFIX + "Scripts_CSharp_Online" + File.separator;
 
     // Path docs
-    public static final String PATH_DOCS_JAVA_WEB = PROJECT_DIR + File.separator + "Docs_JavaWeb" + File.separator;
-    public static final String PATH_DOCS_JAVA = PROJECT_DIR + File.separator + "Docs_Java" + File.separator;
-    public static final String PATH_DOCS_C = PROJECT_DIR + File.separator + "Docs_C" + File.separator;
-    public static final String PATH_DOCS_C_SHARP = PROJECT_DIR + File.separator + "Docs_CSharp" + File.separator;
+    private static final String DOCS_PREFIX = PROJECT_DIR + File.separator + "Documents" + File.separator;
+
+    public static final String PATH_DOCS_JAVA_WEB = DOCS_PREFIX + "Docs_JavaWeb" + File.separator;
+    public static final String PATH_DOCS_JAVA = DOCS_PREFIX + "Docs_Java" + File.separator;
+    public static final String PATH_DOCS_C = DOCS_PREFIX + "Docs_C" + File.separator;
+    public static final String PATH_DOCS_CSHARP = DOCS_PREFIX + "Docs_CSharp" + File.separator;
 
 
     // Path template
@@ -45,7 +120,7 @@ public class PathConstants {
             + "JavaApplicationTests.java";
 
     public static final String PATH_TEMPLATE_C = STATIC_DIR + File.separator + "Template_C";
-    public static final String PATH_TEMPLATE_C_SHARP = STATIC_DIR
+    public static final String PATH_TEMPLATE_CSHARP = STATIC_DIR
             + File.separator
             + "Template_CSharp"
             + File.separator
