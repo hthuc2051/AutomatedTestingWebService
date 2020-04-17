@@ -4,11 +4,8 @@ import com.fpt.automatedtesting.actions.SubjectActionParam;
 import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.exception.CustomException;
-import com.fpt.automatedtesting.params.Param;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeUpdateRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -73,7 +70,15 @@ public class ParamTypeServiceImpl implements ParamTypeService {
 
                     saveEntities.add(saveParamTypeEntity);
                 } else {
-                    duplicatedTypeCounter++;
+
+                    // if name - subject code existed -> check if active is false -> set to true
+                    if (!checkExistedEntity.getActive()) {
+                        checkExistedEntity.setActive(true);
+                        saveEntities.add(checkExistedEntity);
+                    } else {
+                        // else do nothing
+                        duplicatedTypeCounter++;
+                    }
                 }
             }
 
@@ -90,39 +95,6 @@ public class ParamTypeServiceImpl implements ParamTypeService {
             }
         } else {
             throw new CustomException(HttpStatus.NOT_FOUND, "Not found any subject.");
-        }
-    }
-
-    @Transactional
-    @Override
-    public String updateParamType(ParamTypeUpdateRequestDto dto) {
-
-        if (dto.getName() != null && dto.getName().length() > 0) {
-
-            // get param type by id
-            ParamType updateParamType = paramTypeRepository.findById(dto.getId())
-                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + dto.getId()));
-
-            if (dto.getName().equals(updateParamType.getName())) {
-                return CustomConstant.UPDATE_PARAM_TYPE_SUCCESS;
-            }
-
-            //check if name - subject from dto existed
-            if (paramTypeRepository.findByNameAndSubjectCode(dto.getName(), updateParamType.getSubjectCode()) != null) {
-
-                return "Param type is already existed.";
-            } else { // if name - subject not existed
-
-                // update the old param type's name
-                updateParamType.setName(dto.getName());
-                if (paramTypeRepository.save(updateParamType) != null) {
-                    return CustomConstant.UPDATE_PARAM_TYPE_SUCCESS;
-                } else {
-                    return CustomConstant.UPDATE_PARAM_TYPE_FAIL;
-                }
-            }
-        } else {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Not found param type.");
         }
     }
 
@@ -144,6 +116,4 @@ public class ParamTypeServiceImpl implements ParamTypeService {
         } else
             return "Param type is already in use.";
     }
-
-
 }

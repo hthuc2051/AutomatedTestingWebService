@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ActionService {
     List<ActionResponseDto> getAll();
-    ActionResponseDto insert(ActionRequestDto dto);
+    ActionResponseDto insertAction(ActionRequestDto dto);
     ActionResponseDto update(ActionRequestDto dto);
     ActionResponseDto findById(int id);
     List<ActionResponseSubjectIdDto> getAllActionBySubject(int subjectId);

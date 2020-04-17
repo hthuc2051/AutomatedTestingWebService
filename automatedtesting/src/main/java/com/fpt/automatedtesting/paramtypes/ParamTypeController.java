@@ -2,8 +2,6 @@ package com.fpt.automatedtesting.paramtypes;
 
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeUpdateRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +33,6 @@ public class ParamTypeController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(paramTypeService.createParamType(requestDto));
-    }
-
-    @PutMapping("/param-type")
-    public ResponseEntity<String> updateParamType(@RequestBody ParamTypeUpdateRequestDto requestDto) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(paramTypeService.updateParamType(requestDto));
     }
 
     @DeleteMapping("/param-type/{id}")

@@ -34,7 +34,9 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public List<ActionResponseDto> getAll() {
+
 //        List<Action> actions = actionRepository.findAllByActiveIsTrue();
+//
 //        if (actions != null && actions.size() > 0) {
 //            List<ActionResponseDto> actionResponseDtos = MapperManager.mapAll(actions, ActionResponseDto.class);
 //            for (int i = 0; i < actions.size(); i++) {
@@ -53,7 +55,7 @@ public class ActionServiceImpl implements ActionService {
     }
 
     @Override
-    public ActionResponseDto insert(ActionRequestDto dto) {
+    public ActionResponseDto insertAction(ActionRequestDto dto) {
 //        Admin admin = adminRepository
 //                .findByIdAndActiveIsTrue(dto.getAdminId())
 //                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Action is not found with Id " + dto.getAdminId()));
