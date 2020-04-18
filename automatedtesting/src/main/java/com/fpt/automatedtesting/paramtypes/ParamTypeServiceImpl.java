@@ -4,7 +4,7 @@ import com.fpt.automatedtesting.actions.SubjectActionParam;
 import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.exception.CustomException;
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,12 +25,12 @@ public class ParamTypeServiceImpl implements ParamTypeService {
     }
 
     @Override
-    public List<ParamTypeDetailsResponseDto> getAllParamType() {
+    public List<ParamTypeResponseDto> getAllParamType() {
 
         List<ParamType> paramTypes = paramTypeRepository.findAllByActiveIsTrue();
 
         if (paramTypes != null && paramTypes.size() > 0) {
-            List<ParamTypeDetailsResponseDto> responseDtos = MapperManager.mapAll(paramTypes, ParamTypeDetailsResponseDto.class);
+            List<ParamTypeResponseDto> responseDtos = MapperManager.mapAll(paramTypes, ParamTypeResponseDto.class);
 
             if (responseDtos != null && responseDtos.size() > 0) {
                 return responseDtos;

@@ -1,6 +1,6 @@
 package com.fpt.automatedtesting.paramtypes;
 
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ public class ParamTypeController {
     }
 
     @GetMapping("/param-type")
-    public ResponseEntity<List<ParamTypeDetailsResponseDto>> getAllParamTypes() {
+    public ResponseEntity<List<ParamTypeResponseDto>> getAllParamTypes() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(paramTypeService.getAllParamType());

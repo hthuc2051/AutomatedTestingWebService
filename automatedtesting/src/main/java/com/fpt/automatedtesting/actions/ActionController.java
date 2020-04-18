@@ -17,41 +17,42 @@ import java.util.List;
 public class ActionController {
 
     private final ActionService actionService;
+
     @Autowired
     public ActionController(ActionService actionService) {
         this.actionService = actionService;
     }
 
     // Return data to lecturer
-    @GetMapping("/actions")
+    @GetMapping("/action")
     public ResponseEntity<List<ActionResponseDto>> getAllActions() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAll());
     }
 
-    @GetMapping("/actions/subjects/{subjectId}")
+    @GetMapping("/action/subject/{subjectId}")
     public ResponseEntity<List<ActionParamDTO>> getAllActionsBySubject(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionBySubject(subjectId));
     }
 
-    @PostMapping("/actions")
-    public ResponseEntity<ActionResponseDto> insertNewActions(@RequestBody ActionRequestDto dto) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(actionService.insert(dto));
-    }
+//    @PostMapping("/action")
+//    public ResponseEntity<ActionResponseDto> insertNewActions(@RequestBody ActionRequestDto dto) {
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(actionService.insert(dto));
+//    }
 
-    @GetMapping("/actions/{id}")
+    @GetMapping("/action/{id}")
     public ResponseEntity<ActionResponseDto> getAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.findById(id));
     }
 
-    @DeleteMapping("/actions/{id}")
+    @DeleteMapping("/action/{id}")
     public ResponseEntity<String> deleteAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)

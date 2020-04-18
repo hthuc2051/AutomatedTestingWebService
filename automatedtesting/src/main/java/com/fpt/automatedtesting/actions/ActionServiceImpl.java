@@ -1,10 +1,6 @@
 package com.fpt.automatedtesting.actions;
 
-import com.fpt.automatedtesting.actions.dtos.ActionParamDTO;
-import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
-import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
-import com.fpt.automatedtesting.actions.dtos.ActionResponseSubjectIdDto;
-import com.fpt.automatedtesting.admins.Admin;
+import com.fpt.automatedtesting.actions.dtos.*;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.params.Param;
@@ -12,14 +8,14 @@ import com.fpt.automatedtesting.admins.AdminRepository;
 import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
 import com.fpt.automatedtesting.params.dtos.ParamTypeDTO;
 import com.fpt.automatedtesting.paramtypes.ParamType;
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeDetailsResponseDto;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
 import com.fpt.automatedtesting.subjects.Subject;
+import com.fpt.automatedtesting.subjects.dtos.SubjectResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,23 +37,72 @@ public class ActionServiceImpl implements ActionService {
     @Override
     public List<ActionResponseDto> getAll() {
 
-//        List<Action> actions = actionRepository.findAllByActiveIsTrue();
-//
-//        if (actions != null && actions.size() > 0) {
-//            List<ActionResponseDto> actionResponseDtos = MapperManager.mapAll(actions, ActionResponseDto.class);
-//            for (int i = 0; i < actions.size(); i++) {
-//                List<Subject> subjects = actions.get(i).getSubjects();
-//                ArrayList<String> subjectNames = new ArrayList<>();
-//                for (Subject subject : subjects) {
-//                    subjectNames.add(subject.getName());
-//                }
-//                actionResponseDtos.get(i).setSubjectName(subjectNames);
-//            }
-//            return actionResponseDtos;
-//        } else {
-//            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any action");
-//        }
-        return null;
+        List<Action> actions = actionRepository.findAllByActiveIsTrue();
+
+        if (actions != null && actions.size() > 0) {
+
+            // list action dto
+            List<ActionResponseDto> listActionDto = new ArrayList<>();
+            ActionResponseDto actionResponseDto = null;
+
+            for (Action action : actions) {
+
+                // Get list of subject - action entities
+                List<SubjectAction> subjectActions = action.getSubjectActions();
+
+                // list of subject - action dto
+                List<SubjectActionResponseDto> listSubjectActionDto = null;
+
+                if (subjectActions != null && subjectActions.size() > 0) {
+
+                    listSubjectActionDto = new ArrayList<>();
+
+                    for (SubjectAction subjectAction : subjectActions) {
+
+                        // retrieve list of subject - action - param entities
+                        List<SubjectActionParam> subjectActionParamEntities = subjectAction.getSubjectActionParams();
+
+                        // list of subject - action - param dto
+                        List<SubjectActionParamResponseDto> listSubjectActionParamDto = null;
+
+                        if (subjectActionParamEntities != null && subjectActionParamEntities.size() > 0) {
+
+                            listSubjectActionParamDto = new ArrayList<>();
+
+                            for (SubjectActionParam sap : subjectActionParamEntities) {
+
+                                ParamResponseDto paramDto = MapperManager.map(sap.getParam(), ParamResponseDto.class);
+                                ParamTypeResponseDto paramTypeDto = MapperManager.map(sap.getParamType(), ParamTypeResponseDto.class);
+
+                                SubjectActionParamResponseDto subjectActionParamDto = new SubjectActionParamResponseDto(sap.getId(), paramDto, paramTypeDto);
+
+                                listSubjectActionParamDto.add(subjectActionParamDto);
+                            }
+                        }
+
+                        SubjectResponseDto subjectDto = MapperManager.map(subjectAction.getSubject(), SubjectResponseDto.class);
+
+                        SubjectActionResponseDto subjectActionDto = new SubjectActionResponseDto();
+                        subjectActionDto.setId(subjectAction.getId());
+                        subjectActionDto.setSubject(subjectDto);
+                        subjectActionDto.setSubjectActionParams(listSubjectActionParamDto);
+
+                        listSubjectActionDto.add(subjectActionDto);
+                    }
+                }
+
+                actionResponseDto = new ActionResponseDto();
+                actionResponseDto.setId(action.getId());
+                actionResponseDto.setName(action.getName());
+                actionResponseDto.setCode(action.getCode());
+                actionResponseDto.setSubjectActions(listSubjectActionDto);
+
+                listActionDto.add(actionResponseDto);
+            }
+            return listActionDto;
+        } else {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any action");
+        }
     }
 
     @Override
@@ -146,19 +191,19 @@ public class ActionServiceImpl implements ActionService {
 //            response.forEach(element -> element.setSubjectId(subjects));
 //        }
         List<ActionParamDTO> response = new ArrayList<>();
-        List<SubjectAction> subjectActions =  subject.getSubjectActions();
-        for (SubjectAction item: subjectActions) {
+        List<SubjectAction> subjectActions = subject.getSubjectActions();
+        for (SubjectAction item : subjectActions) {
             Action action = item.getAction();
             ActionParamDTO actionParamDTO = MapperManager.map(action, ActionParamDTO.class);
             List<SubjectActionParam> subjectActionParam = item.getSubjectActionParams();
-            for (SubjectActionParam element: subjectActionParam) {
+            for (SubjectActionParam element : subjectActionParam) {
                 Param param = element.getParam();
                 ParamType typeEntity = element.getParamType();
                 ParamTypeDTO paramTypeDTO = new ParamTypeDTO();
                 paramTypeDTO.setId(param.getId());
                 paramTypeDTO.setName(param.getName());
-                ParamTypeDetailsResponseDto type = MapperManager.map(typeEntity, ParamTypeDetailsResponseDto.class);
-               // paramTypeDTO.setType(type);
+                ParamTypeResponseDto type = MapperManager.map(typeEntity, ParamTypeResponseDto.class);
+                // paramTypeDTO.setType(type);
                 paramTypeDTO.setType(type.getName());
                 actionParamDTO.getParams().add(paramTypeDTO);
             }
