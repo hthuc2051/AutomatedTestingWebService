@@ -83,9 +83,20 @@ public class ScriptController {
         scriptService.downloadTemplateQuestion(scriptId,response);
     }
 
+    @GetMapping("/templateQuestionTemplate/download/{subjectId}")
+    public void downloadTemplateQuestionTemplate(@PathVariable Integer subjectId, HttpServletResponse response) {
+        scriptService.downloadTemplateQuestionTemplate(subjectId,response);
+    }
+
+
     @GetMapping("/database/download/{scriptId}")
     public void downloadDatabase(@PathVariable Integer scriptId, HttpServletResponse response) {
         scriptService.downloadDatabaseScript(scriptId,response);
+    }
+
+    @GetMapping("/testData/download/{scriptId}")
+    public void downloadTestData(@PathVariable Integer scriptId, HttpServletResponse response) {
+        scriptService.downloadTestData(scriptId,response);
     }
 
     @PostMapping("/upload")

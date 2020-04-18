@@ -51,6 +51,10 @@ public class CustomConstant {
     // File extensions
     public static final String EXTENSION_SQL_SERVER = ".sql";
     public static final String EXTENSION_DOCUMENT = ".docx";
+    public static final String EXTENSION_TEXT_FILE = ".txt";
+
+    // Template Qusestion name
+    public static final String TEMPLATE_QUESTION_TEMPLATE_NAME = "TemplateQuestion";
 
     // Import name
     public static final String IMPORT_JAVA = "import";

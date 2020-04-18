@@ -112,12 +112,26 @@ public class PathConstants {
     public static final String PATH_TEMPLATE_QUESTION_C = PATH_TEMPLATE_QUESTION_PREFIX + "C" + File.separator;
     public static final String PATH_TEMPLATE_QUESTION_C_SHARP = PATH_TEMPLATE_QUESTION_PREFIX + "CSharp" + File.separator;
 
+    // Path TEMPLATE QUESTION TEMPLATE
+    private static final String PATH_TEMPLATE_QUESTION_TEMPLATE_PREFIX = PROJECT_DIR + File.separator + "TemplateQuestionTemplate" + File.separator;
+    public static final String PATH_TEMPLATE_QUESTION_TEMPLATE_JAVA_WEB = PATH_TEMPLATE_QUESTION_TEMPLATE_PREFIX + "JavaWeb" + File.separator;
+    public static final String PATH_TEMPLATE_QUESTION_TEMPLATE_JAVA = PATH_TEMPLATE_QUESTION_TEMPLATE_PREFIX + "Java" + File.separator;
+    public static final String PATH_TEMPLATE_QUESTION_TEMPLATE_C = PATH_TEMPLATE_QUESTION_TEMPLATE_PREFIX + "C" + File.separator;
+    public static final String PATH_TEMPLATE_QUESTION_TEMPLATE_C_SHARP = PATH_TEMPLATE_QUESTION_TEMPLATE_PREFIX + "CSharp" + File.separator;
+
     // Path Database
     private static final String PATH_DATABASE_PREFIX = PROJECT_DIR + File.separator + "Database" + File.separator;
     public static final String PATH_DATABASE_SCRIPT_JAVA_WEB = PATH_DATABASE_PREFIX + "JavaWeb" + File.separator;
     public static final String PATH_DATABASE_SCRIPT_JAVA = PATH_DATABASE_PREFIX + "Java" + File.separator;
     public static final String PATH_DATABASE_SCRIPT_C = PATH_DATABASE_PREFIX + "C" + File.separator;
     public static final String PATH_DATABASE_SCRIPT_C_SHARP = PATH_DATABASE_PREFIX + "CSharp" + File.separator;
+
+    // Path TestData
+    private static final String PATH_TESTDATA_PREFIX = PROJECT_DIR + File.separator + "TestData" + File.separator;
+    public static final String PATH_TESTDATA_JAVA_WEB = PATH_TESTDATA_PREFIX + "JavaWeb" + File.separator;
+    public static final String PATH_TESTDATA_JAVA = PATH_TESTDATA_PREFIX + "Java" + File.separator;
+    public static final String PATH_TESTDATA_C = PATH_TESTDATA_PREFIX + "C" + File.separator;
+    public static final String PATH_TESTDATA_C_SHARP = PATH_TESTDATA_PREFIX + "CSharp" + File.separator;
 
     // Path template
     public static final String PATH_TEMPLATE_JAVA_WEB = STATIC_DIR

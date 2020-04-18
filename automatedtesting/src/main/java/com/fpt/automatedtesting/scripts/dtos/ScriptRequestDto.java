@@ -20,6 +20,7 @@ public class ScriptRequestDto {
     private MultipartFile docsFile;
     private MultipartFile database;
     private MultipartFile templateQuestion;
+    private MultipartFile testData;
     private String onlineConnection;
     private String offlineConnection;
 }

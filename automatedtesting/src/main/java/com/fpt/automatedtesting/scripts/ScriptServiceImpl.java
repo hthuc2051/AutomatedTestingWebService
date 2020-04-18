@@ -97,6 +97,7 @@ public class ScriptServiceImpl implements ScriptService {
             String docsFolPath = "";
             String templateQuestionFolPath = "";
             String databaseFolPath = "";
+            String testDataFolPath = "";
             // Select path to create and save script test by type
             switch (subject.getCode()) {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
@@ -106,6 +107,7 @@ public class ScriptServiceImpl implements ScriptService {
                     fileExtension = EXTENSION_JAVA;
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA;
+                    testDataFolPath = PathConstants.PATH_TESTDATA_JAVA;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA_WEB;
@@ -114,6 +116,7 @@ public class ScriptServiceImpl implements ScriptService {
                     fileExtension = EXTENSION_JAVA;
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA_WEB;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA_WEB;
+                    testDataFolPath = PathConstants.PATH_TESTDATA_JAVA_WEB;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
                     templatePath = PathConstants.PATH_TEMPLATE_CSHARP;
@@ -122,6 +125,7 @@ public class ScriptServiceImpl implements ScriptService {
                     fileExtension = EXTENSION_CSharp;
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_C_SHARP;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_C_SHARP;
+                    testDataFolPath = PathConstants.PATH_TESTDATA_C_SHARP;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_C:
                     templatePath = PathConstants.PATH_TEMPLATE_C;
@@ -130,6 +134,7 @@ public class ScriptServiceImpl implements ScriptService {
                     fileExtension = EXTENSION_C;
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_C;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_C;
+                    testDataFolPath = PathConstants.PATH_TESTDATA_C;
                     break;
                 default:
                     throw new CustomException(HttpStatus.CONFLICT, "TypeConflictNotSupported");
@@ -181,7 +186,7 @@ public class ScriptServiceImpl implements ScriptService {
                 Files.copy(docsFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
             }
             // Save CONNECTION STRING AND FILES in saveFiles()
-            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath, code, fileExtension);
+            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath,testDataFolPath, code, fileExtension);
             // Save to database
             Script script = new Script();
             script.setName(dto.getName());
@@ -220,6 +225,40 @@ public class ScriptServiceImpl implements ScriptService {
                     os = response.getOutputStream();
                     FileManager.downloadZip(file, os);
                 }
+            }
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+    @Override
+    public void downloadTemplateQuestionTemplate(int subjectId, HttpServletResponse response) {
+        try {
+            Optional<Subject> subject = subjectRepository.findById(subjectId);
+            if (subject.isPresent()) {
+                String subjectCode = subject.get().getCode();
+                String templateQuestionTemplateFol = "";
+                String extension = "";
+                switch (subjectCode) {
+                    case CustomConstant.TEMPLATE_TYPE_JAVA:
+                        templateQuestionTemplateFol = PathConstants.PATH_TEMPLATE_QUESTION_TEMPLATE_JAVA;
+                        extension = CustomConstant.EXTENSION_JAVA;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
+                        templateQuestionTemplateFol = PathConstants.PATH_TEMPLATE_QUESTION_TEMPLATE_JAVA_WEB;
+                        extension = CustomConstant.EXTENSION_JAVA;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_CSHARP:
+                        templateQuestionTemplateFol = PathConstants.PATH_TEMPLATE_QUESTION_TEMPLATE_C_SHARP;
+                        extension = CustomConstant.EXTENSION_CSHARP;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_C:
+                        templateQuestionTemplateFol = PathConstants.PATH_TEMPLATE_QUESTION_TEMPLATE_C;
+                        extension = CustomConstant.EXTENSION_C;
+                        break;
+                }
+                downloadFile(templateQuestionTemplateFol,CustomConstant.TEMPLATE_QUESTION_TEMPLATE_NAME,extension,response);
             }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -277,16 +316,7 @@ public class ScriptServiceImpl implements ScriptService {
                         extension = CustomConstant.EXTENSION_C;
                         break;
                 }
-                if (!"".equals(templateQuestionFol)) {
-                    File file = new File(templateQuestionFol + script.get().getCode() + extension);
-                    String mimeType = "application/octet-stream";
-                    response.setContentType(mimeType);
-                    response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
-                    response.setContentLength((int) file.length());
-                    OutputStream os = null;
-                    os = response.getOutputStream();
-                    FileManager.downloadZip(file, os);
-                }
+                downloadFile(templateQuestionFol,script.get().getCode(),extension,response);
             }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -317,16 +347,7 @@ public class ScriptServiceImpl implements ScriptService {
                         databaseFol = PathConstants.PATH_DATABASE_SCRIPT_C;
                         break;
                 }
-                if (!"".equals(databaseFol)) {
-                    File file = new File(databaseFol + script.get().getCode() + extension);
-                    String mimeType = "application/octet-stream";
-                    response.setContentType(mimeType);
-                    response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
-                    response.setContentLength((int) file.length());
-                    OutputStream os = null;
-                    os = response.getOutputStream();
-                    FileManager.downloadZip(file, os);
-                }
+                downloadFile(databaseFol,script.get().getCode(),extension,response);
             }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -335,6 +356,49 @@ public class ScriptServiceImpl implements ScriptService {
         }
     }
 
+    @Override
+    public void downloadTestData(int scriptId, HttpServletResponse response) {
+        try {
+            Optional<Script> script = scriptRepository.findById(scriptId);
+            if (script.isPresent()) {
+                String subjectCode = script.get().getSubject().getCode();
+                String testDataFol = "";
+                String extension = CustomConstant.EXTENSION_TEXT_FILE;
+                switch (subjectCode) {
+                    case CustomConstant.TEMPLATE_TYPE_JAVA:
+                        testDataFol = PathConstants.PATH_TESTDATA_JAVA;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
+                        testDataFol = PathConstants.PATH_TESTDATA_JAVA_WEB;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_CSHARP:
+                        testDataFol = PathConstants.PATH_TESTDATA_C_SHARP;
+                        break;
+                    case CustomConstant.TEMPLATE_TYPE_C:
+                        testDataFol = PathConstants.PATH_TESTDATA_C;
+                        break;
+                }
+                downloadFile(testDataFol,script.get().getCode(),extension,response);
+            }
+        } catch (FileNotFoundException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    private void downloadFile(String folderPath,String code,String extension, HttpServletResponse response) throws IOException {
+        if (!"".equals(folderPath)) {
+            File file = new File(folderPath + code + extension);
+            String mimeType = "application/octet-stream";
+            response.setContentType(mimeType);
+            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+            response.setContentLength((int) file.length());
+            OutputStream os = null;
+            os = response.getOutputStream();
+            FileManager.downloadZip(file, os);
+        }
+    }
     @Override
     public String deleteScript(Integer scriptId) {
         Script script = scriptRepository.findById(scriptId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script with id" + scriptId));
@@ -347,8 +411,6 @@ public class ScriptServiceImpl implements ScriptService {
 
     @Override
     public String updateScriptTest(ScriptRequestDto dto) {
-        HeadLecturer headLecturer = headLecturerRepository.findById(dto.getHeadLecturerId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found user with id" + dto.getHeadLecturerId()));
         Subject subject = subjectRepository.findById(dto.getSubjectId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found subject with id" + dto.getSubjectId()));
 
@@ -358,6 +420,7 @@ public class ScriptServiceImpl implements ScriptService {
             String fileExtension = "";
             String templateQuestionFolPath = "";
             String databaseFolPath = "";
+            String testDataFolPath = "";
             // Select path to create and save script test by type
             switch (subject.getCode()) {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
@@ -365,24 +428,28 @@ public class ScriptServiceImpl implements ScriptService {
                     fileExtension = EXTENSION_JAVA;
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA;
+                    testDataFolPath = PathConstants.PATH_TESTDATA_JAVA;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA_WEB;
                     fileExtension = EXTENSION_JAVA;
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA_WEB;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA_WEB;
+                    testDataFolPath = PathConstants.PATH_TESTDATA_JAVA_WEB;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
                     templatePath = PathConstants.PATH_TEMPLATE_CSHARP;
                     fileExtension = EXTENSION_CSharp;
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_C_SHARP;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_C_SHARP;
+                    testDataFolPath = PathConstants.PATH_TESTDATA_C_SHARP;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_C:
                     templatePath = PathConstants.PATH_TEMPLATE_C;
                     fileExtension = EXTENSION_C;
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_C;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_C;
+                    testDataFolPath = PathConstants.PATH_TESTDATA_C;
                     break;
                 default:
                     throw new CustomException(HttpStatus.CONFLICT, "TypeConflictNotSupported");
@@ -431,7 +498,7 @@ public class ScriptServiceImpl implements ScriptService {
             }
             String code = script.getCode();
             // SAVE CONNECTION STRING in saveFiles()
-            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath, code, fileExtension);
+            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath,testDataFolPath, code, fileExtension);
             // Save to database
             script.setName(dto.getName());
             script.setScriptPath(scriptPath);
@@ -449,7 +516,7 @@ public class ScriptServiceImpl implements ScriptService {
         return CustomConstant.UPDATE_SCRIPT_FAIL;
     }
 
-    private void saveFilesAndConnectionString(ScriptRequestDto dto, String templateQuestionFolPath, String databaseFolPath, String code, String fileExtension) throws IOException {
+    private void saveFilesAndConnectionString(ScriptRequestDto dto, String templateQuestionFolPath, String databaseFolPath,String testDataFolPath, String code, String fileExtension) throws IOException {
         // Save template question to Template question folder
         MultipartFile templateQuestion = dto.getTemplateQuestion();
         if (templateQuestion != null) {
@@ -461,6 +528,12 @@ public class ScriptServiceImpl implements ScriptService {
         if (database != null) {
             Path copyLocation = Paths.get(databaseFolPath + code + CustomConstant.EXTENSION_SQL_SERVER);
             Files.copy(database.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+        }
+        // Save file text to folder
+        MultipartFile testData = dto.getTestData();
+        if (database != null) {
+            Path copyLocation = Paths.get(testDataFolPath + code + CustomConstant.EXTENSION_TEXT_FILE);
+            Files.copy(testData.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
         }
         String onlineConnection = dto.getOnlineConnection();
         if (onlineConnection != null && !"".equals(onlineConnection)) {
