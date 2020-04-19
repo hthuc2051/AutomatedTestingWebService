@@ -80,6 +80,13 @@ public class CustomConstant {
     public static final String DELETE_PARAM_TYPE_SUCCESS = "Delete Param Type Successfully";
     public static final String DELETE_PARAM_TYPE_FAIL = "Delete Param Type Failed";
 
+    public static final String CREATE_ACTION_SUCCESS = "Create Action Successfully";
+    public static final String CREATE_ACTION_FAIL = "Create Action Failed";
+    public static final String UPDATE_ACTION_SUCCESS = "Update Action Successfully";
+    public static final String UPDATE_ACTION_FAIL = "Update Action Failed";
+    public static final String DELETE_ACTION_SUCCESS = "Delete Action Successfully";
+    public static final String DELETE_ACTION_FAIL = "Delete Action Failed";
+
     // Github Result
     public static final int NUMBER_TOP_SIMILAR_FILE = 20;
     public static final String AUTH_TOKEN = "212222f614818a99b5e69b017f77617fa3081f96";

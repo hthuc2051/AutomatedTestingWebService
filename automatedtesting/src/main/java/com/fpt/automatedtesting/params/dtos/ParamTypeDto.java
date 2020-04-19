@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParamTypeDTO {
+public class ParamTypeDto {
     Integer id;
     String name;
     String type;

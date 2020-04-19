@@ -1,6 +1,6 @@
 package com.fpt.automatedtesting.paramtypes;
 
-import com.fpt.automatedtesting.actions.SubjectActionParam;
+import com.fpt.automatedtesting.actions.ActionParam;
 import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.exception.CustomException;
@@ -104,9 +104,9 @@ public class ParamTypeServiceImpl implements ParamTypeService {
         ParamType paramTypeEntity = paramTypeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param type for id " + id));
 
-        List<SubjectActionParam> subjectActionParams = paramTypeEntity.getSubjectActionParams();
+        List<ActionParam> actionParams = paramTypeEntity.getActionParams();
 
-        if (subjectActionParams == null || subjectActionParams.size() <= 0) {
+        if (actionParams == null || actionParams.size() <= 0) {
             paramTypeEntity.setActive(false);
 
             if (paramTypeRepository.save(paramTypeEntity) != null) {

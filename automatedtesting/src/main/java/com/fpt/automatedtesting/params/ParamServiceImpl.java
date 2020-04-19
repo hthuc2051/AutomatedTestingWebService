@@ -1,6 +1,6 @@
 package com.fpt.automatedtesting.params;
 
-import com.fpt.automatedtesting.actions.SubjectActionParam;
+import com.fpt.automatedtesting.actions.ActionParam;
 import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.exception.CustomException;
@@ -60,7 +60,7 @@ public class ParamServiceImpl implements ParamService {
                 return CustomConstant.CREATE_PARAM_FAIL;
         }
     }
-    
+
     @Override
     public String deleteParam(Integer id) {
 
@@ -68,10 +68,10 @@ public class ParamServiceImpl implements ParamService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + id));
 
         // get relationship of param
-        List<SubjectActionParam> subjectActionParams = deleteParamEntity.getSubjectActionParams();
+        List<ActionParam> actionParams = deleteParamEntity.getActionParams();
 
         // if param is not in use -> set active status to false
-        if (subjectActionParams == null || subjectActionParams.size() <= 0) {
+        if (actionParams == null || actionParams.size() <= 0) {
             deleteParamEntity.setActive(false);
             if (paramRepository.save(deleteParamEntity) != null)
                 return CustomConstant.DELETE_PARAM_SUCCESS;

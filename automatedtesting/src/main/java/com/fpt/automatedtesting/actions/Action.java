@@ -1,6 +1,7 @@
 package com.fpt.automatedtesting.actions;
 
 import com.fpt.automatedtesting.admins.Admin;
+import com.fpt.automatedtesting.subjects.Subject;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,6 +32,7 @@ public class Action {
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
-    @OneToMany(mappedBy = "action",cascade = CascadeType.ALL)
-    private List<SubjectAction> subjectActions;
+    @ManyToOne
+    @JoinColumn(name = "subject_id", referencedColumnName = "id")
+    private Subject subject;
 }

@@ -1,9 +1,8 @@
 package com.fpt.automatedtesting.actions;
 
-import com.fpt.automatedtesting.actions.dtos.ActionParamDTO;
+import com.fpt.automatedtesting.actions.dtos.ActionParamDto;
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
-import com.fpt.automatedtesting.actions.dtos.ActionResponseSubjectIdDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,18 +31,18 @@ public class ActionController {
     }
 
     @GetMapping("/action/subject/{subjectId}")
-    public ResponseEntity<List<ActionParamDTO>> getAllActionsBySubject(@PathVariable Integer subjectId) {
+    public ResponseEntity<List<ActionParamDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionBySubject(subjectId));
     }
 
-//    @PostMapping("/action")
-//    public ResponseEntity<ActionResponseDto> insertNewActions(@RequestBody ActionRequestDto dto) {
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(actionService.insert(dto));
-//    }
+    @PostMapping("/action")
+    public ResponseEntity<String> insertNewActions(@RequestBody ActionRequestDto dto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(actionService.insertAction(dto));
+    }
 
     @GetMapping("/action/{id}")
     public ResponseEntity<ActionResponseDto> getAction(@PathVariable Integer id) {
@@ -60,7 +59,7 @@ public class ActionController {
     }
 
     @PutMapping("/action")
-    public ResponseEntity<ActionResponseDto> updateAction(@RequestBody ActionRequestDto dto) {
+    public ResponseEntity<String> updateAction(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.update(dto));

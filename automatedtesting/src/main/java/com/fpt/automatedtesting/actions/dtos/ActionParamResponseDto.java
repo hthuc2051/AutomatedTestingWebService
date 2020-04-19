@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubjectActionParamResponseDto {
+public class ActionParamResponseDto {
 
     private Integer id;
 

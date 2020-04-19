@@ -2,20 +2,18 @@ package com.fpt.automatedtesting.actions;
 
 import com.fpt.automatedtesting.params.Param;
 import com.fpt.automatedtesting.paramtypes.ParamType;
-import com.fpt.automatedtesting.subjects.Subject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Subject_Action_Param")
-public class SubjectActionParam {
+@Table(name = "Action_Param")
+public class ActionParam {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -23,8 +21,8 @@ public class SubjectActionParam {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "subject_action_id", referencedColumnName = "id")
-    private SubjectAction subjectAction;
+    @JoinColumn(name = "action_id", referencedColumnName = "id")
+    private Action action;
 
     @ManyToOne
     @JoinColumn(name = "param_id", referencedColumnName = "id")
