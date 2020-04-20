@@ -35,4 +35,7 @@ public class Action {
     @ManyToOne
     @JoinColumn(name = "subject_id", referencedColumnName = "id")
     private Subject subject;
+
+    @OneToMany(mappedBy = "action", cascade = CascadeType.ALL)
+    private List<ActionParam> actionParams;
 }
