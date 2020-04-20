@@ -16,5 +16,5 @@ public class ActionParamDto {
     private String name;
     private String code;
     private List<ParamTypeDto> params =  new ArrayList<>();
-    private List<Integer> subjectId =  new ArrayList<>();
+    private String subjectCode;
 }

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class ScripTestJava {
-    public static String questionPointStr = "testcase:1";
+    public static String questionPointStr = "testcase:11";
     @Autowired
     private TemplateQuestion templateQuestion;
 

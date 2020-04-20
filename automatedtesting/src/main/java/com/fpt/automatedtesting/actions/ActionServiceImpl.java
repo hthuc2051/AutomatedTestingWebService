@@ -159,7 +159,7 @@ public class ActionServiceImpl implements ActionService {
                 paramTypeDto.setType(type.getName());
                 actionParamDto.getParams().add(paramTypeDto);
             }
-            actionParamDto.getSubjectId().add(subjectId);
+            actionParamDto.setSubjectCode(subject.getCode());
             response.add(actionParamDto);
         }
         return response;
