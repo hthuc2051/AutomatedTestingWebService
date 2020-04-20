@@ -43,13 +43,6 @@ public class ActionController {
                 .body(actionService.createAction(dto));
     }
 
-    @GetMapping("/action/{id}")
-    public ResponseEntity<ActionResponseDto> getAction(@PathVariable Integer id) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(actionService.findById(id));
-    }
-
     @DeleteMapping("/action/{id}")
     public ResponseEntity<String> deleteAction(@PathVariable Integer id) {
         return ResponseEntity
