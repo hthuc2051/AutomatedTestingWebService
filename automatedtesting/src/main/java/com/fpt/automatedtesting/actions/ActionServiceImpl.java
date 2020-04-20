@@ -8,6 +8,7 @@ import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.params.Param;
 import com.fpt.automatedtesting.admins.AdminRepository;
 import com.fpt.automatedtesting.params.ParamRepository;
+import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
 import com.fpt.automatedtesting.params.dtos.ParamTypeDto;
 import com.fpt.automatedtesting.paramtypes.ParamType;
 import com.fpt.automatedtesting.paramtypes.ParamTypeRepository;
@@ -30,16 +31,12 @@ public class ActionServiceImpl implements ActionService {
     private final ActionRepository actionRepository;
     private final AdminRepository adminRepository;
     private final SubjectRepository subjectRepository;
-    private final ParamRepository paramRepository;
-    private final ParamTypeRepository paramTypeRepository;
 
     @Autowired
-    public ActionServiceImpl(ActionRepository actionRepository, AdminRepository adminRepository, SubjectRepository subjectRepository, ParamRepository paramRepository, ParamTypeRepository paramTypeRepository) {
+    public ActionServiceImpl(ActionRepository actionRepository, AdminRepository adminRepository, SubjectRepository subjectRepository) {
         this.actionRepository = actionRepository;
         this.adminRepository = adminRepository;
         this.subjectRepository = subjectRepository;
-        this.paramRepository = paramRepository;
-        this.paramTypeRepository = paramTypeRepository;
     }
 
     @Override
@@ -63,8 +60,22 @@ public class ActionServiceImpl implements ActionService {
                 actionDto.setSubject(subjectDto);
 
                 List<ActionParam> actionParamEntities = actionEntity.getActionParams();
+                List<ActionParamResponseDto> listActionParamDto;
                 if (actionParamEntities != null && actionParamEntities.size() > 0) {
-                    List<ActionParamResponseDto> listActionParamDto = MapperManager.mapAll(actionEntities, ActionParamResponseDto.class);
+
+                    listActionParamDto = new ArrayList<>();
+                    for (ActionParam actionParam : actionParamEntities) {
+                        ParamResponseDto paramDto = MapperManager.map(actionParam.getParam(), ParamResponseDto.class);
+                        ParamTypeResponseDto paramTypeDto = MapperManager.map(actionParam.getParamType(), ParamTypeResponseDto.class);
+
+                        ActionParamResponseDto actionParamDto = new ActionParamResponseDto();
+                        actionParamDto.setId(actionParam.getId());
+                        actionParamDto.setParam(paramDto);
+                        actionParamDto.setParamType(paramTypeDto);
+
+                        listActionParamDto.add(actionParamDto);
+                    }
+
                     actionDto.setActionParams(listActionParamDto);
                 }
 
@@ -115,6 +126,7 @@ public class ActionServiceImpl implements ActionService {
                 ActionParam actionParamEntity = new ActionParam();
                 actionParamEntity.setParam(paramEntity);
                 actionParamEntity.setParamType(paramType);
+                actionParamEntity.setAction(action);
 
                 actionParamEntities.add(actionParamEntity);
             }

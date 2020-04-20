@@ -1,7 +1,7 @@
 package com.fpt.automatedtesting.actions.dtos;
 
 import com.fpt.automatedtesting.params.dtos.ParamRequestDto;
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeForActionDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ActionParamRequestDto {
     private ParamRequestDto param;
-    private ParamTypeRequestDto paramType;
+    private ParamTypeForActionDto paramType;
 }

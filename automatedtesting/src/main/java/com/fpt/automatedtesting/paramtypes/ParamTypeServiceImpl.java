@@ -9,10 +9,8 @@ import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
 
 import com.fpt.automatedtesting.subjects.Subject;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
-import com.google.common.reflect.TypeToken;
 
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
-import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
