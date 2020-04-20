@@ -8,14 +8,12 @@ import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.params.Param;
 import com.fpt.automatedtesting.admins.AdminRepository;
 import com.fpt.automatedtesting.params.ParamRepository;
-import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
 import com.fpt.automatedtesting.params.dtos.ParamTypeDto;
 import com.fpt.automatedtesting.paramtypes.ParamType;
 import com.fpt.automatedtesting.paramtypes.ParamTypeRepository;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
 import com.fpt.automatedtesting.subjects.SubjectRepository;
 import com.fpt.automatedtesting.subjects.Subject;
-import com.fpt.automatedtesting.subjects.dtos.SubjectRequestDto;
 import com.fpt.automatedtesting.subjects.dtos.SubjectResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,10 +43,10 @@ public class ActionServiceImpl implements ActionService {
     }
 
     @Override
-    public List<ActionResponseDto> getAll() {
+    public List<ActionResponseDto> getAllActions() {
 
         List<Action> actionEntities = actionRepository.findAllByActiveIsTrue();
-        List<ActionResponseDto> listActionResponseDto = null;
+        List<ActionResponseDto> listActionResponseDto;
 
         if (actionEntities != null && actionEntities.size() > 0) {
             listActionResponseDto = new ArrayList<>();
@@ -80,7 +78,7 @@ public class ActionServiceImpl implements ActionService {
 
     @Transactional
     @Override
-    public String insertAction(ActionRequestDto dto) {
+    public String createAction(ActionRequestDto dto) {
 
         Admin admin = adminRepository.findByIdAndActiveIsTrue(dto.getAdminId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found admin with id " + dto.getAdminId()));
@@ -133,7 +131,7 @@ public class ActionServiceImpl implements ActionService {
 
     @Transactional
     @Override
-    public String update(ActionRequestDto dto) {
+    public String updateAction(ActionRequestDto dto) {
         Action action = actionRepository.findByIdAndActiveIsTrue(dto.getId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found action with id " + dto.getId()));
 
@@ -175,43 +173,46 @@ public class ActionServiceImpl implements ActionService {
     }
 
     @Override
-    public ActionResponseDto findById(int id) {
-        ActionResponseDto response = MapperManager.map(actionRepository
-                        .findByIdAndActiveIsTrue(id)
-                        .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Action is not found with Id " + id))
-                , ActionResponseDto.class);
-        return response;
-    }
-
-    @Override
     public List<ActionParamDto> getAllActionBySubject(int subjectId) {
+
         Subject subject = subjectRepository
                 .findByIdAndActiveIsTrue(subjectId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
-        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found subject with id " + subjectId));
+
+        // get list actions by subject
+        List<Action> actionEntities = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
         List<ActionParamDto> response = new ArrayList<>();
-        for (Action action : actions) {
-            ActionParamDto actionParamDto = MapperManager.map(action, ActionParamDto.class);
-            List<ActionParam> subjectActionParam = action.getActionParams();
-            for (ActionParam element : subjectActionParam) {
-                Param param = element.getParam();
-                ParamType typeEntity = element.getParamType();
-                ParamTypeDto paramTypeDto = new ParamTypeDto();
-                paramTypeDto.setId(param.getId());
-                paramTypeDto.setName(param.getName());
-                ParamTypeResponseDto type = MapperManager.map(typeEntity, ParamTypeResponseDto.class);
-                // paramTypeDto.setType(type);
-                paramTypeDto.setType(type.getName());
-                actionParamDto.getParams().add(paramTypeDto);
+
+        if (actionEntities != null && actionEntities.size() > 0) {
+            for (Action action : actionEntities) {
+
+                ActionParamDto actionParamDto = MapperManager.map(action, ActionParamDto.class);
+                List<ActionParam> subjectActionParam = action.getActionParams();
+
+                for (ActionParam element : subjectActionParam) {
+
+                    Param param = element.getParam();
+                    ParamType typeEntity = element.getParamType();
+                    ParamTypeDto paramTypeDto = new ParamTypeDto();
+                    paramTypeDto.setId(param.getId());
+                    paramTypeDto.setName(param.getName());
+
+                    ParamTypeResponseDto type = MapperManager.map(typeEntity, ParamTypeResponseDto.class);
+                    paramTypeDto.setType(type.getName());
+
+                    actionParamDto.getParams().add(paramTypeDto);
+                }
+
+                actionParamDto.setSubjectCode(subject.getCode());
+                response.add(actionParamDto);
             }
-            actionParamDto.setSubjectCode(subject.getCode());
-            response.add(actionParamDto);
         }
+
         return response;
     }
 
     @Override
-    public String delete(int id) {
+    public String deleteAction(int id) {
         Action action = actionRepository
                 .findByIdAndActiveIsTrue(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found action with id " + id));

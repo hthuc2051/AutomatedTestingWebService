@@ -7,10 +7,9 @@ import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
 import java.util.List;
 
 public interface ActionService {
-    List<ActionResponseDto> getAll();
-    String insertAction(ActionRequestDto dto);
-    String update(ActionRequestDto dto);
-    ActionResponseDto findById(int id);
+    List<ActionResponseDto> getAllActions();
+    String createAction(ActionRequestDto dto);
+    String updateAction(ActionRequestDto dto);
     List<ActionParamDto> getAllActionBySubject(int subjectId);
-    String delete(int id);
+    String deleteAction(int id);
 }

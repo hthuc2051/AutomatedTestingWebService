@@ -22,12 +22,11 @@ public class ActionController {
         this.actionService = actionService;
     }
 
-    // Return data to lecturer
     @GetMapping("/action")
     public ResponseEntity<List<ActionResponseDto>> getAllActions() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(actionService.getAll());
+                .body(actionService.getAllActions());
     }
 
     @GetMapping("/action/subject/{subjectId}")
@@ -41,7 +40,7 @@ public class ActionController {
     public ResponseEntity<String> insertNewActions(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(actionService.insertAction(dto));
+                .body(actionService.createAction(dto));
     }
 
     @GetMapping("/action/{id}")
@@ -55,13 +54,13 @@ public class ActionController {
     public ResponseEntity<String> deleteAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(actionService.delete(id));
+                .body(actionService.deleteAction(id));
     }
 
     @PutMapping("/action")
     public ResponseEntity<String> updateAction(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(actionService.update(dto));
+                .body(actionService.updateAction(dto));
     }
 }
