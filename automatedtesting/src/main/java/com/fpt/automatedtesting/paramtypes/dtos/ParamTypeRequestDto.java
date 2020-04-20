@@ -10,6 +10,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParamTypeRequestDto {
+    private Integer id;
+
     private String name;
 
     private List<String> subjectCode;

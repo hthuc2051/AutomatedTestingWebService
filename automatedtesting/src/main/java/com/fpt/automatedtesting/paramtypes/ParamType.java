@@ -1,8 +1,6 @@
 package com.fpt.automatedtesting.paramtypes;
 
-import com.fpt.automatedtesting.actions.SubjectAction;
-import com.fpt.automatedtesting.actions.SubjectActionParam;
-import com.fpt.automatedtesting.params.Param;
+import com.fpt.automatedtesting.actions.ActionParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,6 +30,6 @@ public class ParamType {
     private Boolean active;
 
     @OneToMany(mappedBy = "paramType", cascade = CascadeType.ALL)
-    private List<SubjectActionParam> subjectActionParams;
+    private List<ActionParam> actionParams;
 
 }

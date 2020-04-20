@@ -1,9 +1,8 @@
 package com.fpt.automatedtesting.actions;
 
-import com.fpt.automatedtesting.actions.dtos.ActionParamDTO;
+import com.fpt.automatedtesting.actions.dtos.ActionParamDto;
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
-import com.fpt.automatedtesting.actions.dtos.ActionResponseSubjectIdDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,41 +16,42 @@ import java.util.List;
 public class ActionController {
 
     private final ActionService actionService;
+
     @Autowired
     public ActionController(ActionService actionService) {
         this.actionService = actionService;
     }
 
     // Return data to lecturer
-    @GetMapping("/actions")
+    @GetMapping("/action")
     public ResponseEntity<List<ActionResponseDto>> getAllActions() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAll());
     }
 
-    @GetMapping("/actions/subjects/{subjectId}")
-    public ResponseEntity<List<ActionParamDTO>> getAllActionsBySubject(@PathVariable Integer subjectId) {
+    @GetMapping("/action/subject/{subjectId}")
+    public ResponseEntity<List<ActionParamDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionBySubject(subjectId));
     }
 
-    @PostMapping("/actions")
-    public ResponseEntity<ActionResponseDto> insertNewActions(@RequestBody ActionRequestDto dto) {
+    @PostMapping("/action")
+    public ResponseEntity<String> insertNewActions(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(actionService.insert(dto));
+                .body(actionService.insertAction(dto));
     }
 
-    @GetMapping("/actions/{id}")
+    @GetMapping("/action/{id}")
     public ResponseEntity<ActionResponseDto> getAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.findById(id));
     }
 
-    @DeleteMapping("/actions/{id}")
+    @DeleteMapping("/action/{id}")
     public ResponseEntity<String> deleteAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -59,7 +59,7 @@ public class ActionController {
     }
 
     @PutMapping("/action")
-    public ResponseEntity<ActionResponseDto> updateAction(@RequestBody ActionRequestDto dto) {
+    public ResponseEntity<String> updateAction(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.update(dto));

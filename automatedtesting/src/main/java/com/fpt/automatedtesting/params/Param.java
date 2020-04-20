@@ -1,6 +1,6 @@
 package com.fpt.automatedtesting.params;
 
-import com.fpt.automatedtesting.actions.SubjectActionParam;
+import com.fpt.automatedtesting.actions.ActionParam;
 import lombok.*;
 import javax.persistence.*;
 import java.util.List;
@@ -24,5 +24,5 @@ public class Param {
     private Boolean active;
 
     @OneToMany(mappedBy = "param", cascade = CascadeType.ALL)
-    private List<SubjectActionParam> subjectActionParams;
+    private List<ActionParam> actionParams;
 }

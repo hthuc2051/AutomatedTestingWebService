@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParamUpdateRequestDto {
-    private Integer id;
-    private String name;
-    private Boolean active;
+public class ParamTypeDto {
+    Integer id;
+    String name;
+    String type;
 }

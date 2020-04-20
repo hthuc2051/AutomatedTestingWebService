@@ -2,7 +2,6 @@ package com.fpt.automatedtesting.params;
 
 import com.fpt.automatedtesting.params.dtos.ParamCreateRequestDto;
 import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
-import com.fpt.automatedtesting.params.dtos.ParamUpdateRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +33,6 @@ public class ParamController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(paramService.createParam(dto));
-    }
-
-    @PutMapping("/param")
-    public ResponseEntity<String> updateParam(@RequestBody ParamUpdateRequestDto dto) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(paramService.updateParam(dto));
     }
 
     @DeleteMapping("/param/{id}")

@@ -1,7 +1,6 @@
 package com.fpt.automatedtesting.actions.dtos;
 
-import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
-import com.fpt.automatedtesting.params.dtos.ParamTypeDTO;
+import com.fpt.automatedtesting.params.dtos.ParamTypeDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,10 +11,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActionParamDTO {
+public class ActionParamDto {
     private Integer id;
     private String name;
     private String code;
-    private List<ParamTypeDTO> params =  new ArrayList<>();
+    private List<ParamTypeDto> params =  new ArrayList<>();
     private List<Integer> subjectId =  new ArrayList<>();
 }
