@@ -10,13 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class ScripTestJava {
-    public static String questionPointStr = "testcase:10";
+    public static String questionPointStr = "testcase:11";
     @Autowired
     private TemplateQuestion templateQuestion;
 
     //start
 @Test 
-@Order(12) 
-public void testcase(){driver.findElement(By.id( "txtUsername" )).sendKeys( "t01" );driver.findElement(By.id( "txtPassword" )).sendKeys( "t02" );driver.findElement(By.id( "txtConfirm" )).sendKeys( "t03" );}
+@Order(1) 
+public void testcase(){driver.findElement(By.id( "a" )).sendKeys( "a" );if( a ){ driver.get( "http" ); }else{  }}
 //end
 }

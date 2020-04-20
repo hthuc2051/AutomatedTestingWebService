@@ -4,6 +4,13 @@ import com.fpt.automatedtesting.actions.ActionParam;
 import com.fpt.automatedtesting.common.CustomConstant;
 import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.exception.CustomException;
+
+import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
+
+import com.fpt.automatedtesting.subjects.Subject;
+import com.fpt.automatedtesting.subjects.SubjectRepository;
+import com.google.common.reflect.TypeToken;
+
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeResponseDto;
 import com.fpt.automatedtesting.paramtypes.dtos.ParamTypeRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +20,18 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ParamTypeServiceImpl implements ParamTypeService {
 
     private final ParamTypeRepository paramTypeRepository;
+    private final SubjectRepository subjectRepository;
 
     @Autowired
-    public ParamTypeServiceImpl(ParamTypeRepository paramTypeRepository) {
+    public ParamTypeServiceImpl(ParamTypeRepository paramTypeRepository, SubjectRepository subjectRepository) {
         this.paramTypeRepository = paramTypeRepository;
+        this.subjectRepository = subjectRepository;
     }
 
     @Override
@@ -40,6 +50,18 @@ public class ParamTypeServiceImpl implements ParamTypeService {
         } else {
             throw new CustomException(HttpStatus.NOT_FOUND, "Not found any param type.");
         }
+    }
+
+    @Override
+    public List<ParamTypeResponseDto> getParamTypeBySubjectId(Integer subjectId) {
+        Optional<Subject> subject = subjectRepository.findByIdAndActiveIsTrue(subjectId);
+        List<ParamTypeResponseDto> result = new ArrayList<>();
+        if(subject.isPresent()){
+            String subjectCode = subject.get().getCode();
+            List<ParamType> paramTypes = paramTypeRepository.findAllBySubjectCodeAndActiveIsTrue(subjectCode);
+            result = MapperManager.mapAll(paramTypes,ParamTypeResponseDto.class);
+        }
+        return result;
     }
 
     @Transactional

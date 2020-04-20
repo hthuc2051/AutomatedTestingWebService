@@ -188,36 +188,26 @@ public class ActionServiceImpl implements ActionService {
         Subject subject = subjectRepository
                 .findByIdAndActiveIsTrue(subjectId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Subject is not found with Id " + subjectId));
-//        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
-//        List<ActionResponseSubjectIdDto> response = new ArrayList<>();
-//        if (actions.size() > 0) {
-//            response = MapperManager.mapAll(actions, ActionResponseSubjectIdDto.class);
-//            List<Integer> subjects = new ArrayList<>();
-//            subjects.add(subjectId);
-//            response.forEach(element -> element.setSubjectId(subjects));
-//        }
-//        List<ActionParamDto> response = new ArrayList<>();
-//        List<SubjectAction> subjectActions = subject.getSubjectActions();
-//        for (SubjectAction item : subjectActions) {
-//            Action action = item.getAction();
-//            ActionParamDto actionParamDto = MapperManager.map(action, ActionParamDto.class);
-//            List<ActionParam> subjectActionParam = item.getSubjectActionParams();
-//            for (ActionParam element : subjectActionParam) {
-//                Param param = element.getParam();
-//                ParamType typeEntity = element.getParamType();
-//                ParamTypeDto paramTypeDto = new ParamTypeDto();
-//                paramTypeDto.setId(param.getId());
-//                paramTypeDto.setName(param.getName());
-//                ParamTypeResponseDto type = MapperManager.map(typeEntity, ParamTypeResponseDto.class);
-//                // paramTypeDto.setType(type);
-//                paramTypeDto.setType(type.getName());
-//                actionParamDto.getParams().add(paramTypeDto);
-//            }
-//            actionParamDto.getSubjectId().add(subjectId);
-//            response.add(actionParamDto);
-//        }
-//        return response;
-        return null;
+        List<Action> actions = actionRepository.findAllBySubjectAndActiveIsTrue(subject.getId());
+        List<ActionParamDto> response = new ArrayList<>();
+        for (Action action : actions) {
+            ActionParamDto actionParamDto = MapperManager.map(action, ActionParamDto.class);
+            List<ActionParam> subjectActionParam = action.getActionParams();
+            for (ActionParam element : subjectActionParam) {
+                Param param = element.getParam();
+                ParamType typeEntity = element.getParamType();
+                ParamTypeDto paramTypeDto = new ParamTypeDto();
+                paramTypeDto.setId(param.getId());
+                paramTypeDto.setName(param.getName());
+                ParamTypeResponseDto type = MapperManager.map(typeEntity, ParamTypeResponseDto.class);
+                // paramTypeDto.setType(type);
+                paramTypeDto.setType(type.getName());
+                actionParamDto.getParams().add(paramTypeDto);
+            }
+            actionParamDto.setSubjectCode(subject.getCode());
+            response.add(actionParamDto);
+        }
+        return response;
     }
 
     @Override

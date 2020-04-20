@@ -25,6 +25,9 @@ public class Action {
     @Column(name = "code")
     private String code;
 
+    @OneToMany(mappedBy = "action", cascade = CascadeType.ALL)
+    private List<ActionParam> actionParams;
+
     @ManyToOne
     @JoinColumn(name = "admin_id", referencedColumnName = "id")
     private Admin admin;
