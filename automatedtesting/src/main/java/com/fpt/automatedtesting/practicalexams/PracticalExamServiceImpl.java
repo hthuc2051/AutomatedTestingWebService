@@ -381,7 +381,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                     // Copy DBTools
                     try {
                         String dbPath = dbToolsFol.getAbsolutePath() + File.separator + "DBUtilities" + extension;
-                        Files.copy(Paths.get(PATH_DB_TOOLS + File.separator + practicalExam.getCode() + "_Online" + extension),
+                        Files.copy(Paths.get(PATH_DB_TOOLS + File.separator + practicalExam.getCode() + "_Offline" + extension),
                                 Paths.get(dbPath));
 
                     } catch (Exception e) {
