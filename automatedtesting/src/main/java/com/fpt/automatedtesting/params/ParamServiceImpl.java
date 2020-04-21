@@ -6,7 +6,6 @@ import com.fpt.automatedtesting.common.MapperManager;
 import com.fpt.automatedtesting.exception.CustomException;
 import com.fpt.automatedtesting.params.dtos.ParamCreateRequestDto;
 import com.fpt.automatedtesting.params.dtos.ParamResponseDto;
-import com.fpt.automatedtesting.params.dtos.ParamUpdateRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -61,37 +60,7 @@ public class ParamServiceImpl implements ParamService {
                 return CustomConstant.CREATE_PARAM_FAIL;
         }
     }
-
-    @Override
-    public String updateParam(ParamUpdateRequestDto dto) {
-
-        Param updateEntity = paramRepository.findById(dto.getId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found param for id " + dto.getId()));
-
-        if (dto.getName().equals(updateEntity.getName()))
-            return CustomConstant.UPDATE_PARAM_SUCCESS;
-
-        // find param by case-sensitive name
-        Param paramEntity = paramRepository.findParamByName(dto.getName());
-
-        // if found param with the given name
-        if (paramEntity != null) {
-
-            // if found param is not update param
-            if (paramEntity.getId() != updateEntity.getId()) {
-
-                return "Param name \"" + dto.getName() + "\" is already existed.";
-            } // else do nothing
-        } else {
-            updateEntity.setName(dto.getName());
-        }
-
-        if (paramRepository.save(updateEntity) != null)
-            return CustomConstant.UPDATE_PARAM_SUCCESS;
-        else
-            return CustomConstant.UPDATE_PARAM_FAIL;
-    }
-
+    
     @Override
     public String deleteParam(Integer id) {
 
@@ -112,6 +81,4 @@ public class ParamServiceImpl implements ParamService {
             return "Param name \"" + deleteParamEntity.getName() + "\" is already in use.";
         }
     }
-
-
 }

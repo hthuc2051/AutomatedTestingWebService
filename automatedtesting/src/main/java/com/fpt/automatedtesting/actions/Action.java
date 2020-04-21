@@ -7,10 +7,10 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Action")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "Action")
 public class Action {
 
     @Id
@@ -18,19 +18,18 @@ public class Action {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = true)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "code", nullable = true)
+    @Column(name = "code")
     private String code;
 
     @ManyToOne
-    @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "admin_id", referencedColumnName = "id")
     private Admin admin;
 
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
-
 
     @OneToMany(mappedBy = "action",cascade = CascadeType.ALL)
     private List<SubjectAction> subjectActions;

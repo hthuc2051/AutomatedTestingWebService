@@ -80,15 +80,11 @@ public class CustomConstant {
 
     public static final String CREATE_PARAM_SUCCESS = "Create Param Successfully";
     public static final String CREATE_PARAM_FAIL = "Create Param Failed";
-    public static final String UPDATE_PARAM_SUCCESS = "Update Param Successfully";
-    public static final String UPDATE_PARAM_FAIL = "Update Param Failed";
     public static final String DELETE_PARAM_SUCCESS = "Delete Param Successfully";
     public static final String DELETE_PARAM_FAIL = "Delete Param Failed";
 
     public static final String CREATE_PARAM_TYPE_SUCCESS = "Create Param Type Successfully";
     public static final String CREATE_PARAM_TYPE_FAIL = "Create Param Type Failed";
-    public static final String UPDATE_PARAM_TYPE_SUCCESS = "Update Param Type Successfully";
-    public static final String UPDATE_PARAM_TYPE_FAIL = "Update Param Type Failed";
     public static final String DELETE_PARAM_TYPE_SUCCESS = "Delete Param Type Successfully";
     public static final String DELETE_PARAM_TYPE_FAIL = "Delete Param Type Failed";
 
