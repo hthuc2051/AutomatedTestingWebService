@@ -16,7 +16,7 @@ public class ActionRequestDto {
     private String name;
     private String code;
     private SubjectRequestDto subject;
-    private List<ActionParamRequestDto> actionParams;
+    private List<ActionParameterRequestDto> actionParams;
     private Integer adminId;
     private Boolean active;
 }

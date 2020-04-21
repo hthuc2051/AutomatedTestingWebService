@@ -25,9 +25,6 @@ public class Action {
     @Column(name = "code")
     private String code;
 
-    @OneToMany(mappedBy = "action", cascade = CascadeType.ALL)
-    private List<ActionParam> actionParams;
-
     @ManyToOne
     @JoinColumn(name = "admin_id", referencedColumnName = "id")
     private Admin admin;
@@ -38,4 +35,7 @@ public class Action {
     @ManyToOne
     @JoinColumn(name = "subject_id", referencedColumnName = "id")
     private Subject subject;
+
+    @OneToMany(mappedBy = "action", cascade = CascadeType.ALL)
+    private List<ActionParameter> actionParameters;
 }

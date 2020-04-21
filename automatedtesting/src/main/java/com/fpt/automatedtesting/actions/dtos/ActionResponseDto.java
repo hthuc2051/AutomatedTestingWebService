@@ -16,5 +16,5 @@ public class ActionResponseDto {
     private String name;
     private String code;
     private SubjectResponseDto subject;
-    private List<ActionParamResponseDto> actionParams;
+    private List<ActionParameterResponseDto> actionParams;
 }

@@ -17,7 +17,7 @@ import java.util.*;
  * Implementation of {@link ServletContextInitializer} to register the servlets, listeners and filters defined
  * in the application's web.xml on startup.
  * <p>
- * TODO servlets' init-params are not supported
+ * TODO servlets' init-parameters are not supported
  * TODO filters are not registered
  */
 
