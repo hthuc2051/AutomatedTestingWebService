@@ -2,6 +2,8 @@ package com.fpt.automatedtesting.subjects;
 
 import com.fpt.automatedtesting.classes.ClassResponseDto;
 import com.fpt.automatedtesting.classes.Class;
+import com.fpt.automatedtesting.lecturers.Lecturer;
+import com.fpt.automatedtesting.lecturers.LecturerDto;
 import com.fpt.automatedtesting.scripts.Script;
 import com.fpt.automatedtesting.scripts.dtos.ScriptResponseDto;
 import com.fpt.automatedtesting.subjectclasses.SubjectClass;
@@ -43,7 +45,12 @@ public class SubjectServiceImpl implements SubjectService {
                             Class classEntity = entity.getAClass();
                             Integer classId = classEntity.getId();
                             String classCode = classEntity.getClassCode();
-                            classResponseDtos.add(new ClassResponseDto(classId, classCode, subjectClassId));
+                            Lecturer lecturer = entity.getLecturer();
+                            LecturerDto lecturerDto = null;
+                            if (lecturer != null) {
+                                lecturerDto = MapperManager.map(lecturer, LecturerDto.class);
+                            }
+                            classResponseDtos.add(new ClassResponseDto(classId, classCode, subjectClassId, lecturerDto));
                         }
                     }
                     result.get(i).setClasses(classResponseDtos);
@@ -78,7 +85,12 @@ public class SubjectServiceImpl implements SubjectService {
                 Class classEntity = entity.getAClass();
                 Integer classId = classEntity.getId();
                 String classCode = classEntity.getClassCode();
-                listResponse.add(new ClassResponseDto(classId, classCode, subjectClassId));
+                Lecturer lecturer = entity.getLecturer();
+                LecturerDto lecturerDto = null;
+                if (lecturer != null) {
+                    lecturerDto = MapperManager.map(lecturer, LecturerDto.class);
+                }
+                listResponse.add(new ClassResponseDto(classId, classCode, subjectClassId, lecturerDto));
             }
             result.setClasses(listResponse);
         }

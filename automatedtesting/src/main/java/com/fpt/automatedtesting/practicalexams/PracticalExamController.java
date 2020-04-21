@@ -4,9 +4,8 @@ package com.fpt.automatedtesting.practicalexams;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.exception.ExceptionManager;
-import com.fpt.automatedtesting.githubResult.GithubResultService;
-import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
-import com.fpt.automatedtesting.githubResult.dtos.GithubResultDTO;
+import com.fpt.automatedtesting.githubresult.GithubResultService;
+import com.fpt.automatedtesting.githubresult.dtos.GithubResultDTO;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
 import com.fpt.automatedtesting.submissions.Submission;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")

@@ -1,11 +1,10 @@
-package com.fpt.automatedtesting.githubResult.dtos;
+package com.fpt.automatedtesting.githubresult.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor

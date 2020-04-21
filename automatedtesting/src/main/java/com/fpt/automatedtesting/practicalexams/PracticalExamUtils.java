@@ -1,8 +1,7 @@
 package com.fpt.automatedtesting.practicalexams;
 
-import com.fpt.automatedtesting.common.CustomConstant;
-import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
-import com.fpt.automatedtesting.githubResult.dtos.GitHubResponseDTO;
+import com.fpt.automatedtesting.githubresult.dtos.GitHubFileDuplicateDTO;
+import com.fpt.automatedtesting.githubresult.dtos.GitHubResponseDTO;
 import com.google.gson.Gson;
 import org.kohsuke.github.*;
 

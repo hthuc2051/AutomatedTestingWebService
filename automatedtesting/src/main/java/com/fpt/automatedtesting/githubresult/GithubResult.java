@@ -1,13 +1,11 @@
-package com.fpt.automatedtesting.githubResult;
+package com.fpt.automatedtesting.githubresult;
 
-import com.fpt.automatedtesting.duplicatedcode.DuplicatedCodeDetails;
 import com.fpt.automatedtesting.practicalexams.PracticalExam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @AllArgsConstructor

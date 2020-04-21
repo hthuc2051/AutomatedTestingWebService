@@ -186,7 +186,7 @@ public class ScriptServiceImpl implements ScriptService {
                 Files.copy(docsFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
             }
             // Save CONNECTION STRING AND FILES in saveFiles()
-            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath,testDataFolPath, code, fileExtension);
+            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath, testDataFolPath, code, fileExtension);
             // Save to database
             Script script = new Script();
             script.setName(dto.getName());
@@ -232,6 +232,7 @@ public class ScriptServiceImpl implements ScriptService {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
+
     @Override
     public void downloadTemplateQuestionTemplate(int subjectId, HttpServletResponse response) {
         try {
@@ -258,7 +259,7 @@ public class ScriptServiceImpl implements ScriptService {
                         extension = CustomConstant.EXTENSION_C;
                         break;
                 }
-                downloadFile(templateQuestionTemplateFol,CustomConstant.TEMPLATE_QUESTION_TEMPLATE_NAME,extension,response);
+                downloadFile(templateQuestionTemplateFol, CustomConstant.TEMPLATE_QUESTION_TEMPLATE_NAME, extension, response);
             }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -316,7 +317,7 @@ public class ScriptServiceImpl implements ScriptService {
                         extension = CustomConstant.EXTENSION_C;
                         break;
                 }
-                downloadFile(templateQuestionFol,script.get().getCode(),extension,response);
+                downloadFile(templateQuestionFol, script.get().getCode(), extension, response);
             }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -347,7 +348,7 @@ public class ScriptServiceImpl implements ScriptService {
                         databaseFol = PathConstants.PATH_DATABASE_SCRIPT_C;
                         break;
                 }
-                downloadFile(databaseFol,script.get().getCode(),extension,response);
+                downloadFile(databaseFol, script.get().getCode(), extension, response);
             }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -378,7 +379,7 @@ public class ScriptServiceImpl implements ScriptService {
                         testDataFol = PathConstants.PATH_TESTDATA_C;
                         break;
                 }
-                downloadFile(testDataFol,script.get().getCode(),extension,response);
+                downloadFile(testDataFol, script.get().getCode(), extension, response);
             }
         } catch (FileNotFoundException e) {
             throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
@@ -387,7 +388,7 @@ public class ScriptServiceImpl implements ScriptService {
         }
     }
 
-    private void downloadFile(String folderPath,String code,String extension, HttpServletResponse response) throws IOException {
+    private void downloadFile(String folderPath, String code, String extension, HttpServletResponse response) throws IOException {
         if (!"".equals(folderPath)) {
             File file = new File(folderPath + code + extension);
             String mimeType = "application/octet-stream";
@@ -399,6 +400,7 @@ public class ScriptServiceImpl implements ScriptService {
             FileManager.downloadZip(file, os);
         }
     }
+
     @Override
     public String deleteScript(Integer scriptId) {
         Script script = scriptRepository.findById(scriptId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script with id" + scriptId));
@@ -498,7 +500,7 @@ public class ScriptServiceImpl implements ScriptService {
             }
             String code = script.getCode();
             // SAVE CONNECTION STRING in saveFiles()
-            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath,testDataFolPath, code, fileExtension);
+            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath, testDataFolPath, code, fileExtension);
             // Save to database
             script.setName(dto.getName());
             script.setScriptPath(scriptPath);
@@ -516,7 +518,7 @@ public class ScriptServiceImpl implements ScriptService {
         return CustomConstant.UPDATE_SCRIPT_FAIL;
     }
 
-    private void saveFilesAndConnectionString(ScriptRequestDto dto, String templateQuestionFolPath, String databaseFolPath,String testDataFolPath, String code, String fileExtension) throws IOException {
+    private void saveFilesAndConnectionString(ScriptRequestDto dto, String templateQuestionFolPath, String databaseFolPath, String testDataFolPath, String code, String fileExtension) throws IOException {
         // Save template question to Template question folder
         MultipartFile templateQuestion = dto.getTemplateQuestion();
         if (templateQuestion != null) {

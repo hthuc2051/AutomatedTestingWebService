@@ -1,8 +1,8 @@
-package com.fpt.automatedtesting.githubResult;
+package com.fpt.automatedtesting.githubresult;
 
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
-import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
-import com.fpt.automatedtesting.githubResult.dtos.GithubResultDTO;
+import com.fpt.automatedtesting.githubresult.dtos.GitHubFileDuplicateDTO;
+import com.fpt.automatedtesting.githubresult.dtos.GithubResultDTO;
 
 import java.util.List;
 import java.util.Map;

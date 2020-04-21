@@ -15,8 +15,8 @@ import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeDto;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.duplicatedcode.dtos.FileVectors;
-import com.fpt.automatedtesting.githubResult.GithubResultService;
-import com.fpt.automatedtesting.githubResult.dtos.GitHubFileDuplicateDTO;
+import com.fpt.automatedtesting.githubresult.GithubResultService;
+import com.fpt.automatedtesting.githubresult.dtos.GitHubFileDuplicateDTO;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.dtos.request.SubmissionDetailsDto;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
@@ -35,7 +35,6 @@ import com.fpt.automatedtesting.submissions.SubmissionRepository;
 import com.fpt.automatedtesting.submissions.dtos.response.SubmissionResponse;
 import com.fpt.automatedtesting.users.UserRepository;
 
-import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
