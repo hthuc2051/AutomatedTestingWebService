@@ -39,6 +39,8 @@ public class ScriptServiceImpl implements ScriptService {
     private static final String EXTENSION_C = ".c";
     private static final String EXTENSION_CSharp = ".cs";
     private static final String QUESTION_POINT_STR_VALUE = "questionPointStrValue";
+    private static final String CONNECTION_C = "\"CONNECTION HERE\"";
+    private static final String CONNECTION_C_FORMAT = "(NULL == CU_add_test(pSuite, \"$variable\", $variable))";
     private static final String GLOBAL_VARIABLE_STR = "//GLOBAL_VARIABLE";
 
     private final ScriptRepository scriptRepository;
@@ -98,6 +100,7 @@ public class ScriptServiceImpl implements ScriptService {
             String templateQuestionFolPath = "";
             String databaseFolPath = "";
             String testDataFolPath = "";
+            boolean isTemplateC = false;
             // Select path to create and save script test by type
             switch (subject.getCode()) {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
@@ -135,6 +138,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_C;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_C;
                     testDataFolPath = PathConstants.PATH_TESTDATA_C;
+                    isTemplateC = true;
                     break;
                 default:
                     throw new CustomException(HttpStatus.CONFLICT, "TypeConflictNotSupported");
@@ -164,6 +168,22 @@ public class ScriptServiceImpl implements ScriptService {
             String tempScript = startPart + "\n" + middlePart + "\n" + endPart;
             String fullScript = tempScript.replace(QUESTION_POINT_STR_VALUE, dto.getQuestionPointStr());
             fullScript = fullScript.replace(GLOBAL_VARIABLE_STR, dto.getGlobalVariable());
+           // generate connect for C_Template
+            if (isTemplateC) {
+                String connection = "";
+                String[] questionStrs = dto.getQuestionPointStr().split("-");
+                for (String question : questionStrs) {
+                    String[] temp = question.split(":");
+                    String questionName = temp[0];
+                    String connect_C = CONNECTION_C_FORMAT.replace("$variable", questionName);
+                    if ("".equals(connection)) {
+                        connection += connect_C;
+                    } else {
+                        connection += " || " + connect_C;
+                    }
+                }
+                fullScript = fullScript.replace(CONNECTION_C,connection);
+            }
             // Write new file to Scripts_[Language] folder
             Date date = new Date();
             Integer hashCode = CustomUtils.getCurDateTime(date, "Date").hashCode();

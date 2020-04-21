@@ -146,7 +146,11 @@ public class PathConstants {
             + File.separator
             + "JavaApplicationTests.java";
 
-    public static final String PATH_TEMPLATE_C = STATIC_DIR + File.separator + "Template_C";
+    public static final String PATH_TEMPLATE_C = STATIC_DIR
+            + File.separator
+            + "Template_C"   +
+            File.separator
+            + "ScriptTestC.c";
     public static final String PATH_TEMPLATE_CSHARP = STATIC_DIR
             + File.separator
             + "Template_CSharp"

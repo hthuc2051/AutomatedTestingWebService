@@ -728,10 +728,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             int score = entry.getValue().getScore();
             double percent = (double)score /fileLength * 100;
             entry.getValue().setPercent(percent);
-            listFile.add(entry.getValue());
-            if(++count == NUMBER_TOP_SIMILAR_FILE){
-                break;
-            }
+            if(percent >= MINIMUM_SIMILAR_FILE)listFile.add(entry.getValue());
         }
         return listFile;
     }

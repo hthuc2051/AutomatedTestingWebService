@@ -10,10 +10,10 @@ public class CustomConstant {
 
 
     // Script type
-    public static final String TEMPLATE_TYPE_JAVA = "Java";
-    public static final String TEMPLATE_TYPE_JAVA_WEB = "JavaWeb";
-    public static final String TEMPLATE_TYPE_C = "C";
-    public static final String TEMPLATE_TYPE_CSHARP = "CSharp";
+    public static final String TEMPLATE_TYPE_JAVA = "PRO192";
+    public static final String TEMPLATE_TYPE_JAVA_WEB = "PRJ321";
+    public static final String TEMPLATE_TYPE_C = "PRF192";
+    public static final String TEMPLATE_TYPE_CSHARP = "PRN292";
     public static final String PRACTICAL_INFO_FILE_NAME = "practical-info.json";
 
     public static final String COLUMN_NO = "No";
@@ -78,17 +78,24 @@ public class CustomConstant {
     public static final String DB_NAME_JAVA ="DBUtilities.java";
 
 
-    public static final String CREATE_PARAM_SUCCESS = "Create Param Successfully";
-    public static final String CREATE_PARAM_FAIL = "Create Param Failed";
-    public static final String DELETE_PARAM_SUCCESS = "Delete Param Successfully";
-    public static final String DELETE_PARAM_FAIL = "Delete Param Failed";
+    public static final String CREATE_PARAM_SUCCESS = "Create Parameter Successfully";
+    public static final String CREATE_PARAM_FAIL = "Create Parameter Failed";
+    public static final String DELETE_PARAM_SUCCESS = "Delete Parameter Successfully";
+    public static final String DELETE_PARAM_FAIL = "Delete Parameter Failed";
 
-    public static final String CREATE_PARAM_TYPE_SUCCESS = "Create Param Type Successfully";
-    public static final String CREATE_PARAM_TYPE_FAIL = "Create Param Type Failed";
-    public static final String DELETE_PARAM_TYPE_SUCCESS = "Delete Param Type Successfully";
-    public static final String DELETE_PARAM_TYPE_FAIL = "Delete Param Type Failed";
+    public static final String CREATE_PARAM_TYPE_SUCCESS = "Create Parameter Type Successfully";
+    public static final String CREATE_PARAM_TYPE_FAIL = "Create Parameter Type Failed";
+    public static final String DELETE_PARAM_TYPE_SUCCESS = "Delete Parameter Type Successfully";
+    public static final String DELETE_PARAM_TYPE_FAIL = "Delete Parameter Type Failed";
+
+    public static final String CREATE_ACTION_SUCCESS = "Create Action Successfully";
+    public static final String CREATE_ACTION_FAIL = "Create Action Failed";
+    public static final String UPDATE_ACTION_SUCCESS = "Update Action Successfully";
+    public static final String UPDATE_ACTION_FAIL = "Update Action Failed";
+    public static final String DELETE_ACTION_SUCCESS = "Delete Action Successfully";
+    public static final String DELETE_ACTION_FAIL = "Delete Action Failed";
 
     // Github Result
-    public static final int NUMBER_TOP_SIMILAR_FILE = 20;
-    public static final String AUTH_TOKEN = "212222f614818a99b5e69b017f77617fa3081f96";
+    public static final int MINIMUM_SIMILAR_FILE = 30;
+    public static final String AUTH_TOKEN = "dacc087949ca9e16f0489c0c04eb2be8c89b8e0a";
 }

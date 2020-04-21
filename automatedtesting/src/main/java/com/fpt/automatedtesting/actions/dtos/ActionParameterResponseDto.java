@@ -1,19 +1,20 @@
 package com.fpt.automatedtesting.actions.dtos;
 
 import com.fpt.automatedtesting.parameters.dtos.ParameterResponseDto;
+import com.fpt.automatedtesting.parametertypes.dtos.ParameterTypeResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActionResponseSubjectIdDto {
+public class ActionParameterResponseDto {
+
     private Integer id;
-    private String name;
-    private String code;
-    private List<ParameterResponseDto> params;
-    private List<Integer> subjectId;
+
+    private ParameterResponseDto param;
+
+    private ParameterTypeResponseDto paramType;
+
 }

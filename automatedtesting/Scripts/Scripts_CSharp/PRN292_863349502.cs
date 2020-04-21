@@ -13,7 +13,7 @@ namespace AutomatedTests
     [TestClass()]
     public class AutomatedTests
     {
-        public String questionPointStr = "questionPointStrValue";
+        public String questionPointStr = "testcase:1";
         public static ResultSocket resultSocket;
         //[TestInitialize]
         //public void TestInit()
@@ -29,8 +29,9 @@ namespace AutomatedTests
 
         public TestContext TestContext { get; set; }
         //start
-
-        //end
+[TestMethod()] 
+public void testcase(){Assert.AreEqual( 5 , TemplateQuestion.Question1(2, 3));}
+//end
         [TestCleanup()]
         public void TestCleanup()
         {

@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface ActionRepository extends JpaRepository<Action,Integer> {
     Optional<Action> findByIdAndActiveIsTrue(Integer id);
     List<Action> findAllByActiveIsTrue();
-    @Query("SELECT a FROM Action a INNER JOIN a.subjectActions sa INNER JOIN sa.subject s WHERE s.id=?1")
+    @Query("SELECT a FROM Action a  INNER JOIN a.subject s WHERE s.id=?1")
     List<Action> findAllBySubjectAndActiveIsTrue(Integer subjectId);
 }
