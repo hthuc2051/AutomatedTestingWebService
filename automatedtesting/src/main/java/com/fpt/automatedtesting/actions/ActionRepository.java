@@ -14,5 +14,4 @@ public interface ActionRepository extends JpaRepository<Action,Integer> {
     List<Action> findAllByActiveIsTrue();
     @Query("SELECT a FROM Action a  INNER JOIN a.subject s WHERE s.id=?1")
     List<Action> findAllBySubjectAndActiveIsTrue(Integer subjectId);
-    Action findByNameAndActiveIsTrue(Action action);
 }

@@ -1,15 +1,20 @@
-package com.fpt.automatedtesting.params.dtos;
+package com.fpt.automatedtesting.parametertypes.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ParamRequestDto {
+@AllArgsConstructor
+public class ParameterTypeRequestDto {
     private Integer id;
+
     private String name;
+
+    private List<String> subjectCode;
+
     private Boolean active;
 }

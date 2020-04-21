@@ -37,5 +37,5 @@ public class Action {
     private Subject subject;
 
     @OneToMany(mappedBy = "action", cascade = CascadeType.ALL)
-    private List<ActionParam> actionParams;
+    private List<ActionParameter> actionParameters;
 }

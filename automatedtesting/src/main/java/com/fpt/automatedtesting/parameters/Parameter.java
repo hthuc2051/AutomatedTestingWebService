@@ -1,6 +1,6 @@
-package com.fpt.automatedtesting.params;
+package com.fpt.automatedtesting.parameters;
 
-import com.fpt.automatedtesting.actions.ActionParam;
+import com.fpt.automatedtesting.actions.ActionParameter;
 import lombok.*;
 import javax.persistence.*;
 import java.util.List;
@@ -9,20 +9,20 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Param")
-public class Param {
+@Table(name = "Parameter")
+public class Parameter {
 
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = true)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
 
-    @OneToMany(mappedBy = "param", cascade = CascadeType.ALL)
-    private List<ActionParam> actionParams;
+    @OneToMany(mappedBy = "parameter", cascade = CascadeType.ALL)
+    private List<ActionParameter> actionParameters;
 }

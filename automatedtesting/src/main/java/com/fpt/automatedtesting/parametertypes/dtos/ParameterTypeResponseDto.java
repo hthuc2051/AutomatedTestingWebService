@@ -1,4 +1,4 @@
-package com.fpt.automatedtesting.paramtypes.dtos;
+package com.fpt.automatedtesting.parametertypes.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParamTypeResponseDto {
+public class ParameterTypeResponseDto {
     private Integer id;
 
     private String name;

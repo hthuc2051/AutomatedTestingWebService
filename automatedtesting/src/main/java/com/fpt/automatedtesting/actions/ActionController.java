@@ -1,6 +1,6 @@
 package com.fpt.automatedtesting.actions;
 
-import com.fpt.automatedtesting.actions.dtos.ActionParamDto;
+import com.fpt.automatedtesting.actions.dtos.ActionParameterDto;
 import com.fpt.automatedtesting.actions.dtos.ActionRequestDto;
 import com.fpt.automatedtesting.actions.dtos.ActionResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +22,15 @@ public class ActionController {
         this.actionService = actionService;
     }
 
-    @GetMapping("/action")
-    public ResponseEntity<List<ActionResponseDto>> getAllActions() {
+    @GetMapping("/action/all/subject/{subjectId}")
+    public ResponseEntity<List<ActionResponseDto>> getAllActionsBySubjectId(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(actionService.getAllActions());
+                .body(actionService.getAllActionsBySubjectId(subjectId));
     }
 
     @GetMapping("/action/subject/{subjectId}")
-    public ResponseEntity<List<ActionParamDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
+    public ResponseEntity<List<ActionParameterDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionBySubject(subjectId));

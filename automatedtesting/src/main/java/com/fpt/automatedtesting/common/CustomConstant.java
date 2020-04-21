@@ -78,15 +78,15 @@ public class CustomConstant {
     public static final String DB_NAME_JAVA ="DBUtilities.java";
 
 
-    public static final String CREATE_PARAM_SUCCESS = "Create Param Successfully";
-    public static final String CREATE_PARAM_FAIL = "Create Param Failed";
-    public static final String DELETE_PARAM_SUCCESS = "Delete Param Successfully";
-    public static final String DELETE_PARAM_FAIL = "Delete Param Failed";
+    public static final String CREATE_PARAM_SUCCESS = "Create Parameter Successfully";
+    public static final String CREATE_PARAM_FAIL = "Create Parameter Failed";
+    public static final String DELETE_PARAM_SUCCESS = "Delete Parameter Successfully";
+    public static final String DELETE_PARAM_FAIL = "Delete Parameter Failed";
 
-    public static final String CREATE_PARAM_TYPE_SUCCESS = "Create Param Type Successfully";
-    public static final String CREATE_PARAM_TYPE_FAIL = "Create Param Type Failed";
-    public static final String DELETE_PARAM_TYPE_SUCCESS = "Delete Param Type Successfully";
-    public static final String DELETE_PARAM_TYPE_FAIL = "Delete Param Type Failed";
+    public static final String CREATE_PARAM_TYPE_SUCCESS = "Create Parameter Type Successfully";
+    public static final String CREATE_PARAM_TYPE_FAIL = "Create Parameter Type Failed";
+    public static final String DELETE_PARAM_TYPE_SUCCESS = "Delete Parameter Type Successfully";
+    public static final String DELETE_PARAM_TYPE_FAIL = "Delete Parameter Type Failed";
 
     public static final String CREATE_ACTION_SUCCESS = "Create Action Successfully";
     public static final String CREATE_ACTION_FAIL = "Create Action Failed";
