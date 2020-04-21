@@ -96,6 +96,6 @@ public class CustomConstant {
     public static final String DELETE_ACTION_FAIL = "Delete Action Failed";
 
     // Github Result
-    public static final int NUMBER_TOP_SIMILAR_FILE = 20;
-    public static final String AUTH_TOKEN = "212222f614818a99b5e69b017f77617fa3081f96";
+    public static final int MINIMUM_SIMILAR_FILE = 30;
+    public static final String AUTH_TOKEN = "dacc087949ca9e16f0489c0c04eb2be8c89b8e0a";
 }
