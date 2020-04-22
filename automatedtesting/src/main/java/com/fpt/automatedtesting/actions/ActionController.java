@@ -22,35 +22,35 @@ public class ActionController {
         this.actionService = actionService;
     }
 
-    @GetMapping("/action/all/subject/{subjectId}")
+    @GetMapping("/actions/all/subject/{subjectId}")
     public ResponseEntity<List<ActionResponseDto>> getAllActionsBySubjectId(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionsBySubjectId(subjectId));
     }
 
-    @GetMapping("/action/subject/{subjectId}")
+    @GetMapping("/actions/subject/{subjectId}")
     public ResponseEntity<List<ActionParameterDto>> getAllActionsBySubject(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.getAllActionBySubject(subjectId));
     }
 
-    @PostMapping("/action")
+    @PostMapping("/actions")
     public ResponseEntity<String> insertNewActions(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.createAction(dto));
     }
 
-    @DeleteMapping("/action/{id}")
+    @DeleteMapping("/actions/{id}")
     public ResponseEntity<String> deleteAction(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(actionService.deleteAction(id));
     }
 
-    @PutMapping("/action")
+    @PutMapping("/actions")
     public ResponseEntity<String> updateAction(@RequestBody ActionRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)

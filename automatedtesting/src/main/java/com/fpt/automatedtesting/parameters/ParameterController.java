@@ -21,21 +21,21 @@ public class ParameterController {
         this.parameterService = parameterService;
     }
 
-    @GetMapping("/param")
+    @GetMapping("/params")
     public ResponseEntity<List<ParameterResponseDto>> getAllParams() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(parameterService.getAllParam());
     }
 
-    @PostMapping("/param")
+    @PostMapping("/params")
     public ResponseEntity<String> createParam(@RequestBody ParameterCreateRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(parameterService.createParam(dto));
     }
 
-    @DeleteMapping("/param/{id}")
+    @DeleteMapping("/params/{id}")
     public ResponseEntity<String> deleteParam(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
