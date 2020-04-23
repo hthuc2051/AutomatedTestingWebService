@@ -43,10 +43,10 @@ public class ActionServiceImpl implements ActionService {
     public List<ActionResponseDto> getAllActionsBySubjectId(int subjectId) {
 
         List<Action> actionEntities = actionRepository.findAllBySubjectAndActiveIsTrue(subjectId);
-        List<ActionResponseDto> listActionResponseDto;
+        List<ActionResponseDto> listActionResponseDto = new ArrayList<>();
 
         if (actionEntities != null && actionEntities.size() > 0) {
-            listActionResponseDto = new ArrayList<>();
+
             ActionResponseDto actionDto;
 
             for (Action actionEntity : actionEntities) {
@@ -83,7 +83,7 @@ public class ActionServiceImpl implements ActionService {
             }
             return listActionResponseDto;
         } else {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Not found any action.");
+            return listActionResponseDto;
         }
     }
 
