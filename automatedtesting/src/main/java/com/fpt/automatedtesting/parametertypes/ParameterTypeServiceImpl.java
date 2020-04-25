@@ -103,7 +103,7 @@ public class ParameterTypeServiceImpl implements ParameterTypeService {
             }
 
             if (duplicatedTypeCounter == subjectCodes.size()) {
-                return "Parameter type is already existed.";
+                throw new CustomException(HttpStatus.CONFLICT, "Parameter type is already existed.");
             }
 
             List<ParameterType> paramTypeEntities = parameterTypeRepository.saveAll(saveEntities);
@@ -134,6 +134,6 @@ public class ParameterTypeServiceImpl implements ParameterTypeService {
             } else
                 return CustomConstant.DELETE_PARAM_TYPE_FAIL;
         } else
-            return "Parameter type is already in use.";
+            throw new CustomException(HttpStatus.CONFLICT, "Parameter type is already in use.");
     }
 }

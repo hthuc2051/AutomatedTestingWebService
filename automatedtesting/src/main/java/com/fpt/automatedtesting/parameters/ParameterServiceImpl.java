@@ -45,7 +45,7 @@ public class ParameterServiceImpl implements ParameterService {
             // if parameter found with given name
             if (saveParamEntity != null) {
 
-                return "Parameter name \"" + dto.getName() + "\" is already existed.";
+                throw new CustomException(HttpStatus.CONFLICT, "Parameter name \"" + dto.getName() + "\" is already existed.");
             } else {
                 // not found any parameter with the given name -> create new parameter
                 saveParamEntity = new Parameter();
@@ -78,7 +78,7 @@ public class ParameterServiceImpl implements ParameterService {
             else
                 return CustomConstant.DELETE_PARAM_FAIL;
         } else { // parameter is already in use
-            return "Parameter name \"" + deleteParamEntity.getName() + "\" is already in use.";
+            throw new CustomException(HttpStatus.CONFLICT, "Parameter name \"" + deleteParamEntity.getName() + "\" is already in use.");
         }
     }
 }
