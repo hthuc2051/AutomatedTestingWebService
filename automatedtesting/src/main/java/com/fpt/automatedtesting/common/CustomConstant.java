@@ -10,10 +10,10 @@ public class CustomConstant {
 
 
     // Script type
-    public static final String TEMPLATE_TYPE_JAVA = "PRO192";
-    public static final String TEMPLATE_TYPE_JAVA_WEB = "PRJ321";
-    public static final String TEMPLATE_TYPE_C = "PRF192";
-    public static final String TEMPLATE_TYPE_CSHARP = "PRN292";
+    public static final String TEMPLATE_TYPE_JAVA = "Java";
+    public static final String TEMPLATE_TYPE_JAVA_WEB = "JavaWeb";
+    public static final String TEMPLATE_TYPE_C = "C";
+    public static final String TEMPLATE_TYPE_CSHARP = "CSharp";
     public static final String PRACTICAL_INFO_FILE_NAME = "practical-info.json";
 
     public static final String COLUMN_NO = "No";
@@ -39,11 +39,19 @@ public class CustomConstant {
     public static final String CODE_PRACTICAL_JAVA_WEB = "Practical_JavaWeb";
     public static final String CODE_PRACTICAL_CSHARP = "Practical_CSharp";
 
+    public static final String CODE_SUBJECT_JAVA = "Java";
+    public static final String CODE_SUBJECT_C = "C";
+    public static final String CODE_SUBJECT_JAVA_WEB = "JavaWeb";
+    public static final String CODE_SUBJECT_CSHARP = "CSharp";
+
     // Language in search api
     public static final String LANGUAGE_JAVA = "JAVA";
     public static final String LANGUAGE_CS = "CS";
     public static final String LANGUAGE_C = "C";
     public static final String EXTENSION_ZIP = ".zip";
+    public static final String EXTENSION_TXT = ".txt";
+    public static final String EXTENSION_DOCX = ".docx";
+    public static final String EXTENSION_SQL = ".sql";
     public static final String EXTENSION_JAVA = ".java";
     public static final String EXTENSION_CSHARP = ".cs";
     public static final String EXTENSION_C = ".c";

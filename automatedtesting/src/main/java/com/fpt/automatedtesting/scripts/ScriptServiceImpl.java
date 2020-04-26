@@ -30,6 +30,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
+import static com.fpt.automatedtesting.common.PathConstants.PATH_DB_TEMPLATE;
+import static com.fpt.automatedtesting.common.PathConstants.PATH_DB_TOOLS;
+
 @Service
 public class ScriptServiceImpl implements ScriptService {
 
@@ -95,6 +98,7 @@ public class ScriptServiceImpl implements ScriptService {
             if (dto == null) throw new CustomException(HttpStatus.NOT_FOUND, CustomMessages.MSG_SCRIPT_NULL);
             String templatePath = "";
             String scriptStorePath = "";
+            String scriptStoreOnlinePath = "";
             String fileExtension = "";
             String docsFolPath = "";
             String templateQuestionFolPath = "";
@@ -111,6 +115,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA;
                     testDataFolPath = PathConstants.PATH_TESTDATA_JAVA;
+                    scriptStoreOnlinePath = PathConstants.PATH_SCRIPT_JAVA_ONLINE;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA_WEB;
@@ -154,12 +159,15 @@ public class ScriptServiceImpl implements ScriptService {
             ObjectMapper mapper = new ObjectMapper();
             // [{"testcase":"testcase1", "code":"ABC"}, {"testcase":"testcase2", "code":"AB2C"}]
             String middlePart = "";
-            List<CodeDto> codeDtoList = Arrays.asList(mapper.readValue(dto.getQuestions(), CodeDto[].class));
-            if (codeDtoList != null && codeDtoList.size() > 0) {
-                for (CodeDto code : codeDtoList) {
-                    middlePart += code.getCode().replace(QUESTION_POINT_STR_VALUE, "\"");
+            if (dto.getQuestions() != null && !dto.getQuestions().equals("")) {
+                List<CodeDto> codeDtoList = Arrays.asList(mapper.readValue(dto.getQuestions(), CodeDto[].class));
+                if (codeDtoList != null && codeDtoList.size() > 0) {
+                    for (CodeDto code : codeDtoList) {
+                        middlePart += code.getCode().replace(QUESTION_POINT_STR_VALUE, "\"");
+                    }
                 }
             }
+
             int startIndex = data.indexOf(PREFIX_START);
             String startPart = data.substring(0, startIndex) + PREFIX_START;
             int endIndex = data.indexOf(PREFIX_END);
@@ -168,7 +176,7 @@ public class ScriptServiceImpl implements ScriptService {
             String tempScript = startPart + "\n" + middlePart + "\n" + endPart;
             String fullScript = tempScript.replace(QUESTION_POINT_STR_VALUE, dto.getQuestionPointStr());
             fullScript = fullScript.replace(GLOBAL_VARIABLE_STR, dto.getGlobalVariable());
-           // generate connect for C_Template
+            // generate connect for C_Template
             if (isTemplateC) {
                 String connection = "";
                 String[] questionStrs = dto.getQuestionPointStr().split("-");
@@ -182,7 +190,7 @@ public class ScriptServiceImpl implements ScriptService {
                         connection += " || " + connect_C;
                     }
                 }
-                fullScript = fullScript.replace(CONNECTION_C,connection);
+                fullScript = fullScript.replace(CONNECTION_C, connection);
             }
             // Write new file to Scripts_[Language] folder
             Date date = new Date();
@@ -518,9 +526,10 @@ public class ScriptServiceImpl implements ScriptService {
                 Path copyLocation = Paths.get(documentPath);
                 Files.copy(docsFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
             }
-            String code = script.getCode();
+            String scriptCode = script.getCode();
             // SAVE CONNECTION STRING in saveFiles()
-            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath, testDataFolPath, code, fileExtension);
+            saveFilesAndConnectionString(dto, templateQuestionFolPath, databaseFolPath, testDataFolPath,
+                    scriptCode, fileExtension);
             // Save to database
             script.setName(dto.getName());
             script.setScriptPath(scriptPath);
@@ -538,38 +547,72 @@ public class ScriptServiceImpl implements ScriptService {
         return CustomConstant.UPDATE_SCRIPT_FAIL;
     }
 
-    private void saveFilesAndConnectionString(ScriptRequestDto dto, String templateQuestionFolPath, String databaseFolPath, String testDataFolPath, String code, String fileExtension) throws IOException {
-        // Save template question to Template question folder
-        MultipartFile templateQuestion = dto.getTemplateQuestion();
-        if (templateQuestion != null) {
-            Path copyLocation = Paths.get(templateQuestionFolPath + code + fileExtension);
-            Files.copy(templateQuestion.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
-        }
-        // Save database script to database folder
-        MultipartFile database = dto.getDatabase();
-        if (database != null) {
-            Path copyLocation = Paths.get(databaseFolPath + code + CustomConstant.EXTENSION_SQL_SERVER);
-            Files.copy(database.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
-        }
-        // Save file text to folder
-        MultipartFile testData = dto.getTestData();
-        if (database != null) {
-            Path copyLocation = Paths.get(testDataFolPath + code + CustomConstant.EXTENSION_TEXT_FILE);
-            Files.copy(testData.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
-        }
-        String onlineConnection = dto.getOnlineConnection();
-        if (onlineConnection != null && !"".equals(onlineConnection)) {
-            ConnectionObj onlineObj = gson.fromJson(onlineConnection, ConnectionObj.class);
-            //==================================== SAVE ONLINE CONNECTION STRING HERE ===========================
+    private void saveFilesAndConnectionString(ScriptRequestDto dto, String templateQuestionFolPath,
+                                              String databaseFolPath, String testDataFolPath,
+                                              String scriptCode, String fileExtension) {
+        try {
+            // Save template question to Template question folder
+            MultipartFile templateQuestion = dto.getTemplateQuestion();
+            if (templateQuestion != null) {
+                Path copyLocation = Paths.get(templateQuestionFolPath + scriptCode + fileExtension);
+                Files.copy(templateQuestion.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+            }
+            // Save database script to database folder
+            MultipartFile database = dto.getDatabase();
+            if (database != null) {
+                Path copyLocation = Paths.get(databaseFolPath + scriptCode + CustomConstant.EXTENSION_SQL_SERVER);
+                Files.copy(database.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+            }
+            // Save file text to folder
+            MultipartFile testData = dto.getTestData();
+            if (testData != null) {
+                Path copyLocation = Paths.get(testDataFolPath + scriptCode + CustomConstant.EXTENSION_TEXT_FILE);
+                Files.copy(testData.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+            }
 
-            //==================================== END SAVE ONLINE CONNECTION STRING HERE ===========================
-        }
-        String offlineConnection = dto.getOfflineConnection();
-        if (offlineConnection != null && !"".equals(offlineConnection)) {
-            ConnectionObj onlineObj = gson.fromJson(offlineConnection, ConnectionObj.class);
-            //==================================== SAVE OFFLINE CONNECTION STRING HERE ===========================
+            // Get template of DBTemplatet
+            String onlineDBUtilities = PATH_DB_TEMPLATE + File.separator + "DBTemplate" + fileExtension;
 
-            //==================================== END OFFLINE SAVE CONNECTION STRING HERE ===========================
+            Path dbTemplatePath = Paths.get(onlineDBUtilities);
+            if (dbTemplatePath == null) {
+                return;
+            }
+            String onlineConnection = dto.getOnlineConnection();
+
+            if (onlineConnection != null && !"".equals(onlineConnection)) {
+                ConnectionObj onlineObj = gson.fromJson(onlineConnection, ConnectionObj.class);
+                //==================================== SAVE ONLINE CONNECTION STRING HERE ===========================
+
+
+                Path pathDBTools = Paths.get(PATH_DB_TOOLS + File.separator + scriptCode + "_Online" + fileExtension);
+                Files.copy(dbTemplatePath, pathDBTools, StandardCopyOption.REPLACE_EXISTING);
+                Map<String, String> map = new HashMap<>();
+                map.put("%url%", onlineObj.getUrl());
+                map.put("%username%", onlineObj.getUsername());
+                map.put("%password%", onlineObj.getPassword());
+
+                FileManager.replaceString(pathDBTools, map);
+
+                //==================================== END SAVE ONLINE CONNECTION STRING HERE ===========================
+            }
+            String offlineConnection = dto.getOfflineConnection();
+            if (offlineConnection != null && !"".equals(offlineConnection)) {
+                ConnectionObj offlineObj = gson.fromJson(offlineConnection, ConnectionObj.class);
+                //==================================== SAVE OFFLINE CONNECTION STRING HERE ===========================
+                Path pathDBTools = Paths.get(PATH_DB_TOOLS + File.separator + scriptCode + "_Offline" + fileExtension);
+                Files.copy(dbTemplatePath, pathDBTools, StandardCopyOption.REPLACE_EXISTING);
+                Map<String, String> map = new HashMap<>();
+                map.put("%url%", offlineObj.getUrl());
+                map.put("%username%", offlineObj.getUsername());
+                map.put("%password%", offlineObj.getPassword());
+
+                FileManager.replaceString(pathDBTools, map);
+
+                //==================================== END OFFLINE SAVE CONNECTION STRING HERE ===========================
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CustomException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
 

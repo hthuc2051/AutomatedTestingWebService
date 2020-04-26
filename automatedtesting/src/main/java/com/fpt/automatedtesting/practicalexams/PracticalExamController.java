@@ -135,9 +135,9 @@ public class PracticalExamController {
         return practicalExamService.getResultFromAzure(id);
     }
 
-    @GetMapping("/test/check-online")
-    public String testaa() {
-        return practicalExamService.test();
+    @GetMapping("/practical-exam/{id}/check-online")
+    public String checkOnline(@PathVariable Integer id) {
+        return practicalExamService.checkOnline(id);
     }
 
     @PostMapping("/practical-exam/check-code/resultOnline")

@@ -32,7 +32,7 @@ public class CustomUtils {
         return s;
     }
     public static String sendRequest(String url, String token) {
-        String s = ":2pd5qm4n25nnn3j7k3gl7nn3znhde3mkpbfc54xoyg7kq2rwenua";
+        String s = ":bhvnf4hu6fngwzmuvo5f3ghnw4wg5ohpkayri5z2marelxqhbvjq";
         byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
         String authString = "Basic " +
                 Base64Utils.encodeToString(

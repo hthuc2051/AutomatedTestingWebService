@@ -1,5 +1,0 @@
-checkQuestion4(): Pass
-checkQuestion3(): Pass
-checkQuestion1(): Failed
-checkQuestion2(): Pass
-Total mark is :7.5

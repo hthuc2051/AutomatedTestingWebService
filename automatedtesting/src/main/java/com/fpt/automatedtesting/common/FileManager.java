@@ -1,6 +1,5 @@
 package com.fpt.automatedtesting.common;
 
-import ch.qos.logback.classic.Level;
 import com.fpt.automatedtesting.practicalexams.dtos.PracticalExamTemplateDto;
 import com.fpt.automatedtesting.practicalexams.dtos.StudentSubmissionDto;
 import com.fpt.automatedtesting.exception.CustomException;
@@ -12,6 +11,7 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.core.ZipFile;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -66,7 +66,19 @@ public class FileManager {
     public static void unzip(String filePath, String destination) {
         try {
             ZipFile zipFile = new ZipFile(filePath);
-            if(zipFile.isValidZipFile()){
+            if (zipFile.isValidZipFile()) {
+                zipFile.extractAll(destination);
+            }
+        } catch (ZipException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void unzipGetStudentSubmissionOnly(String filePath, String destination) {
+        try {
+            ZipFile zipFile = new ZipFile(filePath);
+            if (zipFile.isValidZipFile()) {
                 zipFile.extractAll(destination);
             }
         } catch (ZipException e) {
@@ -222,6 +234,7 @@ public class FileManager {
         getAllFiles(from, files, extension);
         if (files.size() > 0) {
             for (File file : files) {
+                if(!file.getName().contains("TemplateQuestion") && !file.getName().contains("DBUtilities"))
                 try {
                     Files.copy(Paths.get(file.getAbsolutePath()),
                             Paths.get(to + File.separator + file.getName()), StandardCopyOption.REPLACE_EXISTING);
@@ -230,6 +243,18 @@ public class FileManager {
                 }
             }
         }
+    }
+
+    public static void replaceString(Path path, Map<String, String> map) throws IOException {
+        Charset charset = StandardCharsets.UTF_8;
+        String content = new String(Files.readAllBytes(path), charset);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            content = content.replaceAll(key, value);
+            System.out.println(content);
+        }
+        Files.write(path, content.getBytes(charset));
     }
 
 }
