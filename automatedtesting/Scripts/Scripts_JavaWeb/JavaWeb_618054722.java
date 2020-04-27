@@ -22,12 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(TestResultLoggerExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TestwebApplicationTests {
-    public static String questionPointStr = "questionPointStrValue";
+    public static String questionPointStr = "testcase:1";
     private TemplateQuestion templateQuestion = new TemplateQuestion();
+    private static boolean isLogin = true;
     public static WebDriver driver;
     //public static InternetExplorerOptions options;
     public static ChromeOptions options;
-    //GLOBAL_VARIABLE
+    boolean isLogin  = false;
 
     public TestwebApplicationTests() {
         //  System.setProperty("webdriver.ie.driver", "src/main/resources/static/IEDriverServer.exe");
@@ -42,6 +43,8 @@ class TestwebApplicationTests {
         }
     }
     //start
-
-    //end
+@Test 
+@Order(1) 
+public void testcase(){driver.findElement(By.id($paramName)).clear(); driver.findElement(By.id($paramName)).sendKeys($paramValue);}
+//end
 }
