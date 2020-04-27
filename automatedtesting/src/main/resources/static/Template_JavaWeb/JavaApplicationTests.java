@@ -28,7 +28,7 @@ class TestwebApplicationTests {
     public static WebDriver driver;
     //public static InternetExplorerOptions options;
     public static ChromeOptions options;
-
+    //GLOBAL_VARIABLE
 
     public TestwebApplicationTests() {
         //  System.setProperty("webdriver.ie.driver", "src/main/resources/static/IEDriverServer.exe");

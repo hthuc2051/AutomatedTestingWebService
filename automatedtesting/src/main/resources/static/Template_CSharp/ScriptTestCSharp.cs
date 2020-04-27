@@ -17,6 +17,7 @@ namespace AutomatedTests
     {
         public String questionPointStr = "questionPointStrValue";
         public static ResultSocket resultSocket;
+        //GLOBAL_VARIABLE
         //[TestInitialize]
         //public void TestInit()
         //{

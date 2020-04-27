@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class JavaApplicationTests {
 
     public static String questionPointStr = "questionPointStrValue";
-
+    //GLOBAL_VARIABLE
     private TemplateQuestion templateQuestion = new TemplateQuestion();
 
 

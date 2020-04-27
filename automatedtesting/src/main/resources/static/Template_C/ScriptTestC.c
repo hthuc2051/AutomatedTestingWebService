@@ -28,6 +28,7 @@ int clean_suite(void) {
 
 int main() {
     CU_pSuite pSuite = NULL;
+    //GLOBAL_VARIABLE
     /* Initialize the CUnit test registry */
     if (CUE_SUCCESS != CU_initialize_registry())
         return CU_get_error();
