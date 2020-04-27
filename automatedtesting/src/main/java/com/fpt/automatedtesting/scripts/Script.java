@@ -51,4 +51,9 @@ public class Script {
 
     @Column(name = "active", columnDefinition = "boolean default true")
     private Boolean active;
+
+    @Override
+    public String toString() {
+        return "";
+    }
 }

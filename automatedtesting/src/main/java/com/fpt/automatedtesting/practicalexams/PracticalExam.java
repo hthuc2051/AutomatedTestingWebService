@@ -1,7 +1,7 @@
 package com.fpt.automatedtesting.practicalexams;
 
 import com.fpt.automatedtesting.duplicatedcode.DuplicatedCode;
-import com.fpt.automatedtesting.githubResult.GithubResult;
+import com.fpt.automatedtesting.githubresult.GithubResult;
 import com.fpt.automatedtesting.scripts.Script;
 import com.fpt.automatedtesting.subjectclasses.SubjectClass;
 import com.fpt.automatedtesting.submissions.Submission;

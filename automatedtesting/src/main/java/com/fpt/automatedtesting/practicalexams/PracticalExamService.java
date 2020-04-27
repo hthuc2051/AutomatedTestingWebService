@@ -33,5 +33,5 @@ public interface PracticalExamService {
     List<DuplicatedCodeResponse> getDuplicatedResult(DuplicatedCodeRequest practicalInfo);
     List<OnlineTestResult> getResultFromAzure(Integer code);
 
-    String test();
+    String checkOnline(Integer id);
 }

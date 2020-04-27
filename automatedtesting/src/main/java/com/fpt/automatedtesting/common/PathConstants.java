@@ -6,8 +6,10 @@ public class PathConstants {
 
     public static final String PROJECT_DIR = System.getProperty("user.dir");
     public static final String STATIC_DIR = "static/";
-    // Log path
+
     public static final String PATH_DB_TOOLS = PROJECT_DIR + File.separator + "DBTools";
+    public static final String PATH_DB_TEMPLATE = PROJECT_DIR + File.separator + "DBTemplates";
+    public static final String PATH_TEMPLATE_PROJECT = PROJECT_DIR + File.separator + "TemplateProject";
 
     public static final String PATH_EXCEPTIONS = PROJECT_DIR + File.separator + "Exceptions";
     public static final String PATH_SUBMISSIONS = PROJECT_DIR + File.separator + "Submissions";
@@ -40,11 +42,13 @@ public class PathConstants {
 
     // Java
     public static final String PATH_SERVER_ONLINE_JAVA_STUDENT = PATH_SERVER_ONLINE_JAVA + File.separator
+            + "Server" + File.separator
             + "src" + File.separator
             + "main" + File.separator
             + "java" + File.separator
             + "com" + File.separator
-            + "practicalexam";
+            + "practicalexam" + File.separator
+            + "student";
 
     public static final String PATH_SERVER_ONLINE_JAVA_TEST = PATH_SERVER_ONLINE_JAVA + File.separator
             + "src" + File.separator
@@ -56,11 +60,13 @@ public class PathConstants {
 
     // Java web
     public static final String PATH_SERVER_ONLINE_JAVA_WEB_STUDENT = PATH_SERVER_ONLINE_JAVA_WEB + File.separator
+            + "Server" + File.separator
             + "src" + File.separator
             + "main" + File.separator
             + "java" + File.separator
             + "com" + File.separator
-            + "practicalexam";
+            + "practicalexam" + File.separator
+            + "student";
 
     public static final String PATH_SERVER_ONLINE_JAVA_WEB_TEST = PATH_SERVER_ONLINE_JAVA_WEB + File.separator
             + "Server" + File.separator
@@ -148,7 +154,7 @@ public class PathConstants {
 
     public static final String PATH_TEMPLATE_C = STATIC_DIR
             + File.separator
-            + "Template_C"   +
+            + "Template_C" +
             File.separator
             + "ScriptTestC.c";
     public static final String PATH_TEMPLATE_CSHARP = STATIC_DIR
@@ -201,6 +207,29 @@ public class PathConstants {
 
     // Log path
     public static final String GITHUB_LOG_PATH = STATIC_DIR + "Github_Log.txt";
+
+
+    // Path Template project
+
+    public static final String PATH_STUDENT_JAVA_WEB = PATH_TEMPLATE_PROJECT
+            + File.separator + "JavaWebTemplate"
+            + File.separator + "src"
+            + File.separator + "java"
+            + File.separator + "com"
+            + File.separator + "practicalexam"
+            + File.separator + "student";
+
+    public static final String PATH_STUDENT_JAVA = PATH_TEMPLATE_PROJECT
+            + File.separator + "JavaTemplate"
+            + File.separator + "src"
+            + File.separator + "com"
+            + File.separator + "practicalexam"
+            + File.separator + "student";
+
+
+    public static final String PATH_STUDENT_C = PATH_TEMPLATE_PROJECT;
+    public static final String PATH_STUDENT_CSHARP = PATH_TEMPLATE_PROJECT
+            + File.separator;
 
 
 }

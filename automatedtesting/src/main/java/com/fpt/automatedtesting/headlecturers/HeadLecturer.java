@@ -29,6 +29,9 @@ public class HeadLecturer {
     @Column(name = "last_name", nullable = true)
     private String lastName;
 
+    @Column(name = "subject_code", nullable = true)
+    private String subjectCode;
+
     @Column(name = "email", nullable = true)
     private String email;
 

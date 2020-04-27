@@ -39,11 +39,19 @@ public class CustomConstant {
     public static final String CODE_PRACTICAL_JAVA_WEB = "Practical_JavaWeb";
     public static final String CODE_PRACTICAL_CSHARP = "Practical_CSharp";
 
+    public static final String CODE_SUBJECT_JAVA = "Java";
+    public static final String CODE_SUBJECT_C = "C";
+    public static final String CODE_SUBJECT_JAVA_WEB = "JavaWeb";
+    public static final String CODE_SUBJECT_CSHARP = "CSharp";
+
     // Language in search api
     public static final String LANGUAGE_JAVA = "JAVA";
     public static final String LANGUAGE_CS = "CS";
     public static final String LANGUAGE_C = "C";
     public static final String EXTENSION_ZIP = ".zip";
+    public static final String EXTENSION_TXT = ".txt";
+    public static final String EXTENSION_DOCX = ".docx";
+    public static final String EXTENSION_SQL = ".sql";
     public static final String EXTENSION_JAVA = ".java";
     public static final String EXTENSION_CSHARP = ".cs";
     public static final String EXTENSION_C = ".c";
@@ -97,5 +105,5 @@ public class CustomConstant {
 
     // Github Result
     public static final int MINIMUM_SIMILAR_FILE = 30;
-    public static final String AUTH_TOKEN = "dacc087949ca9e16f0489c0c04eb2be8c89b8e0a";
+    public static final String AUTH_TOKEN = "b459f95ee0546dc73d6dc8259360716598a1c631";
 }

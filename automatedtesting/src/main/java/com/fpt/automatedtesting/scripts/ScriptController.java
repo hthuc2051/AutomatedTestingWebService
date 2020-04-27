@@ -108,6 +108,7 @@ public class ScriptController {
     @PutMapping("/upload_excel")
     public String importExcelFile(@ModelAttribute ExcelFileDto excelDto) throws IOException {
         List<?> listReturn = ImportExcelFile.importExcelFileByRole(excelDto);
+        System.out.println("aa");
         return "ok";
     }
 
