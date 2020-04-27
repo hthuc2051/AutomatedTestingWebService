@@ -212,8 +212,9 @@ public class PathConstants {
     // Path Template project
 
     public static final String PATH_STUDENT_JAVA_WEB = PATH_TEMPLATE_PROJECT
-            + File.separator + "JavaTemplate"
+            + File.separator + "JavaWebTemplate"
             + File.separator + "src"
+            + File.separator + "java"
             + File.separator + "com"
             + File.separator + "practicalexam"
             + File.separator + "student";

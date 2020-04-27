@@ -450,7 +450,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 pathServer = PATH_SERVER_JAVA_WEB;
                 extension = EXTENSION_JAVA;
                 pathTemplateQuestion = PATH_TEMPLATE_QUESTION_JAVA_WEB;
-                templateProjectStudentFol = PATH_STUDENT_JAVA;
+                templateProjectStudentFol = PATH_STUDENT_JAVA_WEB;
                 pathTemplateProject = PATH_TEMPLATE_PROJECT + File.separator + "JavaWebTemplate";
                 databasePath = PATH_DATABASE_SCRIPT_JAVA_WEB;
                 testDataPath = PATH_TESTDATA_JAVA_WEB;
@@ -461,23 +461,11 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 pathServer = PATH_SERVER_JAVA;
                 extension = EXTENSION_JAVA;
                 pathTemplateQuestion = PATH_TEMPLATE_QUESTION_JAVA;
-                templateProjectStudentFol = PATH_STUDENT_JAVA_WEB;
+                templateProjectStudentFol = PATH_STUDENT_JAVA;
                 pathTemplateProject = PATH_TEMPLATE_PROJECT + File.separator + "JavaTemplate";
                 databasePath = PATH_DATABASE_SCRIPT_JAVA;
                 testDataPath = PATH_TESTDATA_JAVA;
                 subjectCode = CODE_SUBJECT_JAVA;
-
-            } else if (examCode.contains(CODE_SUBJECT_C)) {
-                pathScript = PATH_SCRIPT_C;
-                pathDocs = PATH_DOCS_C;
-                pathServer = PATH_SERVER_C;
-                extension = EXTENSION_C;
-                pathTemplateQuestion = PATH_TEMPLATE_QUESTION_C;
-                templateProjectStudentFol = PATH_STUDENT_C;
-                pathTemplateProject = PATH_TEMPLATE_PROJECT + File.separator + "CTemplate";
-                databasePath = PATH_DATABASE_SCRIPT_C;
-                testDataPath = PATH_TESTDATA_C;
-                subjectCode = CODE_SUBJECT_C;
 
             } else if (examCode.contains(CODE_SUBJECT_CSHARP)) {
                 pathScript = PATH_SCRIPT_CSHARP;
@@ -490,6 +478,17 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 databasePath = PATH_DATABASE_SCRIPT_C_SHARP;
                 testDataPath = PATH_TESTDATA_C_SHARP;
                 subjectCode = CODE_SUBJECT_CSHARP;
+            } else if (examCode.contains(CODE_SUBJECT_C)) {
+                pathScript = PATH_SCRIPT_C;
+                pathDocs = PATH_DOCS_C;
+                pathServer = PATH_SERVER_C;
+                extension = EXTENSION_C;
+                pathTemplateQuestion = PATH_TEMPLATE_QUESTION_C;
+                templateProjectStudentFol = PATH_STUDENT_C;
+                pathTemplateProject = PATH_TEMPLATE_PROJECT + File.separator + "CTemplate";
+                databasePath = PATH_DATABASE_SCRIPT_C;
+                testDataPath = PATH_TESTDATA_C;
+                subjectCode = CODE_SUBJECT_C;
 
             }
             // loop by list script test đã assign
@@ -554,9 +553,9 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         }
                     }
 
-
                     // Set up project template question
                     try {
+
                         File templateFile = new File(pathTemplateQuestion + File.separator + script.getCode() + extension);
                         File studentTemplate = new File(templateProjectStudentFol + File.separator + "TemplateQuestion" + extension);
                         Files.copy(templateFile.toPath(),
@@ -846,8 +845,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 dto.setStudentFileVectors(studentFileVectors);
             }
             duplicatedCodeDtoList.add(dto);
-            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methodForGitHub, extension);
-            githubResultService.create(practicalExam.getId(), studentCode, listDuplicate);
+//            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methodForGitHub, extension);
+//           / githubResultService.create(practicalExam.getId(), studentCode, listDuplicate);
         }
         processStudentDuplicatedCode(duplicatedCodeDtoList, practicalExam);
     }
@@ -1104,49 +1103,55 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             if (submissionResponses != null && submissionResponses.size() > 0) {
 
                 for (SubmissionResponse dto : submissionResponses) {
-                    //Getting current date
-                    String evaluatedDate = dto.getDate();
+                    if (dto.getEvaluatedOnline() != null && dto.getEvaluatedOnline()) {
 
-                    //Specifying date format that matches the given date
-                    Calendar c = Calendar.getInstance();
-                    try {
-                        //Setting the date to the given date
-                        c.setTime(sdf.parse(evaluatedDate));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    c.add(Calendar.DAY_OF_MONTH, 6);
-                    String next6Date = sdf.format(c.getTime());
-                    String studentCode = dto.getStudent().getCode();
-                    String brandName = PREFIX_BRANCH + examCode + "/" + studentCode;
-                    String url = "https://dev.azure.com/" +
-                            azureProject +
-                            "_apis/test/Runs?branchName=" +
-                            "refs/heads/" + brandName +
-                            "&minLastUpdatedDate=" + evaluatedDate +
-                            "&maxLastUpdatedDate=" + next6Date;
-                    String testRunResponse = CustomUtils.sendRequest(url, "");
-                    List<AzureTestResult> azureTestResults = null;
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        JsonNode root = null;
-                        root = mapper.readTree(testRunResponse);
-                        String value = root.findPath("value").toString();
-                        RunTestDto[] runTestArr = mapper.readValue(value, RunTestDto[].class);
-                        if (runTestArr != null && runTestArr.length > 0) {
-                            azureTestResults = new ArrayList<>();
-                            for (int i = 0; i < runTestArr.length; i++) {
-                                String testResultResponse = CustomUtils.sendRequest(runTestArr[i].getUrl() + "/results", "");
-                                JsonNode testResultNode = mapper.readTree(testResultResponse);
-                                String testResultValue = testResultNode.findPath("value").toString();
-                                TestRunResult[] arr = mapper.readValue(testResultValue, TestRunResult[].class);
-                                if (arr != null && arr.length > 0) {
-                                    azureTestResults.add(new AzureTestResult(arr[0].getStartedDate(), arr));
+
+                        //Getting current date
+                        String evaluatedDate = dto.getDate();
+
+                        //Specifying date format that matches the given date
+                        Calendar c = Calendar.getInstance();
+                        try {
+                            //Setting the date to the given date
+                            if (evaluatedDate != null) {
+                                c.setTime(sdf.parse(evaluatedDate));
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        c.add(Calendar.DAY_OF_MONTH, 6);
+                        String next6Date = sdf.format(c.getTime());
+                        String studentCode = dto.getStudent().getCode();
+                        String brandName = PREFIX_BRANCH + examCode + "/" + studentCode;
+                        String url = "https://dev.azure.com/" +
+                                azureProject +
+                                "_apis/test/Runs?branchName=" +
+                                "refs/heads/" + brandName +
+                                "&minLastUpdatedDate=" + evaluatedDate +
+                                "&maxLastUpdatedDate=" + next6Date;
+                        String testRunResponse = CustomUtils.sendRequest(url, "");
+                        List<AzureTestResult> azureTestResults = null;
+                        try {
+                            ObjectMapper mapper = new ObjectMapper();
+                            JsonNode root = null;
+                            root = mapper.readTree(testRunResponse);
+                            String value = root.findPath("value").toString();
+                            RunTestDto[] runTestArr = mapper.readValue(value, RunTestDto[].class);
+                            if (runTestArr != null && runTestArr.length > 0) {
+                                azureTestResults = new ArrayList<>();
+                                for (int i = 0; i < runTestArr.length; i++) {
+                                    String testResultResponse = CustomUtils.sendRequest(runTestArr[i].getUrl() + "/results", "");
+                                    JsonNode testResultNode = mapper.readTree(testResultResponse);
+                                    String testResultValue = testResultNode.findPath("value").toString();
+                                    TestRunResult[] arr = mapper.readValue(testResultValue, TestRunResult[].class);
+                                    if (arr != null && arr.length > 0) {
+                                        azureTestResults.add(new AzureTestResult(arr[0].getStartedDate(), arr));
+                                    }
                                 }
                             }
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
                     }
                 }
             }
@@ -1197,12 +1202,12 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         String curTime = CustomUtils.getCurDateTime(date, "");
         String scriptCode = submission.getScriptCode();
         String studentCode = submission.getStudent().getCode();
-        if (!submission.getEvaluatedOnline() &&
-                // Process Git Repository
-                processGitRepo(examCode, scriptCode, studentCode)) {
-            submission.setDate(curTime);
-            submission.setEvaluatedOnline(true);
-        }
+//        if (!submission.getEvaluatedOnline() &&
+        // Process Git Repository
+        processGitRepo(examCode, scriptCode, studentCode);
+        submission.setDate(curTime);
+        submission.setEvaluatedOnline(true);
+//        }
         if (submissionRepository.save(submission) == null) {
 //            TODO:Log file
         }
@@ -1260,56 +1265,56 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         File dir = new File(pathServer);
 
         try {
-//            Git git = Git.open(dir);
-////             Check out to default server branch
-//            CheckoutCommand checkoutServer = git.checkout();
-//            checkoutServer.setName("master");
-//            checkoutServer.call();
-//
-//            // Create new branch base on student code
-//            String brandName = PREFIX_BRANCH + examCode + "/" + studentCode;
-//
-//            try {
-//                CreateBranchCommand branchCommand = git.branchCreate();
-//                branchCommand.setName(brandName);
-//                branchCommand.call();
-//            } catch (Exception e) {
-//                System.out.println("Brand existed");
-//            }
-//
-//
-//            // Check out to that branch and add new file
-//            CheckoutCommand checkout = git.checkout();
-//            checkout.setName(brandName);
-//            checkout.call();
+            Git git = Git.open(dir);
+//             Check out to default server branch
+            CheckoutCommand checkoutServer = git.checkout();
+            checkoutServer.setName("master");
+            checkoutServer.call();
+
+            // Create new branch base on student code
+            String brandName = PREFIX_BRANCH + examCode + "/" + studentCode;
+
+            try {
+                CreateBranchCommand branchCommand = git.branchCreate();
+                branchCommand.setName(brandName);
+                branchCommand.call();
+            } catch (Exception e) {
+                System.out.println("Brand existed");
+            }
+
+
+            // Check out to that branch and add new file
+            CheckoutCommand checkout = git.checkout();
+            checkout.setName(brandName);
+            checkout.call();
 
             // Set up copy submission files
             prepareStudentSubmission(studentCode, examCode, pathServer, pathDBOnline, pathConnection,
-                    pathScriptOnline, pathOnlineTestFol,pathStudentFol, extension);
+                    pathScriptOnline, pathOnlineTestFol, pathStudentFol, extension);
 
-//            AddCommand ac = git.add();
-//            ac.addFilepattern(".");
-//            ac.call();
-//
-//            // commit
-//            CommitCommand commit = git.commit();
-//            commit.setCommitter(brandName, brandName)
-//                    .setMessage(brandName);
-//            commit.call();
-//
-//            // push
-//            PushCommand pc = git.push();
-//            pc.setCredentialsProvider(cp)
-//                    .setForce(true)
-//                    .setPushAll();
-//            pc.call().iterator();
-//
-//            FileManager.deleteFolder(PATH_SERVER_ONLINE_JAVA_WEB + File.separator + "Server");
-//
-//            // Check out to default server branch
-//            CheckoutCommand finalCheckOut = git.checkout();
-//            finalCheckOut.setName("master");
-//            finalCheckOut.call();
+            AddCommand ac = git.add();
+            ac.addFilepattern(".");
+            ac.call();
+
+            // commit
+            CommitCommand commit = git.commit();
+            commit.setCommitter(brandName, brandName)
+                    .setMessage(brandName);
+            commit.call();
+
+            // push
+            PushCommand pc = git.push();
+            pc.setCredentialsProvider(cp)
+                    .setForce(true)
+                    .setPushAll();
+            pc.call().iterator();
+
+            FileManager.deleteFolder(PATH_SERVER_ONLINE_JAVA_WEB + File.separator + "Server");
+
+            // Check out to default server branch
+            CheckoutCommand finalCheckOut = git.checkout();
+            finalCheckOut.setName("master");
+            finalCheckOut.call();
             check = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1319,7 +1324,7 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
     private boolean prepareStudentSubmission(String studentCode, String examCode, String pathServer,
                                              String pathDBOnline, String pathConnection, String pathScriptOnline,
-                                             String pathOnlineTestFol,String studentFol, String extension) {
+                                             String pathOnlineTestFol, String studentFol, String extension) {
         boolean check = false;
         try {
             String studentSubmissionPath = PATH_SUBMISSIONS + File.separator

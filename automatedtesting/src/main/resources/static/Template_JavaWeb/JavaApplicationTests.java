@@ -24,7 +24,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TestwebApplicationTests {
     public static String questionPointStr = "questionPointStrValue";
     private TemplateQuestion templateQuestion = new TemplateQuestion();
+    private static boolean isLogin = true;
+    public static WebDriver driver;
+    //public static InternetExplorerOptions options;
+    public static ChromeOptions options;
 
+
+    public TestwebApplicationTests() {
+        //  System.setProperty("webdriver.ie.driver", "src/main/resources/static/IEDriverServer.exe");
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver2.exe");
+        if (options == null) {
+            options = new ChromeOptions();
+            if (driver == null) {
+                options.addArguments("--headless");
+                driver = new ChromeDriver(options);
+                driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+            }
+        }
+    }
     //start
 
     //end
