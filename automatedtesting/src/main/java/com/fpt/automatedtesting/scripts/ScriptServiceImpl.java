@@ -45,6 +45,7 @@ public class ScriptServiceImpl implements ScriptService {
     private static final String CONNECTION_C = "\"CONNECTION HERE\"";
     private static final String CONNECTION_C_FORMAT = "(NULL == CU_add_test(pSuite, \"$variable\", $variable))";
     private static final String GLOBAL_VARIABLE_STR = "//GLOBAL_VARIABLE";
+    private static final String STATIC_STR = "static ";
 
     private final ScriptRepository scriptRepository;
     private final HeadLecturerRepository headLecturerRepository;
@@ -105,6 +106,7 @@ public class ScriptServiceImpl implements ScriptService {
             String databaseFolPath = "";
             String testDataFolPath = "";
             boolean isTemplateC = false;
+            boolean isAddStatic = false;
             // Select path to create and save script test by type
             switch (subject.getCode()) {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
@@ -116,6 +118,7 @@ public class ScriptServiceImpl implements ScriptService {
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA;
                     testDataFolPath = PathConstants.PATH_TESTDATA_JAVA;
                     scriptStoreOnlinePath = PathConstants.PATH_SCRIPT_JAVA_ONLINE;
+                    isAddStatic = true;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA_WEB;
@@ -125,6 +128,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA_WEB;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA_WEB;
                     testDataFolPath = PathConstants.PATH_TESTDATA_JAVA_WEB;
+                    isAddStatic = true;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
                     templatePath = PathConstants.PATH_TEMPLATE_CSHARP;
@@ -175,7 +179,18 @@ public class ScriptServiceImpl implements ScriptService {
             String endPart = data.substring(endIndex, data.length());
             String tempScript = startPart + "\n" + middlePart + "\n" + endPart;
             String fullScript = tempScript.replace(QUESTION_POINT_STR_VALUE, dto.getQuestionPointStr());
-            fullScript = fullScript.replace(GLOBAL_VARIABLE_STR, dto.getGlobalVariable());
+            if(isAddStatic && !"".equals(dto.getGlobalVariable())){
+                String[] variables = dto.getGlobalVariable().split(";");
+                String newVariabes = "";
+                for (String item: variables) {
+                    if(item != null && !"".equals(item)){
+                        newVariabes += STATIC_STR + item +";"+ "\n";
+                    }
+                }
+                fullScript = fullScript.replace(GLOBAL_VARIABLE_STR, newVariabes);
+            }else {
+                fullScript = fullScript.replace(GLOBAL_VARIABLE_STR, dto.getGlobalVariable());
+            }
             // generate connect for C_Template
             if (isTemplateC) {
                 String connection = "";
@@ -451,6 +466,7 @@ public class ScriptServiceImpl implements ScriptService {
             String templateQuestionFolPath = "";
             String databaseFolPath = "";
             String testDataFolPath = "";
+            boolean isAddStatic = false;
             // Select path to create and save script test by type
             switch (subject.getCode()) {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
@@ -459,6 +475,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA;
                     testDataFolPath = PathConstants.PATH_TESTDATA_JAVA;
+                    isAddStatic = true;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
                     templatePath = PathConstants.PATH_TEMPLATE_JAVA_WEB;
@@ -466,6 +483,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA_WEB;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA_WEB;
                     testDataFolPath = PathConstants.PATH_TESTDATA_JAVA_WEB;
+                    isAddStatic = true;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
                     templatePath = PathConstants.PATH_TEMPLATE_CSHARP;
@@ -508,7 +526,18 @@ public class ScriptServiceImpl implements ScriptService {
             String endPart = data.substring(endIndex, data.length());
             String tempScript = startPart + "\n" + middlePart + "\n" + endPart;
             String fullScript = tempScript.replace(QUESTION_POINT_STR_VALUE, dto.getQuestionPointStr());
-            fullScript = fullScript.replace(GLOBAL_VARIABLE_STR, dto.getGlobalVariable());
+            if(isAddStatic && !"".equals(dto.getGlobalVariable())){
+                String[] variables = dto.getGlobalVariable().split(";");
+                String newVariabes = "";
+                for (String item: variables) {
+                    if(item != null && !"".equals(item)){
+                        newVariabes += STATIC_STR + item +";"+ "\n";
+                    }
+                }
+                fullScript = fullScript.replace(GLOBAL_VARIABLE_STR, newVariabes);
+            }else {
+                fullScript = fullScript.replace(GLOBAL_VARIABLE_STR, dto.getGlobalVariable());
+            }
             Script script = scriptRepository.findById(dto.getId()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found script" + dto.getHeadLecturerId()));
             // Write new file to Scripts_[Language] folder
             String scriptPath = script.getScriptPath();
