@@ -31,7 +31,7 @@ public class DuplicatedCodeService {
     private static GenericParser gp = null;
 
     public void getListTree(String file, String subjectCode, String fileCode, Map<String, List<Double>> vectors, List<String> studentMethods) {
-        System.out.println("Checking offline :" );
+        System.out.println("Checking offline :");
         System.out.println(file);
         File[] files = null;
         File parserFile = null;
@@ -87,30 +87,35 @@ public class DuplicatedCodeService {
             }
             if (ctx != null) {
                 List<ParseTree> trees = ctx.children;
+                System.out.println(ctx.toStringTree());
                 // studentCode_fileName_tokenLineStart_tokenLineStop
                 Map<String, ParseTree> methodsTree = new HashMap<>();
                 // Lấy danh sách biến + methods
                 for (ParseTree tree : trees) {
                     getMethodNode(tree, methodsTree, fileCode, studentMethods);
                 }
+
                 for (Map.Entry<String, ParseTree> entry : methodsTree.entrySet()) {
                     List<Double> vector = new ArrayList<>();
                     walkAllNode(entry.getValue(), vector);
+
                     vectors.put(entry.getKey(), vector);
                 }
             }
 
         }
     }
+
     private String sourceTextForContext(ParserRuleContext ctx) {
-        String code ="";
-        try{
+        String code = "";
+        try {
             code = ctx.start.getInputStream().getText(Interval.of(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
-     return code;
+        return code;
     }
+
     private Map<String, ParseTree> getMethodNode(ParseTree node, Map<String, ParseTree> result, String fileCode, List<String> studentMethods) {
         String className = node.getClass().getName();
         ParserRuleContext parserRuleContext = null;
@@ -151,7 +156,7 @@ public class DuplicatedCodeService {
             }
             if (check) {
                 result.put(fileToken, node);
-               String code =  sourceTextForContext((ParserRuleContext) node);
+                String code = sourceTextForContext((ParserRuleContext) node);
                 studentMethods.add(code);
             }
         }
@@ -171,6 +176,8 @@ public class DuplicatedCodeService {
         } else {
             text = tree.getClass().getName();
         }
+        System.out.println(text);
+
         result.add(Double.parseDouble(String.valueOf(text.hashCode())));
         int count = tree.getChildCount();
         if (count > 0) {
@@ -178,6 +185,7 @@ public class DuplicatedCodeService {
                 walkAllNode(tree.getChild(i), result);
             }
         }
+
     }
 
     private String processData(ParseTree node) {

@@ -13,6 +13,8 @@ import java.io.File;
 public class StudentSubmissionDto {
     private String studentCode;
     private String examCode;
+    private String submitTime;
+    private String point;
     private MultipartFile file;
     private MultipartFile webFile;
     private File project;

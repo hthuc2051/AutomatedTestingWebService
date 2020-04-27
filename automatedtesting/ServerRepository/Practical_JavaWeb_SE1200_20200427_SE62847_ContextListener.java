@@ -27,6 +27,5 @@ ResourceBundle bundle = ResourceBundle.getBundle("config");
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        
     }
 }

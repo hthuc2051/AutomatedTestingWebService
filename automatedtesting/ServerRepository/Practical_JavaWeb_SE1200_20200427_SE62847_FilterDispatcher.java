@@ -5,9 +5,6 @@
  */
 package com.practicalexam.student.filter;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -26,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Dell
  */
-@Component
 public class FilterDispatcher implements Filter {
 
     private static final boolean debug = true;

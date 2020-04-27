@@ -31,7 +31,6 @@ public class PathConstants {
     public static final String PATH_SERVER_ONLINE_CSHARP = SERVER_PREFIX + "Server_CSharp" + File.separator + "Server_Online";
 
     // Prefix path;
-
     private static final String SRC_MAIN_JAVA_COM_PRACTICAL_EXAM_STUDENT = "Server" + File.separator
             + "src" + File.separator
             + "main" + File.separator

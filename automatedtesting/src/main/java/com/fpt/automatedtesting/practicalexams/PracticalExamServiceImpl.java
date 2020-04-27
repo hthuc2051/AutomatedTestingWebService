@@ -812,7 +812,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             if (!studentFiles.isEmpty()) {
                 for (File studentFile : studentFiles) {
                     if (!studentFile.getName().contains("TemplateQuestion")) {
-
                         Map<String, List<Double>> vectors = new HashMap<>();
                         FileVectors fileVectors = new FileVectors();
 
@@ -837,6 +836,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                         fileVectors.setMethodVectors(vectors);
                         fileVectors.setFileName(studentFile.getName());
                         studentFileVectors.add(fileVectors);
+
+
                         // Methods String for check online
                         methods.put(prefixName, studentMethods);
                         methodForGitHub.put(prefixName, studentMethods);
@@ -957,8 +958,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                     }
                     if (!token.equals("") && maxMethodSimilarityPercent >= 0.3) {
                         similarityMethods.put(token, maxMethodSimilarityPercent);
-                    } else {
-                        similarityMethods.put(token, 0.0);
                     }
                 }
             }
@@ -966,11 +965,11 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         return null;
     }
 
-    private void insertDuplicatedCode(Map<String, Double> checkedTokens, PracticalExam practicalExam) {
+    private void insertDuplicatedCode(Map<String, Double> similarityMethods, PracticalExam practicalExam) {
         Map<String, Double> result = new HashMap<>();
         Map<String, List<Double>> studentSimilarityPercentMap = new HashMap<>();
-        if (checkedTokens != null && checkedTokens.size() > 0) {
-            for (Map.Entry<String, Double> entry : checkedTokens.entrySet()) {
+        if (similarityMethods != null && similarityMethods.size() > 0) {
+            for (Map.Entry<String, Double> entry : similarityMethods.entrySet()) {
                 String firstStudentCode = "";
                 String secondStudentCode = "";
                 String key = entry.getKey();
@@ -1019,11 +1018,11 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             duplicatedCode.setSimilarityPercent(similarityPercent);
             DuplicatedCode responseEntity = duplicatedCodeRepository.save(duplicatedCode);
             if (responseEntity != null) {
-                if (checkedTokens != null && checkedTokens.size() > 0) {
+                if (similarityMethods != null && similarityMethods.size() > 0) {
                     String firstStudent = arr[0];
                     String secondStudent = arr[1];
                     List<DuplicatedCodeDetails> list = new ArrayList<>();
-                    for (Map.Entry<String, Double> entryToken : checkedTokens.entrySet()) {
+                    for (Map.Entry<String, Double> entryToken : similarityMethods.entrySet()) {
                         Double value = entryToken.getValue();
                         if (value > 0.45) {
                             String filesToken = entryToken.getKey();
@@ -1188,8 +1187,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
             Submission submission = submissionRepository
                     .findByStudent_CodeAndPracticalExam_CodeAndActiveIsTrue(dto.getStudentCode(), dto.getExamCode())
                     .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:"));
-
+            submission.setTimeSubmitted(dto.getSubmitTime());
+            submission.setPoint(Double.valueOf(dto.getPoint()));
             processEvaluateOnline(dto.getExamCode(), submission);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -6,11 +6,11 @@ public class CosineSimilarity {
 
     public static Double computeSimilarity(List<Double> A, List<Double> B) {
 
-        if(A.size() < B.size()){
+        if (A.size() < B.size()) {
             for (int i = A.size(); i < B.size(); i++) {
                 A.add(0.0);
             }
-        }else{
+        } else {
             for (int i = B.size(); i < A.size(); i++) {
                 B.add(0.0);
             }

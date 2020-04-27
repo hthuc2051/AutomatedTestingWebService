@@ -42,7 +42,9 @@ public class SubjectController {
 
     @GetMapping("/test")
     public String test() {
-
+        File file = new File("A/faf/fa/EXAMS_");
+        String s = file.getParent();
+        System.out.println(s);
         return "";
     }
 
