@@ -238,7 +238,7 @@ public class ActionServiceImpl implements ActionService {
     public String deleteAction(int id) {
         Action action = actionRepository
                 .findByIdAndActiveIsTrue(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found action with id " + id));
+                .orElseThrow(() -> new CustomException(HttpStatus.GONE, "Not found action with id " + id));
 
         action.setActive(false);
 
