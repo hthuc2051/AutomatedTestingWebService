@@ -467,6 +467,7 @@ public class ScriptServiceImpl implements ScriptService {
             String databaseFolPath = "";
             String testDataFolPath = "";
             boolean isAddStatic = false;
+            String docsFolPath = "";
             // Select path to create and save script test by type
             switch (subject.getCode()) {
                 case CustomConstant.TEMPLATE_TYPE_JAVA:
@@ -475,6 +476,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA;
                     testDataFolPath = PathConstants.PATH_TESTDATA_JAVA;
+                    docsFolPath = PathConstants.PATH_DOCS_JAVA;
                     isAddStatic = true;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_JAVA_WEB:
@@ -483,6 +485,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_JAVA_WEB;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_JAVA_WEB;
                     testDataFolPath = PathConstants.PATH_TESTDATA_JAVA_WEB;
+                    docsFolPath = PathConstants.PATH_DOCS_JAVA_WEB;
                     isAddStatic = true;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_CSHARP:
@@ -491,6 +494,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_C_SHARP;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_C_SHARP;
                     testDataFolPath = PathConstants.PATH_TESTDATA_C_SHARP;
+                    docsFolPath = PathConstants.PATH_DOCS_CSHARP;
                     break;
                 case CustomConstant.TEMPLATE_TYPE_C:
                     templatePath = PathConstants.PATH_TEMPLATE_C;
@@ -498,6 +502,7 @@ public class ScriptServiceImpl implements ScriptService {
                     templateQuestionFolPath = PathConstants.PATH_TEMPLATE_QUESTION_C;
                     databaseFolPath = PathConstants.PATH_DATABASE_SCRIPT_C;
                     testDataFolPath = PathConstants.PATH_TESTDATA_C;
+                    docsFolPath = PathConstants.PATH_DOCS_C;
                     break;
                 default:
                     throw new CustomException(HttpStatus.CONFLICT, "TypeConflictNotSupported");
@@ -549,9 +554,10 @@ public class ScriptServiceImpl implements ScriptService {
             inputStream.close();
             // Copy docs file to Docs_[Language] folder
             String documentPath = "";
+            String documentExtesion = CustomConstant.EXTENSION_DOCUMENT;
             MultipartFile docsFile = dto.getDocsFile();
             if (docsFile != null) {
-                documentPath = script.getDocumentPath();
+                documentPath = docsFolPath + script.getCode() + documentExtesion;
                 Path copyLocation = Paths.get(documentPath);
                 Files.copy(docsFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
             }
