@@ -31,3 +31,4 @@ build/
 .vscode/
 /automatedtesting/src/main/resources/static/JavaConsoleApplication/nbproject/private/
 *.log
+*.zip
