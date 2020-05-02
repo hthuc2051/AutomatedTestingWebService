@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class GithubResultServiceImpl implements GithubResultService {
+public class GitHubResultServiceImpl implements GitHubResultService {
 
-    private final GithubResultRepository githubResultRepository;
+    private final GitHubResultRepository githubResultRepository;
     private final PracticalExamRepository practicalExamRepository;
     Gson gson = new Gson();
     @Autowired
-    public GithubResultServiceImpl(GithubResultRepository githubResultRepository, PracticalExamRepository practicalExamRepository) {
+    public GitHubResultServiceImpl(GitHubResultRepository githubResultRepository, PracticalExamRepository practicalExamRepository) {
         this.githubResultRepository = githubResultRepository;
         this.practicalExamRepository = practicalExamRepository;
     }
@@ -30,14 +30,14 @@ public class GithubResultServiceImpl implements GithubResultService {
         String json = gson.toJson(listDuplicate);
         Optional<PracticalExam> practicalExam = practicalExamRepository.findById(practicalExamId);
         if(practicalExam.isPresent()){
-            GithubResult githubResultAvailable = githubResultRepository.findByPracticalExamCodeAndStudentCode(practicalExam.get().getCode(),studentCode);
-            GithubResult githubResult = new GithubResult();
-            if(githubResultAvailable == null){
+            GitHubResult gitHubResultAvailable = githubResultRepository.findByPracticalExamCodeAndStudentCode(practicalExam.get().getCode(),studentCode);
+            GitHubResult githubResult = new GitHubResult();
+            if(gitHubResultAvailable == null){
                 githubResult.setPracticalExam(practicalExam.get());
                 githubResult.setStudentCode(studentCode);
                 githubResult.setResult(json);
             }else{
-                githubResult = githubResultAvailable;
+                githubResult = gitHubResultAvailable;
                 githubResult.setResult(json);
             }
             if (githubResultRepository.save(githubResult) != null) {
@@ -51,7 +51,7 @@ public class GithubResultServiceImpl implements GithubResultService {
     public  List<GithubResultDTO> getListByPracticalCodeAndStudentCode(DuplicatedCodeRequest request) {
         ArrayList<GithubResultDTO> listResult = new ArrayList<>();
         Map<String, List<GitHubFileDuplicateDTO>> result = new HashMap<>();
-        GithubResult githubResult = githubResultRepository.findByPracticalExamCodeAndStudentCode(request.getPracticalExamCode(),request.getStudentCode());
+        GitHubResult githubResult = githubResultRepository.findByPracticalExamCodeAndStudentCode(request.getPracticalExamCode(),request.getStudentCode());
         if(githubResult != null){
             String json = githubResult.getResult();
             if(!"".equals(json)){

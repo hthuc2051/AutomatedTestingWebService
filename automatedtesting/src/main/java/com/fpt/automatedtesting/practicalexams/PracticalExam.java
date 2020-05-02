@@ -1,7 +1,7 @@
 package com.fpt.automatedtesting.practicalexams;
 
 import com.fpt.automatedtesting.duplicatedcode.DuplicatedCode;
-import com.fpt.automatedtesting.githubresult.GithubResult;
+import com.fpt.automatedtesting.githubresult.GitHubResult;
 import com.fpt.automatedtesting.scripts.Script;
 import com.fpt.automatedtesting.subjectclasses.SubjectClass;
 import com.fpt.automatedtesting.submissions.Submission;
@@ -53,6 +53,6 @@ public class PracticalExam {
     private List<DuplicatedCode> duplicatedCodes;
 
     @OneToMany(mappedBy = "practicalExam", cascade = CascadeType.ALL)
-    private List<GithubResult> githubResults ;
+    private List<GitHubResult> gitHubResults;
 
 }

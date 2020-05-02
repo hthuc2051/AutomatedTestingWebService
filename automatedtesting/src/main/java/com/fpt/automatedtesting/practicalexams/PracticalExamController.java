@@ -4,7 +4,7 @@ package com.fpt.automatedtesting.practicalexams;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.exception.ExceptionManager;
-import com.fpt.automatedtesting.githubresult.GithubResultService;
+import com.fpt.automatedtesting.githubresult.GitHubResultService;
 import com.fpt.automatedtesting.githubresult.dtos.GithubResultDTO;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.submissions.StudentSubmissionDetails;
@@ -27,10 +27,10 @@ public class PracticalExamController {
     private final PracticalExamService practicalExamService;
     private final SubmissionRepository submissionRepository;
     private final PracticalExamRepository practicalExamRepository;
-    private final GithubResultService githubResultService;
+    private final GitHubResultService githubResultService;
 
     @Autowired
-    public PracticalExamController(PracticalExamService practicalExamService, SubmissionRepository submissionRepository, SubmissionRepository submissionRepository1, PracticalExamRepository practicalExamRepository, GithubResultService githubResultService) {
+    public PracticalExamController(PracticalExamService practicalExamService, SubmissionRepository submissionRepository, SubmissionRepository submissionRepository1, PracticalExamRepository practicalExamRepository, GitHubResultService githubResultService) {
         this.practicalExamService = practicalExamService;
         this.submissionRepository = submissionRepository1;
         this.practicalExamRepository = practicalExamRepository;

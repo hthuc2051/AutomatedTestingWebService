@@ -15,7 +15,7 @@ import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeDto;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeRequest;
 import com.fpt.automatedtesting.duplicatedcode.dtos.DuplicatedCodeResponse;
 import com.fpt.automatedtesting.duplicatedcode.dtos.FileVectors;
-import com.fpt.automatedtesting.githubresult.GithubResultService;
+import com.fpt.automatedtesting.githubresult.GitHubResultService;
 import com.fpt.automatedtesting.githubresult.dtos.GitHubFileDuplicateDTO;
 import com.fpt.automatedtesting.practicalexams.dtos.*;
 import com.fpt.automatedtesting.students.StudentReportDto;
@@ -87,13 +87,13 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     private final SubjectRepository subjectRepository;
     private final DuplicatedCodeService duplicatedCodeService;
     private Queue<StudentSubmissionDto> submissionQueue;
-    private final GithubResultService githubResultService;
+    private final GitHubResultService githubResultService;
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, DuplicatedCodeRepository duplicatedCodeRepository, LecturerRepository lecturerRepository, SubjectRepository subjectRepository, DuplicatedCodeService duplicatedCodeService, GithubResultService githubResultService) {
+    public PracticalExamServiceImpl(PracticalExamRepository practicalExamRepository, ScriptRepository scriptRepository, SubmissionRepository submissionRepository, UserRepository userRepository, SubjectClassRepository subjectClassRepository, DuplicatedCodeRepository duplicatedCodeRepository, LecturerRepository lecturerRepository, SubjectRepository subjectRepository, DuplicatedCodeService duplicatedCodeService, GitHubResultService githubResultService) {
         this.practicalExamRepository = practicalExamRepository;
         this.scriptRepository = scriptRepository;
         this.submissionRepository = submissionRepository;
