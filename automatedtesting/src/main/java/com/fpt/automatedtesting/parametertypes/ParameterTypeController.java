@@ -21,28 +21,28 @@ public class ParameterTypeController {
         this.parameterTypeService = parameterTypeService;
     }
 
-    @GetMapping("/param-type")
+    @GetMapping("/param-types")
     public ResponseEntity<List<ParameterTypeResponseDto>> getAllParamTypes() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(parameterTypeService.getAllParamType());
     }
 
-    @GetMapping("/param-type/{subjectId}")
+    @GetMapping("/param-types/{subjectId}")
     public ResponseEntity<List<ParameterTypeResponseDto>> getParamTypeBySubjectId(@PathVariable Integer subjectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(parameterTypeService.getParamTypeBySubjectId(subjectId));
     }
 
-    @PostMapping("/param-type")
+    @PostMapping("/param-types")
     public ResponseEntity<String> insertNewParamType(@RequestBody ParameterTypeRequestDto requestDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(parameterTypeService.createParamType(requestDto));
     }
 
-    @DeleteMapping("/param-type/{id}")
+    @DeleteMapping("/param-types/{id}")
     public ResponseEntity<String> deleteParamType(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
