@@ -1,7 +1,7 @@
 package com.fpt.automatedtesting.users.jwt;
 
 
-import com.fpt.automatedtesting.users.user.CustomUserDetails;
+import com.fpt.automatedtesting.users.dtos.CustomUserDetails;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

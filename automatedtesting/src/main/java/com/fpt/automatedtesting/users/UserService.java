@@ -8,7 +8,7 @@ package com.fpt.automatedtesting.users;
  *    Xin cảm ơn!
  *******************************************************/
 
-import com.fpt.automatedtesting.users.user.CustomUserDetails;
+import com.fpt.automatedtesting.users.dtos.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

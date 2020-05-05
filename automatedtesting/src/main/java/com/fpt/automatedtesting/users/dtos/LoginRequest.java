@@ -1,4 +1,4 @@
-package com.fpt.automatedtesting.users.payload;
+package com.fpt.automatedtesting.users.dtos;
 
 import lombok.Data;
 

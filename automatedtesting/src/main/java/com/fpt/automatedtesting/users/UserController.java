@@ -2,10 +2,10 @@ package com.fpt.automatedtesting.users;
 
 
 import com.fpt.automatedtesting.users.jwt.JwtTokenProvider;
-import com.fpt.automatedtesting.users.payload.LoginRequest;
-import com.fpt.automatedtesting.users.payload.LoginResponse;
-import com.fpt.automatedtesting.users.payload.RandomStuff;
-import com.fpt.automatedtesting.users.user.CustomUserDetails;
+import com.fpt.automatedtesting.users.dtos.LoginRequest;
+import com.fpt.automatedtesting.users.dtos.LoginResponse;
+import com.fpt.automatedtesting.users.dtos.RandomStuff;
+import com.fpt.automatedtesting.users.dtos.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-public class LodaRestController {
+public class UserController {
 
     @Autowired
     AuthenticationManager authenticationManager;
