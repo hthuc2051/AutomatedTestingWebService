@@ -1,4 +1,5 @@
-package com.fpt.automatedtesting.dto;
+package com.fpt.automatedtesting.users.user;
+
 
 import com.fpt.automatedtesting.users.User;
 import lombok.AllArgsConstructor;
@@ -14,8 +15,7 @@ import java.util.Collections;
 @Data
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
-
-    private User user;
+    User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

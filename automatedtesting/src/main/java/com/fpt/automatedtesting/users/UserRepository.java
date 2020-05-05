@@ -1,6 +1,6 @@
-package com.fpt.automatedtesting.repository;
+package com.fpt.automatedtesting.users;
 
-import com.fpt.automatedtesting.entity.User;
+import com.fpt.automatedtesting.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User,Integer> {
