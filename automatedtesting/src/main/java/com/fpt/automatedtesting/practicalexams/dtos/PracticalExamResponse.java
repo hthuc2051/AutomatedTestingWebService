@@ -23,5 +23,6 @@ public class PracticalExamResponse implements Serializable {
     private List<ScriptResponseDto> scripts;
     private String classCode;
     private String state;
+    private Boolean active;
 
 }

@@ -21,8 +21,9 @@ public class MapperManager {
     public static <D, T> D map(final T entity, Class<D> outClass) {
         return modelMapper.map(entity, outClass);
     }
+
     public static <D, T> List<D> mapAll(final List<T> entityList, Class<D> outCLass) {
-        if(entityList != null && entityList.size() >0){
+        if (entityList != null && entityList.size() > 0) {
             return entityList.stream()
                     .map(entity -> map(entity, outCLass))
                     .collect(Collectors.toList());

@@ -179,7 +179,6 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         PracticalExam practicalExam = practicalExamRepository.findByIdAndStateEqualsAndActiveIsTrue(dto.getId(), STATE_NOT_EVALUATE)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found practical exam for id" + dto.getId()));
         submissionRepository.deleteAllByPracticalExam(practicalExam);
-
         List<Integer> subjectClassesId = dto.getSubjectClasses();
         if (subjectClassesId != null && subjectClassesId.size() > 0) {
             for (Integer subjectClassId : subjectClassesId) {
@@ -686,8 +685,14 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 subjectClassId.add(subjectClass.getId());
                 List<PracticalExam> practicalExams = subjectClass.getPracticalExams();
                 if (practicalExams != null && practicalExams.size() > 0) {
-                    result = MapperManager.mapAll(practicalExams, PracticalExamResponse.class);
-                    if (result != null) {
+                    List<PracticalExamResponse> filterList = new ArrayList<>();
+                    filterList = MapperManager.mapAll(practicalExams, PracticalExamResponse.class);
+                    if (filterList != null) {
+                        for (PracticalExamResponse practicalExamDto : filterList) {
+                            if (practicalExamDto.getActive() != false) {
+                                result.add(practicalExamDto);
+                            }
+                        }
                         for (PracticalExamResponse practicalExamDto : result) {
                             practicalExamDto.setSubjectCode(subject.getCode());
                             practicalExamDto.setSubjectId(subject.getId());

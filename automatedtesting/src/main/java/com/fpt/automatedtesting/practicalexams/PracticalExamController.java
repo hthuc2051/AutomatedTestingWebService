@@ -74,7 +74,7 @@ public class PracticalExamController {
 
     @GetMapping("/subjects/{id}/practical-exam")
     public ResponseEntity<List<PracticalExamResponse>> getPracticalExamsOfSubject(@PathVariable Integer id) {
-        ExceptionManager.writeException();
+//        ExceptionManager.writeException();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(practicalExamService.getPracticalExamsOfSubject(id));
