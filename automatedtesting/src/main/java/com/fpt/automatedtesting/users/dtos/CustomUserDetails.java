@@ -17,6 +17,11 @@ import java.util.Collections;
 public class CustomUserDetails implements UserDetails {
 
     User user;
+    private String role;
+
+    public CustomUserDetails(User user) {
+        this.user = user;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -31,6 +36,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+
+    public String getRole() {
+        return user.getRole();
     }
 
     @Override

@@ -19,6 +19,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -44,8 +45,8 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Trả về jwt cho người dùng.
-        String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
-        return new LoginResponse(jwt);
+        LoginResponse res = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+        return res;
     }
 
     // Api /api/random yêu cầu phải xác thực mới có thể request

@@ -2,6 +2,7 @@ package com.fpt.automatedtesting.users.jwt;
 
 
 import com.fpt.automatedtesting.users.dtos.CustomUserDetails;
+import com.fpt.automatedtesting.users.dtos.LoginResponse;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,24 +16,25 @@ public class JwtTokenProvider {
     private final String JWT_SECRET = "lodaaaaaa";
     private final long JWT_EXPIRATION = 604800000L;
 
-    public String generateToken(CustomUserDetails userDetails) {
+    public LoginResponse generateToken(CustomUserDetails userDetails) {
         // Lấy thông tin user
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
         // Tạo chuỗi json web token từ id của user.
-        return Jwts.builder()
-                   .setSubject(Long.toString(userDetails.getUser().getId()))
-                   .setIssuedAt(now)
-                   .setExpiration(expiryDate)
-                   .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
-                   .compact();
+        String token = Jwts.builder()
+                .setSubject(Long.toString(userDetails.getUser().getId()))
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
+                .compact();
+        return new LoginResponse(userDetails.getUser().getId(), token, userDetails.getRole());
     }
 
     public Integer getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser()
-                            .setSigningKey(JWT_SECRET)
-                            .parseClaimsJws(token)
-                            .getBody();
+                .setSigningKey(JWT_SECRET)
+                .parseClaimsJws(token)
+                .getBody();
 
         return Integer.parseInt(claims.getSubject());
     }
