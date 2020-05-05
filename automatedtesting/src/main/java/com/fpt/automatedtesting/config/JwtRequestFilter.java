@@ -1,6 +1,6 @@
 package com.fpt.automatedtesting.config;
 
-import com.fpt.automatedtesting.service.serviceImpl.JwtUserDetailsService;
+import com.fpt.automatedtesting.users.JwtUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,8 +43,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			} catch (ExpiredJwtException e) {
 				System.out.println("JWT Token has expired");
 			}
-		} else {
-			logger.warn("JWT Token does not begin with Bearer String");
 		}
 
 		//Once we get the token validate it.

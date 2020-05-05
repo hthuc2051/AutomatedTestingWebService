@@ -1,6 +1,6 @@
-package com.fpt.automatedtesting.dto;
+package com.fpt.automatedtesting.users.dto;
 
-import com.fpt.automatedtesting.entity.User;
+import com.fpt.automatedtesting.users.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +19,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Mặc định mình sẽ để tất cả là ROLE_USER. Để demo cho đơn giản.
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
     }
 

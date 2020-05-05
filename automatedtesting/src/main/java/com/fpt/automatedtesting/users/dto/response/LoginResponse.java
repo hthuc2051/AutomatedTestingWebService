@@ -1,4 +1,4 @@
-package com.fpt.automatedtesting.dto.response;
+package com.fpt.automatedtesting.users.dto.response;
 
 import lombok.Data;
 
