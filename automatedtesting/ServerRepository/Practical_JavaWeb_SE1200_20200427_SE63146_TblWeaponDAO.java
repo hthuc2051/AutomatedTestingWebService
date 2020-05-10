@@ -83,32 +83,32 @@ public class TblWeaponDAO {
     }
     public boolean deleteAmour(String amourId) throws ClassNotFoundException, NamingException, SQLException {
         
-        Connection con = null;
-        PreparedStatement pstm = null;
-        try {
-            String sql = "delete from tbl_Weapon where amourId = ?";
+        // Connection con = null;
+        // PreparedStatement pstm = null;
+        // try {
+        //     String sql = "delete from tbl_Weapon where amourId = ?";
             
-            con = DBUtilities.makeConnection();
-            pstm = con.prepareStatement(sql);
-            pstm.setString(1, amourId);
-            int rowEffect = 0;
+        //     con = DBUtilities.makeConnection();
+        //     pstm = con.prepareStatement(sql);
+        //     pstm.setString(1, amourId);
+        //     int rowEffect = 0;
             
-            rowEffect = pstm.executeUpdate();
-            if (rowEffect > 0 ) {
+        //     rowEffect = pstm.executeUpdate();
+        //     if (rowEffect > 0 ) {
                 
-                return true;
+        //         return true;
                 
-            }
+        //     }
             
-        } finally {
+        // } finally {
             
-            if (con != null) {
-                con.close();
-            }
-            if (pstm != null) {
-                pstm.close();
-            }
-        }
+        //     if (con != null) {
+        //         con.close();
+        //     }
+        //     if (pstm != null) {
+        //         pstm.close();
+        //     }
+        // }
         return false;
     }
     

@@ -30,6 +30,8 @@ public interface PracticalExamService {
 
     String checkDuplicatedCode(PracticalInfo info);
 
+    String setPracticalExamState(PracticalExamState info);
+
     List<DuplicatedCodeResponse> getDuplicatedResult(DuplicatedCodeRequest practicalInfo);
     List<OnlineTestResult> getResultFromAzure(Integer code);
 

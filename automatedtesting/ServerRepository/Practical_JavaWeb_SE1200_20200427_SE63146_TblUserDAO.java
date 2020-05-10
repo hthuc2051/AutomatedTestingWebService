@@ -23,33 +23,33 @@ public class TblUserDAO {
         Connection con = null;
         PreparedStatement pstm = null;
         ResultSet rs = null;
-        String sql = "select userId from tbl_User where userId = ? and password = ?";
+       String sql = "select userId from tbl_User where userId = ? and password = ?";
         try {
-            int passwordInt = Integer.parseInt(password.trim());
+          int passwordInt = Integer.parseInt(password.trim());
             con = DBUtilities.makeConnection();
             pstm = con.prepareStatement(sql);
-            pstm.setString(1, username);
-            pstm.setInt(2, passwordInt);
+           pstm.setString(1, username);
+          pstm.setInt(2, passwordInt);
             rs = pstm.executeQuery();
             
-            if (rs.next()) {
+          if (rs.next()) {
                 return true;
-            }
+          }
             
             
         } finally {
             
-            if (con != null) {
-                con.close();
-            }
-            if (pstm != null) {
-                pstm.close();
+           if (con != null) {
+               con.close();
+           }
+           if (pstm != null) {
+               pstm.close();
             }
             if (rs != null) {
                 rs.close();
             }
             
-        }
+       }
         return false;
     }
 

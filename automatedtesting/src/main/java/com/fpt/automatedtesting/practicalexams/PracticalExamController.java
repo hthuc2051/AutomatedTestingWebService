@@ -116,6 +116,13 @@ public class PracticalExamController {
                 .body(practicalExamService.getStudentSubmission(file));
     }
 
+    @PostMapping("/practical-exam/set-state")
+    public ResponseEntity<String> setPracticalExamState(@ModelAttribute PracticalExamState dto) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(practicalExamService.setPracticalExamState(dto));
+    }
+
     @PostMapping("/practical-exam/check-code")
     public ResponseEntity<String> checkDuplicatedCode(@ModelAttribute PracticalInfo practicalInfo) {
         return ResponseEntity

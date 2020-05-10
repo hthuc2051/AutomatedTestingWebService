@@ -11,5 +11,6 @@ public class SubmissionDetailsDto {
     private Integer id;
     private String timeSubmitted;
     private String submitPath;
+    private String evaluatedTime;
     private Double point;
 }

@@ -768,6 +768,18 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         return "Start checking duplicated code successfully !";
     }
 
+    @Override
+    public String setPracticalExamState(PracticalExamState info) {
+        PracticalExam practicalExam = practicalExamRepository.findByCodeAndActiveIsTrue(info.getExamCode())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + info.getExamCode()));
+
+        practicalExam.setState(info.getState());
+        if(practicalExamRepository.save(practicalExam) != null){
+            return "Update state successfully";
+        }
+        return  "Update state failed";
+    }
+
     @Async
     @EventListener
     public void processChecking(PracticalInfo info) {
