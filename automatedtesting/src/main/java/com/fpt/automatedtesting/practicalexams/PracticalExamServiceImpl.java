@@ -858,8 +858,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 dto.setStudentFileVectors(studentFileVectors);
             }
             duplicatedCodeDtoList.add(dto);
-//            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methodForGitHub, extension);
-//           / githubResultService.create(practicalExam.getId(), studentCode, listDuplicate);
+            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methodForGitHub, extension);
+           githubResultService.create(practicalExam.getId(), studentCode, listDuplicate);
         }
         processStudentDuplicatedCode(duplicatedCodeDtoList, practicalExam);
     }
@@ -1210,12 +1210,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
     }
 
     private void processEvaluateOnline(String examCode, Submission submission) {
-
         Date date = new Date();
         String curTime = CustomUtils.getCurDateTime(date, "");
         String scriptCode = submission.getScriptCode();
         String studentCode = submission.getStudent().getCode();
-//        if (!submission.getEvaluatedOnline() &&
         // Process Git Repository
         processGitRepo(examCode, scriptCode, studentCode);
         submission.setDate(curTime);

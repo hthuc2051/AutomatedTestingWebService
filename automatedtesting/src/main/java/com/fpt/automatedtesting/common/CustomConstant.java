@@ -105,5 +105,5 @@ public class CustomConstant {
 
     // Github Result
     public static final int MINIMUM_SIMILAR_FILE = 30;
-    public static final String AUTH_TOKEN = "b459f95ee0546dc73d6dc8259360716598a1c631";
+    public static final String AUTH_TOKEN = "2a3460cc943a307f325dc34ece38d282108bb14e";
 }
