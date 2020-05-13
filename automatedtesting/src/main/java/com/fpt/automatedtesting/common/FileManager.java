@@ -96,31 +96,35 @@ public class FileManager {
             MultipartFile scriptFile = dto.getScriptFile();
             MultipartFile serverFile = dto.getServerFile();
             // String path = "";
-            if (scriptFile != null && serverFile != null) {
-                Path copyLocation = Paths.get(folPath + File.separator + StringUtils.cleanPath(scriptFile.getOriginalFilename()));
-                Files.copy(scriptFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
-                String pathScript = folPath + File.separator + StringUtils.cleanPath(scriptFile.getOriginalFilename());
-                if (dto.getScriptSubject().equals("CSharp")) {
-                    unzip(pathScript, csFolderScript);
-                } else if (dto.getScriptSubject().equals("Java")) {
-                    unzip(pathScript, javaFolderScript);
-                } else if (dto.getScriptSubject().equals("JavaWeb")) {
-                    unzip(pathScript, webFolderScript);
-                } else if (dto.getScriptSubject().equals("C")) {
-                    unzip(pathScript, cFolderScript);
+            if (scriptFile != null || serverFile != null) {
+                if (scriptFile != null) {
+                    Path copyLocation = Paths.get(folPath + File.separator + StringUtils.cleanPath(scriptFile.getOriginalFilename()));
+                    Files.copy(scriptFile.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+                    String pathScript = folPath + File.separator + StringUtils.cleanPath(scriptFile.getOriginalFilename());
+                    if (dto.getScriptSubject().equals("CSharp")) {
+                        unzip(pathScript, csFolderScript);
+                    } else if (dto.getScriptSubject().equals("Java")) {
+                        unzip(pathScript, javaFolderScript);
+                    } else if (dto.getScriptSubject().equals("JavaWeb")) {
+                        unzip(pathScript, webFolderScript);
+                    } else if (dto.getScriptSubject().equals("C")) {
+                        unzip(pathScript, cFolderScript);
+                    }
                 }
 
-                Path copyLocationServer = Paths.get(folPath + File.separator + StringUtils.cleanPath(serverFile.getOriginalFilename()));
-                Files.copy(serverFile.getInputStream(), copyLocationServer, StandardCopyOption.REPLACE_EXISTING);
-                String pathServer = folPath + File.separator + StringUtils.cleanPath(serverFile.getOriginalFilename());
-                if (dto.getServerSubject().equals("CSharp")) {
-                    unzip(pathServer, PathConstants.PATH_SERVER_CSHARP);
-                } else if (dto.getServerSubject().equals("Java")) {
-                    unzip(pathServer, PathConstants.PATH_SERVER_JAVA);
-                } else if (dto.getServerSubject().equals("JavaWeb")) {
-                    unzip(pathServer, PathConstants.PATH_SERVER_JAVA_WEB);
-                } else if (dto.getServerSubject().equals("C")) {
-                    unzip(pathServer, PathConstants.PATH_SERVER_C);
+                if (serverFile != null) {
+                    Path copyLocationServer = Paths.get(folPath + File.separator + StringUtils.cleanPath(serverFile.getOriginalFilename()));
+                    Files.copy(serverFile.getInputStream(), copyLocationServer, StandardCopyOption.REPLACE_EXISTING);
+                    String pathServer = folPath + File.separator + StringUtils.cleanPath(serverFile.getOriginalFilename());
+                    if (dto.getServerSubject().equals("CSharp")) {
+                        unzip(pathServer, PathConstants.PATH_SERVER_CSHARP);
+                    } else if (dto.getServerSubject().equals("Java")) {
+                        unzip(pathServer, PathConstants.PATH_SERVER_JAVA);
+                    } else if (dto.getServerSubject().equals("JavaWeb")) {
+                        unzip(pathServer, PathConstants.PATH_SERVER_JAVA_WEB);
+                    } else if (dto.getServerSubject().equals("C")) {
+                        unzip(pathServer, PathConstants.PATH_SERVER_C);
+                    }
                 }
             }
 
