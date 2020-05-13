@@ -774,10 +774,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Not found id for Id:" + info.getExamCode()));
 
         practicalExam.setState(info.getState());
-        if(practicalExamRepository.save(practicalExam) != null){
+        if (practicalExamRepository.save(practicalExam) != null) {
             return "Update state successfully";
         }
-        return  "Update state failed";
+        return "Update state failed";
     }
 
     @Async
@@ -858,8 +858,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                 dto.setStudentFileVectors(studentFileVectors);
             }
             duplicatedCodeDtoList.add(dto);
-            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methodForGitHub, extension);
-           githubResultService.create(practicalExam.getId(), studentCode, listDuplicate);
+//            Map<String, List<GitHubFileDuplicateDTO>> listDuplicate = getGithubResult(methodForGitHub, extension);
+//           / githubResultService.create(practicalExam.getId(), studentCode, listDuplicate);
         }
         processStudentDuplicatedCode(duplicatedCodeDtoList, practicalExam);
     }
@@ -1097,10 +1097,10 @@ public class PracticalExamServiceImpl implements PracticalExamService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String examCode = practicalExam.getCode();
         String azureProject = "";
-        if (examCode.contains(CODE_PRACTICAL_JAVA)) {
-            azureProject = AZURE_PROJECT_JAVA;
-        } else if (examCode.contains(CODE_PRACTICAL_JAVA_WEB)) {
+        if (examCode.contains(CODE_PRACTICAL_JAVA_WEB)) {
             azureProject = AZURE_PROJECT_JAVA_WEB;
+        } else if (examCode.contains(CODE_PRACTICAL_JAVA)) {
+            azureProject = AZURE_PROJECT_JAVA;
         } else if (examCode.contains(CODE_PRACTICAL_C)) {
             azureProject = AZURE_PROJECT_C;
         } else if (examCode.contains(CODE_PRACTICAL_CSHARP)) {
@@ -1115,7 +1115,8 @@ public class PracticalExamServiceImpl implements PracticalExamService {
 
                 for (SubmissionResponse dto : submissionResponses) {
                     if (dto.getEvaluatedOnline() != null && dto.getEvaluatedOnline()) {
-
+                        OnlineTestResult onlineTestResult = new OnlineTestResult();
+                        onlineTestResult.setStudentCode(dto.getStudent().getCode());
 
                         //Getting current date
                         String evaluatedDate = dto.getDate();
@@ -1131,37 +1132,42 @@ public class PracticalExamServiceImpl implements PracticalExamService {
                             e.printStackTrace();
                         }
                         c.add(Calendar.DAY_OF_MONTH, 6);
-                        String next6Date = sdf.format(c.getTime());
-                        String studentCode = dto.getStudent().getCode();
-                        String brandName = PREFIX_BRANCH + examCode + "/" + studentCode;
-                        String url = "https://dev.azure.com/" +
-                                azureProject +
-                                "_apis/test/Runs?branchName=" +
-                                "refs/heads/" + brandName +
-                                "&minLastUpdatedDate=" + evaluatedDate +
-                                "&maxLastUpdatedDate=" + next6Date;
-                        String testRunResponse = CustomUtils.sendRequest(url, "");
-                        List<AzureTestResult> azureTestResults = null;
-                        try {
-                            ObjectMapper mapper = new ObjectMapper();
-                            JsonNode root = null;
-                            root = mapper.readTree(testRunResponse);
-                            String value = root.findPath("value").toString();
-                            RunTestDto[] runTestArr = mapper.readValue(value, RunTestDto[].class);
-                            if (runTestArr != null && runTestArr.length > 0) {
-                                azureTestResults = new ArrayList<>();
-                                for (int i = 0; i < runTestArr.length; i++) {
-                                    String testResultResponse = CustomUtils.sendRequest(runTestArr[i].getUrl() + "/results", "");
-                                    JsonNode testResultNode = mapper.readTree(testResultResponse);
-                                    String testResultValue = testResultNode.findPath("value").toString();
-                                    TestRunResult[] arr = mapper.readValue(testResultValue, TestRunResult[].class);
-                                    if (arr != null && arr.length > 0) {
-                                        azureTestResults.add(new AzureTestResult(arr[0].getStartedDate(), arr));
+                        if (evaluatedDate != null && !evaluatedDate.equals("")) {
+                            String[] startDate = evaluatedDate.split(" ");
+                            String next6Date = sdf.format(c.getTime());
+                            String studentCode = dto.getStudent().getCode();
+                            String brandName = PREFIX_BRANCH + examCode + "/" + studentCode;
+                            String url = "https://dev.azure.com/" +
+                                    azureProject +
+                                    "_apis/test/Runs?branchName=" +
+                                    "refs/heads/" + brandName +
+                                    "&minLastUpdatedDate=" + startDate[0] +
+                                    "&maxLastUpdatedDate=" + next6Date;
+                            String testRunResponse = CustomUtils.sendRequest(url, "");
+                            List<AzureTestResult> azureTestResults = null;
+                            try {
+                                ObjectMapper mapper = new ObjectMapper();
+                                JsonNode root = null;
+                                root = mapper.readTree(testRunResponse);
+                                String value = root.findPath("value").toString();
+                                RunTestDto[] runTestArr = mapper.readValue(value, RunTestDto[].class);
+                                if (runTestArr != null && runTestArr.length > 0) {
+                                    azureTestResults = new ArrayList<>();
+                                    for (int i = 0; i < runTestArr.length; i++) {
+                                        String testResultResponse = CustomUtils.sendRequest(runTestArr[i].getUrl() + "/results", "");
+                                        JsonNode testResultNode = mapper.readTree(testResultResponse);
+                                        String testResultValue = testResultNode.findPath("value").toString();
+                                        TestRunResult[] arr = mapper.readValue(testResultValue, TestRunResult[].class);
+                                        if (arr != null && arr.length > 0) {
+                                            azureTestResults.add(new AzureTestResult(arr[0].getStartedDate(), arr));
+                                        }
                                     }
+                                    onlineTestResult.setAzureTestResult(azureTestResults);
+                                    results.add(onlineTestResult);
                                 }
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
                         }
                     }
                 }

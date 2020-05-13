@@ -1,5 +1,8 @@
 package com.fpt.automatedtesting.practicalexams;
 
+import com.fpt.automatedtesting.common.CustomConstant;
+import com.fpt.automatedtesting.common.LoggerManager;
+import com.fpt.automatedtesting.common.PathConstants;
 import com.fpt.automatedtesting.githubresult.dtos.GitHubFileDuplicateDTO;
 import com.fpt.automatedtesting.githubresult.dtos.GitHubResponseDTO;
 import com.google.gson.Gson;
@@ -161,24 +164,24 @@ public class PracticalExamUtils {
         boolean isSentSuccess = false;
         do{
             try {
-                String q = URLEncoder.encode(lineOfCode, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
-                String url = "https://api.github.com/search/code?q=" + q + "+in%3Afile+language%3A"+language;
-                System.out.println("====================Start===================");
-                System.out.println("line:" + lineOfCode);
+                String request = URLEncoder.encode(lineOfCode, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
+                String url = "https://api.github.com/search/code?q=" + request + "+in%3Afile+language%3A"+language;
+                LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[SEARCH] " + START_SIGN);
+                LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[SEARCH] " + lineOfCode);
                 Thread.sleep(6000);
                 String response = search(url);
-                System.out.println(response);
+                LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[RESPONSE] " + response);
                 GitHubResponseDTO listResponse = gson.fromJson(response, GitHubResponseDTO.class);
-                if(listResponse.getTotal_count() != 0) System.out.println("TIME GET DATA: "+ ++count);;
+                if(listResponse.getTotal_count() != 0)  LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[TIME GET DATA] " +  count);
                 addResultToListFunctionSimilarity(listResponse.getItems(),lineOfCode.length());
-                System.out.println("====================END===================");
+                LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[SEARCH] " + END_SIGN);
                 isSentSuccess = true;
-                //    writeToFile("", lineOfCode, pageUrl);
-                //write to file;
             } catch (Exception ex) {
                 // IF exception is "length is not longer than 128" THEN continue ELSE break
-                ex.printStackTrace();
-                if(!ex.getMessage().contains("response code: 422")) break;
+                if(!ex.getMessage().contains("response code: 422")){
+                    LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[ERROR searchRepo]" + START_SIGN);
+                    break;
+                }
                 readLengthBase -= 10;
                 int newIndex = findCodeStatementIndex(lineOfCode,0,readLengthBase);
                 readingIndex  = readingIndex  - lineOfCode.length() + newIndex;
@@ -299,7 +302,7 @@ public class PracticalExamUtils {
                 }
             } while (readingIndex < lineOfCode.length());
         } catch (Exception ex) {
-            System.out.println("writeReport error : " + ex.getMessage());
+            LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[ERROR - writeReport]" + ex.getMessage());
         }
 
     }
@@ -359,7 +362,7 @@ public class PracticalExamUtils {
         timeCallAPIInAFunction = 0;
         functionSimilarityToFile.clear();
         try {
-            System.out.println("Check online - " + code);
+            LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[FUNCTION]" + code);
             String language = "";
             if (".java".equals(extension)) {
                 language = LANGUAGE_JAVA;
@@ -370,7 +373,7 @@ public class PracticalExamUtils {
             }
             writeReport(code, language);
         } catch (Exception ex) {
-            System.out.println("Log Github error : " + ex.getMessage());
+            LoggerManager.writeLogFile(GITHUB_LOG_PATH, "[ERROR - checkDuplicatedCodeGithub]" + ex.getMessage());
         }
         return functionSimilarityToFile;
     }
