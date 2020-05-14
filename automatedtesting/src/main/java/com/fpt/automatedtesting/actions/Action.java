@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "Action")
 public class Action {
-
+ 
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
