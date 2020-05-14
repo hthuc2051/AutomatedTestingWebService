@@ -151,7 +151,7 @@ public class DuplicatedCodeService {
             }
             if (check) {
                 result.put(fileToken, node);
-               String code =  sourceTextForContext((ParserRuleContext) node);
+                String code =  sourceTextForContext((ParserRuleContext) node);
                 studentMethods.add(code);
             }
         }
